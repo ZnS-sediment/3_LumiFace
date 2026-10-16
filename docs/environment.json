@@ -1,0 +1,30 @@
+{
+  "cpu_model": "AMD Ryzen 9 7940HX with Radeon Graphics",
+  "cpu_logical_cores": 32,
+  "python": "3.12.2",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.31",
+  "processor": "x86_64",
+  "packages": {
+    "numpy": "1.26.4",
+    "opencv-python-headless": "4.10.0.84",
+    "insightface": "0.7.3",
+    "onnxruntime": "1.20.1",
+    "onnxruntime-gpu": null,
+    "torch": null,
+    "fastapi": "0.115.6"
+  },
+  "model": {
+    "ready": false,
+    "model": "buffalo_l",
+    "providers": [],
+    "fingerprint": null,
+    "error": null,
+    "weights_present": true,
+    "infrared_supported": "未验证；RGB 模型不保证可见光/红外跨模态准确率"
+  },
+  "algorithm_version": "lumiface-1.0",
+  "torch": {
+    "installed": false,
+    "note": "Optional; InsightFace inference runs via ONNX Runtime"
+  }
+}

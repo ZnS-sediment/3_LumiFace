@@ -1,0 +1,2 @@
+# Optional: training research / hardware diagnostics. Inference uses ONNX Runtime.
+torch>=2.6,<3

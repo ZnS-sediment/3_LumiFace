@@ -1,0 +1,6 @@
+{
+  "dataset_id": 1,
+  "methods": ["original", "gamma", "clahe", "retinex", "adaptive"],
+  "threshold": 0.45,
+  "calibration_id": null
+}
