@@ -11,7 +11,8 @@ Vue 3 + TypeScript + Vite + Element Plus + Axios + ECharts + Vue Router；FastAP
 - 真实 SCRFD 检测、五点对齐、ArcFace 特征；多图注册、编辑、删除、1:1 验证、1:N 检索、未知拒识。
 - ZIP 标注数据集导入、泄漏检查、独立阈值校准、五组消融、按场景汇总、逐样本结果与 CSV。
 - CPU 已实测；装有兼容 CUDA/cuDNN 与 ONNX Runtime GPU 时尝试自动启用 CUDA，实际 provider 记录在实验里。
-- **尚未验证 95% / 90% / 95% 目标**。未提供独立的真实低照度、强逆光、红外数据；公开样例及合成变体仅用于功能测试。
+- 新增真实公开数据评估：CBSR 主动近红外与 Yale B 受控光照，五组实际推理、独立未知人员划分、校准后冻结阈值、逐样本 CSV、Wilson 与按人员重采样区间。详见 `docs/real-data-evaluation.md`。
+- **95% / 90% / 95% 现场目标仍需实景验收**：公开 NIR 缺少夜间/独立会话证明，受控照明不能等同实景强逆光。新增实景采集协议与数据审计工具，自动列明缺口。
 
 ## 在当前 WSL 环境直接启动
 
@@ -55,7 +56,18 @@ bash scripts/check.sh
 .venv/bin/python scripts/smoke_real_model.py
 ```
 
-单元测试中的确定性模型替身只存在于 `backend/tests/conftest.py`；真实模型联调脚本不使用替身。详细已执行结果见 `docs/verification.md`。完整依赖快照在 `backend/requirements-lock.txt`，前端使用 `frontend/package-lock.json`。
+单元测试中的确定性模型替身只存在于 `backend/tests/conftest.py`；真实模型联调脚本不使用替身。当前已通过 68 项后端测试、前端构建和完整真实后端浏览器流程。详细已执行结果见 `docs/verification.md`。完整依赖快照在 `backend/requirements-lock.txt`，前端使用 `frontend/package-lock.json`。
+
+## 复现真实数据研究
+
+```bash
+# 研究许可、来源、固定子集与完整协议先读 docs/public-benchmark-protocol.md
+bash scripts/run_public_study.sh
+# 审计自行采集的真实数据，不会将空模板视为完成验收
+.venv/bin/python scripts/audit_field_data.py /path/to/collection.json --output work/field-audit
+```
+
+下载的原始照片只保存在本机 `datasets/raw`，不进入源码包。源码附保存的预测、冻结协议和真实结果，结果可在实验页查看并导出。默认研究脚本使用 320×320 检测输入，与应用默认 640×640 分别记录，不混用校准记录。
 
 ## 目录
 
@@ -78,3 +90,5 @@ bash scripts/check.sh
 默认只监听回环地址。`runtime` 不被静态托管；注册图片经受控接口读取，普通查询不返回特征向量。人员删除会删除注册照片、特征与涉及该人员的查询记录；历史实验标注/编号是独立研究记录，可进一步删除实验和数据集。不要把本教学系统直接暴露到公网，不应将其识别结果作为真实场景唯一身份认证依据。
 
 详细文档：`docs/architecture.md`、`docs/algorithms.md`、`docs/api.md`、`docs/experiments.md`、`docs/deployment.md`、`docs/project-report.md`。
+
+最后更新：2026-10-17。若此前已启动旧服务，请在普通 WSL 终端执行 `bash scripts/stop.sh`，再执行 `bash scripts/start.sh` 载入新增接口；浏览器进入“实验评估”可查看真实研究结果。旧服务未自动重启。

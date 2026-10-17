@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Explicit synthetic fixtures for browser integration, separate from real datasets."""
 import json
+import os
 import zipfile
 from pathlib import Path
 import cv2
-import matplotlib
-from skimage import data
 ROOT=Path(__file__).resolve().parents[1]
 WORK=ROOT/'work'
 WORK.mkdir(exist_ok=True)
+os.environ.setdefault('MPLCONFIGDIR',str(WORK/'matplotlib-cache'))
+import matplotlib
+from skimage import data
 image=cv2.cvtColor(data.astronaut(),cv2.COLOR_RGB2BGR)
 cv2.imwrite(str(WORK/'astronaut.png'),image)
 hopper=cv2.imread(str(Path(matplotlib.get_data_path())/'sample_data'/'grace_hopper.jpg'))

@@ -148,3 +148,49 @@ def test_failed_background_experiment_has_no_success_summary(client,model,monkey
     record=client.get(f'/api/experiment/{eid}').json()['data']
     assert record['status']=='failed' and record['summary']=={}
     assert 'deliberate test inference failure' in record['error']
+
+
+def test_deleted_person_id_is_never_reassigned_to_old_labels(client,model):
+    enroll(client)
+    did=client.post('/api/dataset/import',files={'file':('test.zip',dataset_zip(),'application/zip')}).json()['data']['id']
+    assert client.delete('/api/person/1').status_code==200
+    fresh=enroll(client,value=200,name='新人员',capture='new-session')
+    assert fresh.status_code==200 and fresh.json()['data']['id']!=1
+    response=client.post('/api/experiment/run',json={'dataset_id':did,'methods':['original']})
+    assert response.status_code==409
+
+
+def test_legacy_numeric_id_reuse_or_missing_registration_binding_is_rejected(client,model):
+    from app.database.session import SessionLocal
+    from app.models.entities import Person, Dataset
+    from datetime import timedelta
+    enroll(client)
+    did=client.post('/api/dataset/import',files={'file':('test.zip',dataset_zip(),'application/zip')}).json()['data']['id']
+    with SessionLocal() as db:
+        person=db.get(Person,1)
+        person.created_at += timedelta(seconds=1)
+        db.commit()
+    response=client.post('/api/experiment/run',json={'dataset_id':did,'methods':['original']})
+    assert response.status_code==409 and '身份引用' in response.json()['message']
+    with SessionLocal() as db:
+        dataset=db.get(Dataset,did)
+        manifest=dict(dataset.manifest)
+        manifest.pop('person_references')
+        dataset.manifest=manifest
+        db.commit()
+    assert client.post('/api/experiment/run',json={'dataset_id':did,'methods':['original']}).status_code==409
+
+
+def test_research_reports_are_read_only_and_raw_paths_not_accessible(client,tmp_path,monkeypatch):
+    from app.services import research
+    monkeypatch.setattr(research,'ROOT',tmp_path)
+    assert client.get('/api/research/benchmarks').json()['data']==[]
+    folder=tmp_path/'experiments/results/real-cbsr-nir'
+    folder.mkdir(parents=True)
+    (folder/'summary.json').write_text(json.dumps({'dataset':'cbsr-nir','status':'running'}))
+    assert client.get('/api/research/benchmarks').json()['data']==[]
+    (folder/'summary.json').write_text(json.dumps({'dataset':'cbsr-nir','status':'completed','purpose':'unit-test report reader fixture'}))
+    assert len(client.get('/api/research/benchmarks').json()['data'])==1
+    assert client.get('/api/research/benchmarks/not-a-dataset/csv').status_code==404
+    assert client.get('/datasets/raw/cbsr-nir/CBSR-NIR.zip').status_code==404
+    assert client.get('/api/research/benchmarks/cbsr-nir/csv').status_code==404

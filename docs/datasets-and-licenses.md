@@ -1,6 +1,6 @@
 # 数据集可用性与权重来源核实
 
-核实日期：2026-10-16。以下说明来自官方来源；不自动同意协议、代签机构文件或获取限制下载的数据。
+首次核实：2026-10-16；真实公开数据补充：2026-10-17，见本文末及 public-benchmark-protocol.md。以下说明来自官方来源；不自动同意协议、代签机构文件或获取限制下载的数据。
 
 | 数据集 | 官方说明与身份/光照覆盖 | 获取与授权现状 | 本项目状态 |
 |---|---|---|---|
@@ -41,3 +41,13 @@
 - [Matplotlib 许可](https://matplotlib.org/stable/project/license.html)
 
 功能测试用同源 Gamma 和局部压暗派生图，具有同源相关性，故 `real_capture=false`。它们只能验证管线可以运行，不能验证人物泛化、红外、真实逆光或 95% 考核目标。无红外样例时不生成红外“成功率”。
+
+## 2026-10-17 补充核实与真实评估接入
+
+已取得 OTCBVS 主办方公开提供的 CBSR NIR 完整归档（197 人、3940 图）和真实身份/眼点标注，按其教育研究条款仅在本地使用并致谢。已取得 Yale B 裁剪研究镜像，只使用原始编号 01–10，依据 Yale 官方研究条款，保留镜像来源且不再分发照片。实际已测子集、摘要与完整协议严格区分，见 public-benchmark-protocol.md 和 real-data-evaluation.md。
+
+当前不能把这两份数据直接当成现场目标验收：CBSR 未提供夜间/跨会话标记，Yale 是短时受控光照序列。Idiap MCXFace 虽含 RGB/NIR、多会话及照明变化，但其 [Zenodo 原始记录](https://zenodo.org/records/7309673) 明确 Restricted，需要永久职位签署人和机构邮箱审批，尚未取得授权；不通过非授权镜像绕过此流程。
+
+致谢：IEEE OTCBVS Workshop Series Benchmark；Center for Biometrics and Security Research (CBSR)；AuthenMetric Co. Ltd (Beijing)。参考 Stan Z. Li, RuFeng Chu, ShengCai Liao, Lun Zhang, “Illumination Invariant Face Recognition Using Near-infrared Images,” IEEE TPAMI 29(4), 627–639, 2007。
+
+Yale 原始数据引用 Athinodoros Georghiades, Peter Belhumeur, David Kriegman, “From Few to Many: Illumination Cone Models for Face Recognition under Variable Lighting and Pose,” IEEE TPAMI, 2001。裁剪处理同时说明 Kuang-Chih Lee, Jeffrey Ho, David Kriegman, “Acquiring Linear Subspaces for Face Recognition under Variable Lighting,” IEEE TPAMI, 2005。

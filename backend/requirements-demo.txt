@@ -1,0 +1,4 @@
+# Explicit dependencies of the optional public-sample integration scripts.
+# They are also installed transitively by InsightFace in the verified lock file.
+matplotlib==3.11.2
+scikit-image==0.26.0

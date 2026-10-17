@@ -1,0 +1,16 @@
+{
+  "name": "填写真实实景采集批次名称",
+  "source": "填写采集负责人、设备、日期、会话日志位置",
+  "license": "填写本地研究使用授权信息",
+  "protocol": {
+    "name": "独立会话实景验收",
+    "capture_independence": "session_disjoint",
+    "scene_evidence": {
+      "normal": {"source":"填写采集日志位置","annotation_basis":"manual_capture_log","modality":"rgb"},
+      "low_light": {"source":"填写低照度日志及测光记录","annotation_basis":"manual_capture_log","modality":"rgb","low_light_confirmed":false},
+      "backlight": {"source":"填写光源与人脸/摄像机位置记录","annotation_basis":"manual_capture_log","modality":"rgb","backlight_confirmed":false},
+      "infrared": {"source":"填写夜间近红外设备与补光日志","annotation_basis":"manual_capture_log","modality":"nir","active_illumination":false,"night_confirmed":false}
+    }
+  },
+  "images": []
+}

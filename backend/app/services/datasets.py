@@ -33,7 +33,9 @@ def import_dataset(db: Session, raw: bytes) -> Dataset:
             manifest = Manifest.model_validate_json(archive.read('manifest.json'))
             if len({x.file for x in manifest.items}) != len(manifest.items):
                 raise AppError('manifest 中存在重复文件')
-            known = set(db.scalars(select(Person.id)))
+            persons = list(db.scalars(select(Person)))
+            known = {p.id for p in persons}
+            references = {str(p.id): p.created_at.replace(tzinfo=None).isoformat() for p in persons}
             samples = list(db.scalars(select(FaceSample)))
             forbidden_hashes = {s.digest for s in samples}
             forbidden_captures = {s.capture_id for s in samples}
@@ -53,7 +55,13 @@ def import_dataset(db: Session, raw: bytes) -> Dataset:
                 if image_hash in forbidden_hashes or item.capture_id in forbidden_captures:
                     raise AppError(f'{item.file} 与注册/其他数据划分存在图像或采集会话泄漏', 409)
                 forbidden_hashes.add(image_hash)
+                if manifest.localization_protocol == 'single_face_presence' and len(item.faces) != 1:
+                    raise AppError('单人脸存在性协议须每图恰有一个身份标注')
                 for face in item.faces:
+                    if manifest.localization_protocol == 'eye_containment' and face.eyes is None:
+                        raise AppError('眼点包含协议需要独立眼点标注')
+                    if face.eyes and any(not (0 <= x < image.shape[1] and 0 <= y < image.shape[0]) for x, y in face.eyes):
+                        raise AppError('眼点坐标超出图像尺寸')
                     if face.person_id is not None and face.person_id not in known:
                         raise AppError(f'未知 person_id：{face.person_id}')
                     if face.person_id is None and face.subject in other_unknowns:
@@ -65,7 +73,9 @@ def import_dataset(db: Session, raw: bytes) -> Dataset:
                 (directory / filename).chmod(0o600)
                 items.append({**item.model_dump(), 'stored_file': filename, 'digest': image_hash})
             record = Dataset(name=manifest.name, split=manifest.split, directory=directory.name,
-                             manifest={**manifest.model_dump(), 'items': items})
+                             manifest={**manifest.model_dump(), 'items': items,
+                                       'person_references': {str(f.person_id): references[str(f.person_id)]
+                                                             for item in manifest.items for f in item.faces if f.person_id is not None}})
             db.add(record)
             db.commit()
             return record

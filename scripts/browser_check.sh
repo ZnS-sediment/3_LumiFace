@@ -3,10 +3,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 mkdir -p work
+export LUMIFACE_TEST_API_PORT="${LUMIFACE_TEST_API_PORT:-8000}"
+export LUMIFACE_TEST_UI_PORT="${LUMIFACE_TEST_UI_PORT:-5173}"
+export LUMIFACE_API_URL="http://127.0.0.1:$LUMIFACE_TEST_API_PORT"
+export LUMIFACE_UI_ORIGIN="http://127.0.0.1:$LUMIFACE_TEST_UI_PORT"
+export LUMIFACE_TEST_BASE_URL="$LUMIFACE_UI_ORIGIN"
 .venv/bin/python scripts/prepare_browser_fixtures.py
 .venv/bin/python - <<'PY'
-import socket
-for port in (8000,5173):
+import socket,os
+for port in (int(os.environ['LUMIFACE_TEST_API_PORT']),int(os.environ['LUMIFACE_TEST_UI_PORT'])):
     with socket.socket() as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:s.bind(('127.0.0.1',port))
@@ -21,19 +26,23 @@ cleanup(){
   if [ -n "$backend_pid" ]; then kill -- -"$backend_pid" 2>/dev/null || true; fi
 }
 trap cleanup EXIT INT TERM
-setsid env LUMIFACE_DATA="$TEST_RUNTIME" .venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 > work/browser-backend.log 2>&1 &
+setsid env LUMIFACE_DATA="$TEST_RUNTIME" .venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port "$LUMIFACE_TEST_API_PORT" > work/browser-backend.log 2>&1 &
 backend_pid=$!
-setsid npm run dev --prefix frontend > work/browser-frontend.log 2>&1 &
+setsid npm run dev --prefix frontend -- --port "$LUMIFACE_TEST_UI_PORT" > work/browser-frontend.log 2>&1 &
 frontend_pid=$!
 .venv/bin/python - <<'PY'
-import time,urllib.request
-for address in ('http://127.0.0.1:8000/api/system/overview','http://127.0.0.1:5173'):
+import time,urllib.request,os
+for address in (os.environ['LUMIFACE_API_URL']+'/api/system/overview',os.environ['LUMIFACE_UI_ORIGIN']):
     for attempt in range(100):
         try:
             with urllib.request.urlopen(address,timeout=2) as r:
                 if r.status==200:break
         except OSError:time.sleep(.2)
     else:raise SystemExit(f'Server startup failed: {address}')
+# Load the actual weights before timing UI interactions on a busy CPU host.
+request=urllib.request.Request(os.environ['LUMIFACE_API_URL']+'/api/system/model/load',method='POST')
+with urllib.request.urlopen(request,timeout=180) as response:
+    if response.status!=200:raise SystemExit('Real model warmup failed')
 PY
 # The verified WSL host uses its existing Windows fonts for headless screenshots.
 if [ -d /mnt/c/Windows/Fonts ]; then

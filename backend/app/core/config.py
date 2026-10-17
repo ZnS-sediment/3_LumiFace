@@ -2,6 +2,9 @@
 import os
 from pathlib import Path
 
+# Inference is local; disable an optional dependency's import-time version request.
+os.environ.setdefault('NO_ALBUMENTATIONS_UPDATE', '1')
+
 ROOT = Path(__file__).resolve().parents[3]
 DATA = Path(os.environ.get('LUMIFACE_DATA', str(ROOT / 'runtime'))).resolve()
 MODEL_ROOT = Path(os.environ.get('LUMIFACE_MODELS', str(ROOT / 'runtime' / 'insightface'))).resolve()
@@ -15,6 +18,7 @@ ALGORITHM_VERSION = 'lumiface-1.0'
 
 
 def prepare_storage() -> None:
-    for folder in (DATA, DATA / 'samples', DATA / 'datasets', MODEL_ROOT):
+    os.environ.setdefault('MPLCONFIGDIR', str(DATA / 'cache' / 'matplotlib'))
+    for folder in (DATA, DATA / 'samples', DATA / 'datasets', DATA / 'cache', MODEL_ROOT):
         folder.mkdir(parents=True, exist_ok=True, mode=0o700)
         folder.chmod(0o700)

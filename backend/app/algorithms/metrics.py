@@ -1,5 +1,7 @@
 """One-to-one score-ordered IoU matching; all rates use pooled counts."""
 import math
+from collections import defaultdict
+import numpy as np
 
 
 def iou(a: list, b: list) -> float:
@@ -10,11 +12,24 @@ def iou(a: list, b: list) -> float:
     return intersection / union if union > 0 else 0
 
 
-def score_image(truth: list[dict], predictions: list[dict], elapsed_ms: float) -> dict:
+def score_image(truth: list[dict], predictions: list[dict], elapsed_ms: float, protocol: str = 'iou') -> dict:
+    if protocol not in ('iou', 'eye_containment', 'single_face_presence'):
+        raise ValueError('Unknown localization protocol')
+    if protocol == 'eye_containment' and any(not g.get('eyes') for g in truth):
+        raise ValueError('Eye-containment evaluation requires independent eye annotations')
+    if protocol == 'single_face_presence' and len(truth) != 1:
+        raise ValueError('Single-face presence requires exactly one annotated subject')
     available = set(range(len(truth)))
     pairs = []
     for p in sorted(range(len(predictions)), key=lambda j: -predictions[j]['confidence']):
-        ranked = [(iou(truth[g]['bbox'], predictions[p]['bbox']), g) for g in available]
+        def overlap(g: int) -> float:
+            if protocol == 'single_face_presence':
+                return 1. if len(predictions) == 1 else 0.
+            if protocol == 'eye_containment':
+                x1, y1, x2, y2 = predictions[p]['bbox']
+                return float(all(x1 <= x <= x2 and y1 <= y <= y2 for x, y in truth[g]['eyes']))
+            return iou(truth[g]['bbox'], predictions[p]['bbox'])
+        ranked = [(overlap(g), g) for g in available]
         overlap, g = max(ranked, default=(0, -1))
         if overlap >= .5:
             available.remove(g)
@@ -40,16 +55,51 @@ def score_image(truth: list[dict], predictions: list[dict], elapsed_ms: float) -
     return {'tp': len(pairs), 'fp': len(predictions) - len(pairs), 'fn': len(truth) - len(pairs),
             'known': known, 'unknown': unknown, 'correct': correct, 'detected_known': detected_known,
             'detected_unknown': detected_unknown, 'false_accept': false_accept,
-            'elapsed_ms': elapsed_ms, 'decisions': decisions, 'predictions': predictions}
+            'elapsed_ms': elapsed_ms, 'localization_protocol': protocol, 'decisions': decisions, 'predictions': predictions}
 
 
 def ratio(n: int | float, d: int | float) -> float | None:
     return n / d if d else None
 
 
+def wilson(successes: int, total: int) -> list[float] | None:
+    """95% Wilson interval; correlated frames still require a cluster-aware interval."""
+    if total == 0:
+        return None
+    z = 1.959963984540054
+    p = successes / total
+    denominator = 1 + z*z/total
+    center = (p + z*z/(2*total))/denominator
+    half = z*math.sqrt(p*(1-p)/total + z*z/(4*total*total))/denominator
+    return [max(0., center-half), min(1., center+half)]
+
+
+def subject_bootstrap(rows: list[dict], repetitions: int = 2000) -> list[float] | None:
+    """Resample measured subject clusters; never generate synthetic prediction scores."""
+    clusters: dict[str, list[int]] = defaultdict(lambda: [0, 0])
+    for row in rows:
+        for decision in row.get('decisions', []):
+            if decision['known']:
+                clusters[decision['subject']][0] += int(decision['correct'])
+                clusters[decision['subject']][1] += 1
+    if len(clusters) < 2:
+        return None
+    values = np.array(list(clusters.values()), dtype=np.int64)
+    indices = np.random.default_rng(20261017).integers(0, len(values), size=(repetitions, len(values)))
+    sampled = values[indices].sum(axis=1)
+    rates = sampled[:, 0] / sampled[:, 1]
+    return np.quantile(rates, [.025, .975]).astype(float).tolist()
+
+
 def aggregate(rows: list[dict]) -> dict:
     counts = {k: sum(r[k] for r in rows) for k in ['tp', 'fp', 'fn', 'known', 'unknown', 'correct', 'detected_known', 'detected_unknown', 'false_accept']}
-    return {**counts, 'images': len(rows), 'precision': ratio(counts['tp'], counts['tp'] + counts['fp']),
+    known_subjects = {d['subject'] for r in rows for d in r.get('decisions', []) if d['known']}
+    unknown_subjects = {d['subject'] for r in rows for d in r.get('decisions', []) if not d['known']}
+    return {**counts, 'images': len(rows), 'known_subjects': len(known_subjects), 'unknown_subjects': len(unknown_subjects),
+            'confirmation_ci95': wilson(counts['correct'], counts['known']),
+            'unknown_far_ci95': wilson(counts['false_accept'], counts['unknown']),
+            'confirmation_subject_bootstrap_ci95': subject_bootstrap(rows),
+            'precision': ratio(counts['tp'], counts['tp'] + counts['fp']),
             'recall': ratio(counts['tp'], counts['tp'] + counts['fn']),
             'confirmation_rate': ratio(counts['correct'], counts['known']),
             'recognition_accuracy': ratio(counts['correct'], counts['detected_known']),

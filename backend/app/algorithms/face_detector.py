@@ -1,4 +1,5 @@
 import hashlib
+import os
 import threading
 import time
 from pathlib import Path
@@ -12,6 +13,9 @@ from app.services.images import data_url
 
 class FaceEngine:
     def __init__(self) -> None:
+        self.detection_size = int(os.environ.get('LUMIFACE_DETECTION_SIZE', '640'))
+        if self.detection_size not in (320,640):
+            raise ValueError('LUMIFACE_DETECTION_SIZE must be 320 or 640')
         self._app = None
         self._lock = threading.RLock()
         self.error: str | None = None
@@ -20,7 +24,7 @@ class FaceEngine:
 
     def status(self) -> dict:
         return {'ready': self._app is not None, 'model': MODEL_NAME, 'providers': self.providers,
-                'fingerprint': self.fingerprint, 'error': self.error,
+                'fingerprint': self.fingerprint, 'error': self.error, 'detection_size': self.detection_size,
                 'weights_present': (MODEL_ROOT / 'models' / MODEL_NAME / 'det_10g.onnx').exists(),
                 'infrared_supported': '未验证；RGB 模型不保证可见光/红外跨模态准确率'}
 
@@ -42,7 +46,7 @@ class FaceEngine:
                 opts.intra_op_num_threads = 2
                 opts.inter_op_num_threads = 1
                 app = FaceAnalysis(name=MODEL_NAME, root=str(MODEL_ROOT), allowed_modules=['detection', 'recognition'], providers=selected, sess_options=opts)
-                app.prepare(ctx_id=0 if selected[0] == 'CUDAExecutionProvider' else -1, det_size=(640, 640), det_thresh=0.5)
+                app.prepare(ctx_id=0 if selected[0] == 'CUDAExecutionProvider' else -1, det_size=(self.detection_size, self.detection_size), det_thresh=0.5)
                 if 'recognition' not in app.models:
                     raise RuntimeError('缺少识别模型')
                 self.providers = app.det_model.session.get_providers()

@@ -1,0 +1,58 @@
+{
+  "thresholds": {
+    "original": 0.7170027494430542,
+    "gamma": 0.7169073224067688,
+    "clahe": 0.7156857252120972,
+    "retinex": 0.6718569993972778,
+    "adaptive": 0.7241584062576294
+  },
+  "details": {
+    "original": {
+      "threshold": 0.7170027494430542,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 40,
+      "unknown": 30,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "gamma": {
+      "threshold": 0.7169073224067688,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 40,
+      "unknown": 30,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "clahe": {
+      "threshold": 0.7156857252120972,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 40,
+      "unknown": 30,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "retinex": {
+      "threshold": 0.6718569993972778,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 40,
+      "unknown": 30,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "adaptive": {
+      "threshold": 0.7241584062576294,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 40,
+      "unknown": 30,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    }
+  },
+  "frozen_before_test_utc": "2026-10-17T03:13:55.317732+00:00",
+  "protocol_sha256": "66e24560f3cd63d1c74e8b734a6626060a09491aa908165a3b2f5a5415bb3443"
+}

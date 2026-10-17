@@ -11,3 +11,17 @@ datasets/*
 !datasets/README.md
 experiments/results/*
 !experiments/results/.gitkeep
+
+# Keep completed public research evidence, never raw licensed images.
+!experiments/results/real-cbsr-nir/
+!experiments/results/real-yale-b/
+experiments/results/real-cbsr-nir/*
+experiments/results/real-yale-b/*
+!experiments/results/real-*/summary.json
+!experiments/results/real-*/protocol-frozen.json
+!experiments/results/real-*/thresholds-frozen.json
+!experiments/results/real-*/predictions.jsonl
+!experiments/results/real-*/results.csv
+!experiments/results/real-*/failure-diagnostics.json
+!experiments/results/real-*/secondary-fixed-default.json
+!experiments/results/real-*/benchmark-source-frozen.py

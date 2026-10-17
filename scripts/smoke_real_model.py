@@ -21,6 +21,7 @@ def main() -> None:
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix='lumiface-real-smoke-') as storage:
         os.environ['LUMIFACE_DATA'] = storage
+        os.environ.setdefault('MPLCONFIGDIR', str(Path(storage) / 'cache' / 'matplotlib'))
         from fastapi.testclient import TestClient
         import cv2
         import matplotlib

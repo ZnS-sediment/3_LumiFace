@@ -98,3 +98,28 @@ Ubuntu 20.04 使用固定 Playwright 1.56.1；新版浏览器支持可能不同�
 删人会删除参考图和特征；历史实验及独立数据集需在实验页显式删除。删除过的图库无法直接复现旧实验，旧报告保留参数摘要和预测供审阅。
 
 环境变量：LUMIFACE_DATA 自定义数据根；LUMIFACE_MODELS 自定义模型根。变量在启动前设置，应用不会接受 HTTP 传入文件系统路径。
+
+公开样例脚本的直接依赖另外声明于 `backend/requirements-demo.txt`；当前 InsightFace 依赖链已安装相同版本。图像增强服务不需要公开人脸图片或外部图像服务。
+
+## 真实公开数据与实景验收
+
+```bash
+# 顺序执行，避免多个大型模型进程使 7 GB WSL 交换区耗尽
+bash scripts/run_public_study.sh
+# 自采数据先核对划分与场景证据
+.venv/bin/python scripts/audit_field_data.py /path/to/collection.json --output work/field-audit
+```
+
+固定子集默认 320 检测输入；主系统默认 640。`LUMIFACE_DETECTION_SIZE=320` 可显式选择 CPU 较小输入，注册/校准/测试时必须保持设置一致；更改后旧检测尺寸的校准记录会被拒绝。
+
+启动后端后才会加载新路由；更新代码后需要重启已有服务。独立验证可使用 `LUMIFACE_TEST_API_PORT=8001 LUMIFACE_TEST_UI_PORT=5174 bash scripts/browser_check.sh`，不会占用已经运行的默认端口。对应 Vite 后端地址来自 LUMIFACE_API_URL，只额外允许显式指定的本地前端 Origin。
+
+如果此前由 Codex 启动的默认端口服务仍运行，更新代码后可以在**普通 WSL 终端**执行：
+
+```bash
+cd /home/zns/3_LumiFace
+bash scripts/stop.sh
+bash scripts/start.sh
+```
+
+stop.sh 只向同一用户、本项目工作目录且命令明确为本项目 Uvicorn/Vite 的进程发送 SIGTERM；不会终止公开数据评估或其他项目。隔离工具的进程命名空间可能看不到旧服务器，此时它会明确提示从普通 WSL 终端执行，不会声称已停止。

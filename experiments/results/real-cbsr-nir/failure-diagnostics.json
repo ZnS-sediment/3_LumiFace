@@ -1,0 +1,27 @@
+{
+  "original": {
+    "missed_or_ambiguous": 0,
+    "rejected_below_threshold": 6,
+    "wrong_identity_accepted": 0
+  },
+  "gamma": {
+    "missed_or_ambiguous": 0,
+    "rejected_below_threshold": 5,
+    "wrong_identity_accepted": 0
+  },
+  "clahe": {
+    "missed_or_ambiguous": 0,
+    "rejected_below_threshold": 6,
+    "wrong_identity_accepted": 0
+  },
+  "retinex": {
+    "missed_or_ambiguous": 0,
+    "rejected_below_threshold": 4,
+    "wrong_identity_accepted": 0
+  },
+  "adaptive": {
+    "missed_or_ambiguous": 0,
+    "rejected_below_threshold": 8,
+    "wrong_identity_accepted": 0
+  }
+}

@@ -1,4 +1,6 @@
 import logging
+import os
+from urllib.parse import urlparse
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -29,6 +31,9 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title='LumiFace 复杂光照人脸增强系统', version='1.0.0', lifespan=lifespan)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost', '127.0.0.1', '[::1]', 'testserver'])
 ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:8000', 'http://127.0.0.1:8000']
+custom_origin = os.environ.get('LUMIFACE_UI_ORIGIN')
+if custom_origin and urlparse(custom_origin).scheme == 'http' and urlparse(custom_origin).hostname in ('127.0.0.1','localhost'):
+    ORIGINS.append(custom_origin)
 app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_methods=['GET', 'POST', 'PATCH', 'DELETE'], allow_headers=['Content-Type'])
 
 

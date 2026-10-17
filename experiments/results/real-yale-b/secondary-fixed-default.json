@@ -1,0 +1,178 @@
+{
+  "protocol": {
+    "name": "项目预先使用的默认阈值补充对照",
+    "threshold": 0.45,
+    "basis": "DEFAULT_THRESHOLD=0.45 and recognition API defaults existed before public benchmark acquisition",
+    "role": "secondary_exploratory",
+    "uses_test_labels_to_select_threshold": false,
+    "note": "与冻结校准阈值结果分别报告；此固定默认值未经当前数据的独立校准，不作为现场目标达成证据"
+  },
+  "declaration_sha256": "68adddb255e954e71c9e06250f932d78275876b8081c5de53920a190431be074",
+  "summary": {
+    "original": {
+      "tp": 80,
+      "fp": 0,
+      "fn": 9,
+      "known": 61,
+      "unknown": 28,
+      "correct": 54,
+      "detected_known": 54,
+      "detected_unknown": 26,
+      "false_accept": 0,
+      "images": 89,
+      "known_subjects": 6,
+      "unknown_subjects": 2,
+      "confirmation_ci95": [
+        0.7815569152759893,
+        0.9432879733926779
+      ],
+      "unknown_far_ci95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "confirmation_subject_bootstrap_ci95": [
+        0.8571428571428571,
+        0.9
+      ],
+      "precision": 1.0,
+      "recall": 0.898876404494382,
+      "confirmation_rate": 0.8852459016393442,
+      "recognition_accuracy": 1.0,
+      "unknown_far": 0.0,
+      "conditional_unknown_far": 0.0,
+      "mean_ms": 1405.35516469664
+    },
+    "gamma": {
+      "tp": 89,
+      "fp": 0,
+      "fn": 0,
+      "known": 61,
+      "unknown": 28,
+      "correct": 61,
+      "detected_known": 61,
+      "detected_unknown": 28,
+      "false_accept": 0,
+      "images": 89,
+      "known_subjects": 6,
+      "unknown_subjects": 2,
+      "confirmation_ci95": [
+        0.9407561321018871,
+        1.0
+      ],
+      "unknown_far_ci95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "confirmation_subject_bootstrap_ci95": [
+        1.0,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "confirmation_rate": 1.0,
+      "recognition_accuracy": 1.0,
+      "unknown_far": 0.0,
+      "conditional_unknown_far": 0.0,
+      "mean_ms": 1523.0512064831398
+    },
+    "clahe": {
+      "tp": 80,
+      "fp": 0,
+      "fn": 9,
+      "known": 61,
+      "unknown": 28,
+      "correct": 54,
+      "detected_known": 54,
+      "detected_unknown": 26,
+      "false_accept": 0,
+      "images": 89,
+      "known_subjects": 6,
+      "unknown_subjects": 2,
+      "confirmation_ci95": [
+        0.7815569152759893,
+        0.9432879733926779
+      ],
+      "unknown_far_ci95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "confirmation_subject_bootstrap_ci95": [
+        0.8571428571428571,
+        0.9
+      ],
+      "precision": 1.0,
+      "recall": 0.898876404494382,
+      "confirmation_rate": 0.8852459016393442,
+      "recognition_accuracy": 1.0,
+      "unknown_far": 0.0,
+      "conditional_unknown_far": 0.0,
+      "mean_ms": 1461.6285235954952
+    },
+    "retinex": {
+      "tp": 89,
+      "fp": 0,
+      "fn": 0,
+      "known": 61,
+      "unknown": 28,
+      "correct": 60,
+      "detected_known": 61,
+      "detected_unknown": 28,
+      "false_accept": 0,
+      "images": 89,
+      "known_subjects": 6,
+      "unknown_subjects": 2,
+      "confirmation_ci95": [
+        0.9128113995535841,
+        0.9971002692007002
+      ],
+      "unknown_far_ci95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "confirmation_subject_bootstrap_ci95": [
+        0.9523809523809523,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "confirmation_rate": 0.9836065573770492,
+      "recognition_accuracy": 0.9836065573770492,
+      "unknown_far": 0.0,
+      "conditional_unknown_far": 0.0,
+      "mean_ms": 1431.6473630000003
+    },
+    "adaptive": {
+      "tp": 88,
+      "fp": 0,
+      "fn": 1,
+      "known": 61,
+      "unknown": 28,
+      "correct": 60,
+      "detected_known": 60,
+      "detected_unknown": 28,
+      "false_accept": 0,
+      "images": 89,
+      "known_subjects": 6,
+      "unknown_subjects": 2,
+      "confirmation_ci95": [
+        0.9128113995535841,
+        0.9971002692007002
+      ],
+      "unknown_far_ci95": [
+        1.3877787807814457e-17,
+        0.12064330476584563
+      ],
+      "confirmation_subject_bootstrap_ci95": [
+        0.95,
+        1.0
+      ],
+      "precision": 1.0,
+      "recall": 0.9887640449438202,
+      "confirmation_rate": 0.9836065573770492,
+      "recognition_accuracy": 1.0,
+      "unknown_far": 0.0,
+      "conditional_unknown_far": 0.0,
+      "mean_ms": 1377.432005853918
+    }
+  }
+}

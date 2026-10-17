@@ -1,0 +1,1351 @@
+{
+  "dataset": "yale-b",
+  "title": "Yale B 真实受控光照评估 · 固定子集",
+  "profile": "pilot",
+  "protocol": {
+    "name": "Original Yale B 01..10, fixed controlled-illumination holdout (limited benchmark)",
+    "profile": "pilot",
+    "localization_protocol": "single_face_presence",
+    "capture_independence": "condition_disjoint",
+    "detector_border": {
+      "pixels": 100,
+      "value": 100,
+      "applied": "after enhancement, gallery and every query identically",
+      "selected_on": "reference enrollment image only, before query inference"
+    },
+    "source": "http://cvc.cs.yale.edu/cvc/projects/yalefacesB/yalefacesB.html",
+    "scene_evidence": {},
+    "source_quality_lists": {
+      "no_strobe.html": [
+        "yaleB01_P01A+095E+00.pgm",
+        "yaleB01_P02A+095E+00.pgm",
+        "yaleB01_P03A+095E+00.pgm",
+        "yaleB01_P04A+095E+00.pgm",
+        "yaleB01_P05A+095E+00.pgm",
+        "yaleB01_P06A+095E+00.pgm",
+        "yaleB01_P07A+095E+00.pgm",
+        "yaleB01_P07A-005E+10.pgm",
+        "yaleB01_P08A+095E+00.pgm",
+        "yaleB02_P00A+095E+00.pgm",
+        "yaleB02_P01A+095E+00.pgm",
+        "yaleB02_P02A+095E+00.pgm",
+        "yaleB02_P02A-005E+10.pgm",
+        "yaleB02_P03A+095E+00.pgm",
+        "yaleB02_P04A+095E+00.pgm",
+        "yaleB02_P05A+095E+00.pgm",
+        "yaleB02_P06A+095E+00.pgm",
+        "yaleB05_P08A-110E-20.pgm",
+        "yaleB06_P03A-005E+10.pgm",
+        "yaleB09_P00A+050E-40.pgm",
+        "yaleB09_P01A+050E-40.pgm",
+        "yaleB09_P02A+050E-40.pgm",
+        "yaleB09_P03A+050E-40.pgm",
+        "yaleB09_P04A+050E-40.pgm",
+        "yaleB09_P05A+050E-40.pgm",
+        "yaleB09_P05A-110E-20.pgm",
+        "yaleB09_P06A+050E-40.pgm",
+        "yaleB09_P06A-110E-20.pgm",
+        "yaleB09_P07A+050E-40.pgm",
+        "yaleB09_P07A-110E-20.pgm",
+        "yaleB09_P08A+050E-40.pgm",
+        "yaleB10_P00A+050E-40.pgm",
+        "yaleB10_P01A+050E-40.pgm",
+        "yaleB10_P01A-110E+15.pgm",
+        "yaleB10_P01A-110E-20.pgm",
+        "yaleB10_P02A+050E-40.pgm",
+        "yaleB10_P02A-110E-20.pgm",
+        "yaleB10_P03A+050E-40.pgm",
+        "yaleB10_P04A+050E-40.pgm",
+        "yaleB10_P04A-110E-20.pgm",
+        "yaleB10_P05A+050E-40.pgm",
+        "yaleB10_P05A-110E-20.pgm",
+        "yaleB10_P06A+050E-40.pgm",
+        "yaleB10_P06A-110E-20.pgm",
+        "yaleB10_P07A+050E-40.pgm",
+        "yaleB10_P08A+050E-40.pgm",
+        "yaleB10_P08A-110E-20.pgm"
+      ],
+      "corrupt.html": [
+        "yaleB02_P00A+020E-10.pgm",
+        "yaleB02_P00A+025E+00.pgm",
+        "yaleB05_P00A+035E+15.pgm",
+        "yaleB05_P00A+035E+40.pgm"
+      ]
+    },
+    "scene_labels": {
+      "acquisition_failure_no_flash": "原库记录的闪光未触发",
+      "ambient_no_flash": "无闪光环境光（不等同夜间）",
+      "controlled_frontal": "受控正面光",
+      "controlled_oblique": "受控斜向光",
+      "controlled_rear_side": "受控背侧光（非实景强逆光）"
+    },
+    "limitations": [
+      "Original cropped data, no independent capture sessions",
+      "Images were acquired in approximately two seconds under changing strobes",
+      "Single-face presence is not IoU localization validation",
+      "No actual IR, field low-light, or bright-background backlight labels",
+      "Original 01..10 only; extra subjects in mirror are not used",
+      "Documented flash failures have their own scene; mild source field imbalance is flagged, not filtered using model scores"
+    ],
+    "roles": {
+      "known_subjects": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "unknown_calibration": [
+        7,
+        8
+      ],
+      "unknown_test": [
+        9,
+        10
+      ]
+    },
+    "mirror": "https://raw.githubusercontent.com/trokas/ai_primer/master/img/CroppedYale.zip"
+  },
+  "protocol_sha256": "84be9ecddd1d3e561f72c4488a66043e1fa10cfb3298adb23071e77378ed2499",
+  "environment": {
+    "cpu_model": "AMD Ryzen 9 7940HX with Radeon Graphics",
+    "cpu_logical_cores": 32,
+    "python": "3.12.2",
+    "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.31",
+    "processor": "x86_64",
+    "packages": {
+      "numpy": "1.26.4",
+      "opencv-python-headless": "4.10.0.84",
+      "insightface": "0.7.3",
+      "onnxruntime": "1.20.1",
+      "onnxruntime-gpu": null,
+      "torch": null,
+      "fastapi": "0.115.6"
+    },
+    "model": {
+      "ready": true,
+      "model": "buffalo_l",
+      "providers": [
+        "CPUExecutionProvider"
+      ],
+      "fingerprint": "1f1ada9ba62bb8b8295a8ab7e5cbae2c31f50be997640a3a7a1d05bb51ca6197",
+      "error": null,
+      "detection_size": 320,
+      "weights_present": true,
+      "infrared_supported": "未验证；RGB 模型不保证可见光/红外跨模态准确率"
+    },
+    "algorithm_version": "lumiface-1.0"
+  },
+  "real_capture": true,
+  "gallery_subjects": 6,
+  "gallery_images": 24,
+  "gallery_accepted_images": 24,
+  "enrollment_failures": [],
+  "calibration_images": 50,
+  "test_images": 89,
+  "status": "completed",
+  "time_scope": "enhancement+detection+embedding+search; concurrent CPU workers; not a dedicated speed benchmark",
+  "workers": 2,
+  "split_audit": {
+    "rule": "gallery > calibration > test; retain first canonical-pixel image; filenames/labels and source ordering fixed before inference",
+    "original_counts": {
+      "gallery": 24,
+      "calibration": 50,
+      "test": 89
+    },
+    "unique_counts": {
+      "gallery": 24,
+      "calibration": 50,
+      "test": 89
+    },
+    "exclusions": []
+  },
+  "thresholds": {
+    "original": 0.6062517762184143,
+    "gamma": 0.6451969742774963,
+    "clahe": 0.5945218205451965,
+    "retinex": 0.6133427619934082,
+    "adaptive": 0.5851446390151978
+  },
+  "calibration": {
+    "original": {
+      "threshold": 0.6062517762184143,
+      "observed_far": 0.0,
+      "confirmation_rate": 0.9722222222222222,
+      "known": 36,
+      "unknown": 14,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "gamma": {
+      "threshold": 0.6451969742774963,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 36,
+      "unknown": 14,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "clahe": {
+      "threshold": 0.5945218205451965,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 36,
+      "unknown": 14,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "retinex": {
+      "threshold": 0.6133427619934082,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 36,
+      "unknown": 14,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    },
+    "adaptive": {
+      "threshold": 0.5851446390151978,
+      "observed_far": 0.0,
+      "confirmation_rate": 1.0,
+      "known": 36,
+      "unknown": 14,
+      "target_far": 0.01,
+      "note": "仅校准集经验值，不保证测试集 FAR"
+    }
+  },
+  "summary": {
+    "original": {
+      "overall": {
+        "tp": 80,
+        "fp": 0,
+        "fn": 9,
+        "known": 61,
+        "unknown": 28,
+        "correct": 53,
+        "detected_known": 54,
+        "detected_unknown": 26,
+        "false_accept": 0,
+        "images": 89,
+        "known_subjects": 6,
+        "unknown_subjects": 2,
+        "confirmation_ci95": [
+          0.7619811980700654,
+          0.932019227250999
+        ],
+        "unknown_far_ci95": [
+          1.3877787807814457e-17,
+          0.12064330476584563
+        ],
+        "confirmation_subject_bootstrap_ci95": [
+          0.8360655737704918,
+          0.9
+        ],
+        "precision": 1.0,
+        "recall": 0.898876404494382,
+        "confirmation_rate": 0.8688524590163934,
+        "recognition_accuracy": 0.9814814814814815,
+        "unknown_far": 0.0,
+        "conditional_unknown_far": 0.0,
+        "mean_ms": 1405.35516469664
+      },
+      "scenes": {
+        "acquisition_failure_no_flash": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2,
+          "known": 1,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "images": 3,
+          "known_subjects": 1,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.0,
+            0.7934506856227626
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": null,
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": null,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 967.2513226667737
+        },
+        "ambient_no_flash": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 7,
+          "known": 6,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "images": 8,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            2.7755575615628914e-17,
+            0.3903342879021653
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision": 1.0,
+          "recall": 0.125,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": null,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 730.0589133749895
+        },
+        "controlled_frontal": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1565.03828846156
+        },
+        "controlled_oblique": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 17,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.7424269921812741,
+            0.990124809021697
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.8333333333333334,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.9444444444444444,
+          "recognition_accuracy": 0.9444444444444444,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1416.1676243077357
+        },
+        "controlled_rear_side": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1493.1934865768865
+        }
+      },
+      "targets": {
+        "infrared": {
+          "target": 0.95,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "backlight": {
+          "target": 0.9,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "overall": {
+          "target": 0.95,
+          "observed": 0.8688524590163934,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        }
+      },
+      "delta_vs_original": 0.0
+    },
+    "gamma": {
+      "overall": {
+        "tp": 89,
+        "fp": 0,
+        "fn": 0,
+        "known": 61,
+        "unknown": 28,
+        "correct": 53,
+        "detected_known": 61,
+        "detected_unknown": 28,
+        "false_accept": 0,
+        "images": 89,
+        "known_subjects": 6,
+        "unknown_subjects": 2,
+        "confirmation_ci95": [
+          0.7619811980700654,
+          0.932019227250999
+        ],
+        "unknown_far_ci95": [
+          1.3877787807814457e-17,
+          0.12064330476584563
+        ],
+        "confirmation_subject_bootstrap_ci95": [
+          0.8360655737704918,
+          0.9
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "confirmation_rate": 0.8688524590163934,
+        "recognition_accuracy": 0.8688524590163934,
+        "unknown_far": 0.0,
+        "conditional_unknown_far": 0.0,
+        "mean_ms": 1523.0512064831398
+      },
+      "scenes": {
+        "acquisition_failure_no_flash": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 1,
+          "detected_unknown": 2,
+          "false_accept": 0,
+          "images": 3,
+          "known_subjects": 1,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.0,
+            0.7934506856227626
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": null,
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": 0.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1115.7689690001764
+        },
+        "ambient_no_flash": {
+          "tp": 8,
+          "fp": 0,
+          "fn": 0,
+          "known": 6,
+          "unknown": 2,
+          "correct": 1,
+          "detected_known": 6,
+          "detected_unknown": 2,
+          "false_accept": 0,
+          "images": 8,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.030053369748306635,
+            0.5635028221864702
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.0,
+            0.5
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.16666666666666666,
+          "recognition_accuracy": 0.16666666666666666,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1361.1407007500134
+        },
+        "controlled_frontal": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1501.7468514615407
+        },
+        "controlled_oblique": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 16,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.672002348698212,
+            0.9689804773543876
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.7777777777777778,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.8888888888888888,
+          "recognition_accuracy": 0.8888888888888888,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1650.0948490000048
+        },
+        "controlled_rear_side": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1514.1246404614844
+        }
+      },
+      "targets": {
+        "infrared": {
+          "target": 0.95,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "backlight": {
+          "target": 0.9,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "overall": {
+          "target": 0.95,
+          "observed": 0.8688524590163934,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        }
+      },
+      "delta_vs_original": 0.0
+    },
+    "clahe": {
+      "overall": {
+        "tp": 80,
+        "fp": 0,
+        "fn": 9,
+        "known": 61,
+        "unknown": 28,
+        "correct": 53,
+        "detected_known": 54,
+        "detected_unknown": 26,
+        "false_accept": 0,
+        "images": 89,
+        "known_subjects": 6,
+        "unknown_subjects": 2,
+        "confirmation_ci95": [
+          0.7619811980700654,
+          0.932019227250999
+        ],
+        "unknown_far_ci95": [
+          1.3877787807814457e-17,
+          0.12064330476584563
+        ],
+        "confirmation_subject_bootstrap_ci95": [
+          0.8360655737704918,
+          0.9
+        ],
+        "precision": 1.0,
+        "recall": 0.898876404494382,
+        "confirmation_rate": 0.8688524590163934,
+        "recognition_accuracy": 0.9814814814814815,
+        "unknown_far": 0.0,
+        "conditional_unknown_far": 0.0,
+        "mean_ms": 1461.6285235954952
+      },
+      "scenes": {
+        "acquisition_failure_no_flash": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 2,
+          "known": 1,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "images": 3,
+          "known_subjects": 1,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.0,
+            0.7934506856227626
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": null,
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": null,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 734.2773093332653
+        },
+        "ambient_no_flash": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 7,
+          "known": 6,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "images": 8,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            2.7755575615628914e-17,
+            0.3903342879021653
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision": 1.0,
+          "recall": 0.125,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": null,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 741.03719250013
+        },
+        "controlled_frontal": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1489.1747369615587
+        },
+        "controlled_oblique": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 17,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.7424269921812741,
+            0.990124809021697
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.8333333333333334,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.9444444444444444,
+          "recognition_accuracy": 0.9444444444444444,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1636.5190303460902
+        },
+        "controlled_rear_side": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1564.837353153822
+        }
+      },
+      "targets": {
+        "infrared": {
+          "target": 0.95,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "backlight": {
+          "target": 0.9,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "overall": {
+          "target": 0.95,
+          "observed": 0.8688524590163934,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        }
+      },
+      "delta_vs_original": 0.0
+    },
+    "retinex": {
+      "overall": {
+        "tp": 89,
+        "fp": 0,
+        "fn": 0,
+        "known": 61,
+        "unknown": 28,
+        "correct": 53,
+        "detected_known": 61,
+        "detected_unknown": 28,
+        "false_accept": 0,
+        "images": 89,
+        "known_subjects": 6,
+        "unknown_subjects": 2,
+        "confirmation_ci95": [
+          0.7619811980700654,
+          0.932019227250999
+        ],
+        "unknown_far_ci95": [
+          1.3877787807814457e-17,
+          0.12064330476584563
+        ],
+        "confirmation_subject_bootstrap_ci95": [
+          0.8360655737704918,
+          0.9
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "confirmation_rate": 0.8688524590163934,
+        "recognition_accuracy": 0.8688524590163934,
+        "unknown_far": 0.0,
+        "conditional_unknown_far": 0.0,
+        "mean_ms": 1431.6473630000003
+      },
+      "scenes": {
+        "acquisition_failure_no_flash": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 1,
+          "detected_unknown": 2,
+          "false_accept": 0,
+          "images": 3,
+          "known_subjects": 1,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.0,
+            0.7934506856227626
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": null,
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": 0.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1088.907992000107
+        },
+        "ambient_no_flash": {
+          "tp": 8,
+          "fp": 0,
+          "fn": 0,
+          "known": 6,
+          "unknown": 2,
+          "correct": 1,
+          "detected_known": 6,
+          "detected_unknown": 2,
+          "false_accept": 0,
+          "images": 8,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.030053369748306635,
+            0.5635028221864702
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.0,
+            0.5
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.16666666666666666,
+          "recognition_accuracy": 0.16666666666666666,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1174.5238796249282
+        },
+        "controlled_frontal": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1368.0926002692174
+        },
+        "controlled_oblique": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 16,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.672002348698212,
+            0.9689804773543876
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.7777777777777778,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.8888888888888888,
+          "recognition_accuracy": 0.8888888888888888,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1546.6527806154143
+        },
+        "controlled_rear_side": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1498.8584765769176
+        }
+      },
+      "targets": {
+        "infrared": {
+          "target": 0.95,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "backlight": {
+          "target": 0.9,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "overall": {
+          "target": 0.95,
+          "observed": 0.8688524590163934,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        }
+      },
+      "delta_vs_original": 0.0
+    },
+    "adaptive": {
+      "overall": {
+        "tp": 88,
+        "fp": 0,
+        "fn": 1,
+        "known": 61,
+        "unknown": 28,
+        "correct": 54,
+        "detected_known": 60,
+        "detected_unknown": 28,
+        "false_accept": 0,
+        "images": 89,
+        "known_subjects": 6,
+        "unknown_subjects": 2,
+        "confirmation_ci95": [
+          0.7815569152759893,
+          0.9432879733926779
+        ],
+        "unknown_far_ci95": [
+          1.3877787807814457e-17,
+          0.12064330476584563
+        ],
+        "confirmation_subject_bootstrap_ci95": [
+          0.85,
+          0.9047619047619048
+        ],
+        "precision": 1.0,
+        "recall": 0.9887640449438202,
+        "confirmation_rate": 0.8852459016393442,
+        "recognition_accuracy": 0.9,
+        "unknown_far": 0.0,
+        "conditional_unknown_far": 0.0,
+        "mean_ms": 1377.432005853918
+      },
+      "scenes": {
+        "acquisition_failure_no_flash": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 2,
+          "correct": 0,
+          "detected_known": 1,
+          "detected_unknown": 2,
+          "false_accept": 0,
+          "images": 3,
+          "known_subjects": 1,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.0,
+            0.7934506856227626
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": null,
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.0,
+          "recognition_accuracy": 0.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1323.3088059998106
+        },
+        "ambient_no_flash": {
+          "tp": 8,
+          "fp": 0,
+          "fn": 0,
+          "known": 6,
+          "unknown": 2,
+          "correct": 2,
+          "detected_known": 6,
+          "detected_unknown": 2,
+          "false_accept": 0,
+          "images": 8,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.09677141110578041,
+            0.700006684861608
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.6576197724933469
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.0,
+            0.6666666666666666
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 0.3333333333333333,
+          "recognition_accuracy": 0.3333333333333333,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1403.5592176248315
+        },
+        "controlled_frontal": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1435.5586290384963
+        },
+        "controlled_oblique": {
+          "tp": 25,
+          "fp": 0,
+          "fn": 1,
+          "known": 18,
+          "unknown": 8,
+          "correct": 16,
+          "detected_known": 17,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.672002348698212,
+            0.9689804773543876
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            0.7777777777777778,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 0.9615384615384616,
+          "confirmation_rate": 0.8888888888888888,
+          "recognition_accuracy": 0.9411764705882353,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1321.1737055384606
+        },
+        "controlled_rear_side": {
+          "tp": 26,
+          "fp": 0,
+          "fn": 0,
+          "known": 18,
+          "unknown": 8,
+          "correct": 18,
+          "detected_known": 18,
+          "detected_unknown": 8,
+          "false_accept": 0,
+          "images": 26,
+          "known_subjects": 6,
+          "unknown_subjects": 2,
+          "confirmation_ci95": [
+            0.8241207763533425,
+            1.0
+          ],
+          "unknown_far_ci95": [
+            0.0,
+            0.32440756488388023
+          ],
+          "confirmation_subject_bootstrap_ci95": [
+            1.0,
+            1.0
+          ],
+          "precision": 1.0,
+          "recall": 1.0,
+          "confirmation_rate": 1.0,
+          "recognition_accuracy": 1.0,
+          "unknown_far": 0.0,
+          "conditional_unknown_far": 0.0,
+          "mean_ms": 1373.7695254999903
+        }
+      },
+      "targets": {
+        "infrared": {
+          "target": 0.95,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "backlight": {
+          "target": 0.9,
+          "observed": null,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        },
+        "overall": {
+          "target": 0.95,
+          "observed": 0.8852459016393442,
+          "status": "未评估",
+          "reasons": [
+            "缺少所需场景的已知身份样本"
+          ]
+        }
+      },
+      "delta_vs_original": 0.016393442622950838
+    }
+  },
+  "completed_at_utc": "2026-10-17T03:34:10.387152+00:00"
+}

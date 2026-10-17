@@ -60,3 +60,15 @@ curl -X POST http://127.0.0.1:8000/api/experiment/run \
 `confirmed=false` 时返回的 person_id 为 null，最高候选只在 candidates 中呈现。若未检测到人脸或出现多人脸，身份确认返回 422，不写入一次成功确认。注册验证所有输入后一次提交，不会因为第二张照片失败而留下半个身份。
 
 实验 summary 各方法含 overall/scenes/targets。分母为零的指标为 null；前端显示“未评估”。queued/running 为未完成，failed 保存错误，不生成达标汇总。
+
+## 真实研究结果与场景证据
+
+- `GET /api/research/benchmarks`：只返回本机已经完成的 CBSR/Yale 真实公开评估摘要，无原始图片或特征向量。
+- `GET /api/research/benchmarks/{dataset}/csv`：下载真实逐样本计数。
+- `GET /api/research/benchmarks/{dataset}/protocol`：查看运行前冻结的源图清单、划分、参数、摘要和证据范围；dataset 仅接受 cbsr-nir / yale-b。
+
+数据集清单新增可选 `localization_protocol`（iou、eye_containment、single_face_presence）和 `protocol` 场景证据。默认保持 IoU 协议；非 IoU 结果不能解释为 IoU 精度。眼点协议需 faces[].eyes 两个独立标注坐标。
+
+protocol.capture_independence 为 session_disjoint / condition_disjoint / frame_disjoint / unknown；scene_evidence 中记录 source、annotation_basis、modality、active_illumination、night_confirmed、backlight_confirmed、low_light_confirmed。real_capture=true 本身不再足以判为现场目标达成。
+
+实验汇总新增 known_subjects、unknown_subjects、confirmation_ci95、unknown_far_ci95、confirmation_subject_bootstrap_ci95。targets 同时给出 reasons、点估计、区间及证据状态。

@@ -13,6 +13,7 @@ from app.algorithms.enhancement import enhance
 from app.algorithms.face_detector import engine
 from app.algorithms.face_recognizer import match
 from app.algorithms.metrics import aggregate, score_image, calibrate
+from app.algorithms.evidence import assess_target
 from app.core.config import DATA, ALGORITHM_VERSION
 from app.core.errors import AppError
 from app.database.session import SessionLocal
@@ -53,6 +54,14 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
     known = {p['id'] for p in templates}
     if any(f['person_id'] is not None and f['person_id'] not in known for x in dataset.manifest['items'] for f in x['faces']):
         raise AppError('数据集引用的注册身份已删除，请重新映射标签', 409)
+    # Legacy SQLite tables may reuse a deleted numeric ID. Bind annotations to the
+    # original registration timestamp so they cannot silently refer to another person.
+    references = dataset.manifest.get('person_references', {})
+    for person_id in {f['person_id'] for x in dataset.manifest['items'] for f in x['faces'] if f['person_id'] is not None}:
+        person = db.get(Person, person_id)
+        signature = person.created_at.replace(tzinfo=None).isoformat()
+        if references.get(str(person_id)) != signature:
+            raise AppError('数据集身份引用已失效或缺少注册绑定，请核实标签后重新导入数据集', 409)
     fingerprint = gallery_digest(templates)
     methods = list(dict.fromkeys(request.methods))
     thresholds = {method: request.threshold for method in methods}
@@ -65,7 +74,7 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
         if calibration is None:
             raise AppError('校准记录不存在', 404)
         previous = db.get(Experiment, calibration.experiment_id)
-        if previous.config['gallery_digest'] != fingerprint or previous.config['environment']['model']['fingerprint'] != engine.fingerprint or previous.config['environment']['algorithm_version'] != ALGORITHM_VERSION:
+        if previous.config['gallery_digest'] != fingerprint or previous.config['environment']['model']['fingerprint'] != engine.fingerprint or previous.config['environment']['algorithm_version'] != ALGORITHM_VERSION or previous.config.get('detector_size', [640,640]) != [engine.detection_size,engine.detection_size]:
             raise AppError('校准后模型、算法或身份库已改变，须重新校准', 409)
         if any(method not in calibration.thresholds for method in methods):
             raise AppError('校准记录未覆盖所选增强方法')
@@ -77,7 +86,8 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
               'split': dataset.split, 'methods': methods, 'thresholds': thresholds, 'calibration_id': request.calibration_id,
               'calibration_note': calibration_note, 'calibration_real_capture': calibration_real, 'gallery_digest': fingerprint, 'gallery_ids': sorted(known),
               'environment': environment(), 'parameters': {m: EnhanceOptions(method=m).model_dump() for m in methods},
-              'iou_threshold': 0.5, 'detector_threshold': 0.5, 'detector_size': [640, 640]}
+              'protocol': dataset.manifest.get('protocol', {}), 'localization_protocol': dataset.manifest.get('localization_protocol', 'iou'),
+              'iou_threshold': 0.5, 'detector_threshold': 0.5, 'detector_size': [engine.detection_size, engine.detection_size]}
     record = Experiment(dataset_id=dataset.id, total=len(dataset.manifest['items']) * len(methods), config=config)
     db.add(record)
     db.commit()
@@ -104,7 +114,8 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                     faces = engine.infer(processed)
                     predictions = [{k: v for k, v in f.items() if k != 'embedding'} | {'match': match(f['embedding'], templates, record.config['thresholds'][method])} for f in faces]
                     elapsed = (time.perf_counter() - start) * 1000
-                    detail = score_image(item['faces'], predictions, elapsed)
+                    detail = score_image(item['faces'], predictions, elapsed, protocol=record.config.get('localization_protocol', 'iou'))
+                    detail['capture_id'] = item['capture_id']
                     detail['steps'] = steps
                     grouped[method].append((item['scene'], detail))
                     db.add(ExperimentResult(experiment_id=record.id, method=method, scene=item['scene'], item_index=index, detail=detail))
@@ -121,9 +132,8 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                     ('infrared', scenes['infrared'], .95, scenes['infrared']['known'] > 0),
                     ('backlight', scenes['backlight'], .90, scenes['backlight']['known'] > 0),
                     ('overall', summary[method]['overall'], .95, all(scenes[s]['known'] > 0 for s in ['normal', 'low_light', 'backlight']))]:
-                    rate = stats['confirmation_rate']
-                    status = '未评估' if not coverage or rate is None else ('探索性结果，不能判定达标' if not actual or not calibrated else ('达到目标（仅本测试集）' if rate >= target else '未达到目标'))
-                    targets[label] = {'target': target, 'observed': rate, 'status': status}
+                    targets[label] = assess_target(label, stats, real_capture=actual,
+                        independent_calibration=calibrated, protocol=record.config.get('protocol', {}), coverage=coverage)
                 summary[method]['targets'] = targets
             record.summary = summary
             record.status = 'completed'

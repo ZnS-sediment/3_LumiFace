@@ -30,6 +30,7 @@ class TruthFace(BaseModel):
     bbox: tuple[float, float, float, float]
     person_id: int | None = Field(default=None, ge=1)
     subject: str = Field(min_length=1, max_length=100)
+    eyes: tuple[tuple[float, float], tuple[float, float]] | None = None
 
     @model_validator(mode='after')
     def valid_bbox(self) -> 'TruthFace':
@@ -47,6 +48,24 @@ class DatasetItem(BaseModel):
     faces: list[TruthFace] = Field(max_length=100)
 
 
+class SceneEvidence(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    source: str = Field(default='', max_length=1000)
+    annotation_basis: Literal['dataset_metadata', 'manual_capture_log', 'brightness_only', 'unspecified'] = 'unspecified'
+    modality: Literal['rgb', 'nir', 'lwir', 'swir', 'unknown'] = 'unknown'
+    active_illumination: bool = False
+    night_confirmed: bool = False
+    backlight_confirmed: bool = False
+    low_light_confirmed: bool = False
+
+
+class ResearchProtocol(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    name: str = Field(default='exploratory', max_length=200)
+    capture_independence: Literal['session_disjoint', 'condition_disjoint', 'frame_disjoint', 'unknown'] = 'unknown'
+    scene_evidence: dict[Scene, SceneEvidence] = Field(default_factory=dict)
+
+
 class Manifest(BaseModel):
     model_config = ConfigDict(extra='forbid')
     name: str = Field(min_length=1, max_length=100)
@@ -54,6 +73,8 @@ class Manifest(BaseModel):
     source: str = Field(min_length=1, max_length=1000)
     license: str = Field(min_length=1, max_length=1000)
     real_capture: bool
+    localization_protocol: Literal['iou', 'eye_containment', 'single_face_presence'] = 'iou'
+    protocol: ResearchProtocol = Field(default_factory=ResearchProtocol)
     items: list[DatasetItem] = Field(min_length=1, max_length=500)
 
 

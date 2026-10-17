@@ -286,3 +286,21 @@ def calibration_create(request: CalibrationRequest, db: Session = Depends(get_db
 @router.get('/calibration', response_model=Response)
 def calibration_list(db: Session = Depends(get_db)) -> dict:
     return {'data': [{'id': c.id, 'experiment_id': c.experiment_id, 'thresholds': c.thresholds, 'detail': c.detail} for c in db.scalars(select(Calibration).order_by(Calibration.id.desc()))]}
+
+
+@router.get('/research/benchmarks', response_model=Response)
+def research_reports() -> dict:
+    from app.services.research import reports
+    return {'data': reports()}
+
+
+@router.get('/research/benchmarks/{dataset}/csv')
+def research_csv(dataset: str) -> FileResponse:
+    from app.services.research import benchmark_file
+    return FileResponse(benchmark_file(dataset, 'results.csv'), media_type='text/csv', filename=f'{dataset}-real-results.csv')
+
+
+@router.get('/research/benchmarks/{dataset}/protocol', response_model=Response)
+def research_protocol(dataset: str) -> dict:
+    from app.services.research import benchmark_file
+    return {'data': json.loads(benchmark_file(dataset, 'protocol-frozen.json').read_text())}

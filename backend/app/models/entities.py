@@ -10,6 +10,7 @@ def now() -> datetime:
 
 class Person(Base):
     __tablename__ = 'persons'
+    __table_args__ = {'sqlite_autoincrement': True}
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(80))
     note: Mapped[str] = mapped_column(Text, default='')
