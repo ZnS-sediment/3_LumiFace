@@ -1,16 +1,192 @@
 <script setup lang="ts">
-import { ref,onMounted } from 'vue'
-import { ArrowRight, User, Aim, DataAnalysis, Collection } from '@element-plus/icons-vue'
-import { get,post,useTask,percent,methodLabel } from '../api/client'
-const overview=ref<any>(null)
-const {busy,run}=useTask()
-function refresh(){return run(async()=>{overview.value=await get('/system/overview')})}
+import { ref, onMounted } from 'vue'
+import { Sunny, User, Aim, DataAnalysis, Refresh, ArrowRight } from '@element-plus/icons-vue'
+import { get, post, useTask } from '../api/client'
+const overview = ref<any>(null)
+const experiments = ref<any[]>([])
+const { busy, run } = useTask()
+async function load() {
+  const [system, records] = await Promise.all([get('/system/overview'), get<any[]>('/experiment')])
+  overview.value = system
+  experiments.value = records.slice(0, 5)
+}
+function refresh() {
+  return run(load)
+}
 onMounted(refresh)
-const shortcuts=[{to:'/enhance',label:'图像增强',description:'分析亮度分布，探索增强策略',icon:'✧',color:'mint'}, {to:'/detect',label:'人脸检测',description:'对比原始与增强检测结果',icon:'⌗',color:'blue'}, {to:'/persons',label:'身份注册',description:'管理多样本身份特征库',icon:'◎',color:'amber'}, {to:'/experiments',label:'实验评估',description:'批量消融与场景指标统计',icon:'↗',color:'rose'}]
+const stats = [
+  { label: '已注册身份', key: 'persons', unit: '人' },
+  { label: '检测记录', key: 'detections', unit: '次' },
+  { label: '实验任务', key: 'experiments', unit: '组' },
+  { label: '标注数据集', key: 'datasets', unit: '个' },
+]
+const entries = [
+  { to: '/enhance', label: '图像增强', description: '调整参数，比较处理前后的图像', icon: Sunny },
+  { to: '/detect', label: '人脸检测', description: '查看人脸位置、关键点与对齐裁剪', icon: Aim },
+  { to: '/persons', label: '身份注册', description: '上传参考照片，管理身份样本', icon: User },
+  {
+    to: '/experiments',
+    label: '批量评估',
+    description: '导入标注数据，运行对照实验',
+    icon: DataAnalysis,
+  },
+]
+const steps = [
+  { title: '注册参考身份', detail: '准备同一身份的参考照片', to: '/persons' },
+  { title: '导入标注数据', detail: '图库、校准与测试保持独立', to: '/experiments' },
+  { title: '校准并冻结阈值', detail: '使用校准数据选择决策阈值', to: '/experiments' },
+  { title: '运行测试与导出', detail: '查看分组计数和逐样本结果', to: '/experiments' },
+]
+const statusLabels: Record<string, string> = {
+  queued: '排队中',
+  running: '运行中',
+  completed: '已完成',
+  failed: '失败',
+}
+function time(value: string) {
+  return new Date(value + 'Z').toLocaleString('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 </script>
 <template>
-  <section class="hero"><div class="hero-content"><span class="hero-badge">COMPUTER VISION × ADAPTIVE LIGHT</span><h2>看见光照之外的<span>清晰与可能。</span></h2><p>融合可解释的图像增强与预训练人脸模型，<br>探索低照度、强逆光与复杂光照下的身份确认。</p><RouterLink to="/enhance" class="hero-cta">进入增强实验室 <el-icon><ArrowRight/></el-icon></RouterLink></div><div class="hero-visual" aria-hidden="true"><div class="scan-grid"></div><div class="face-orbit orbit-one"></div><div class="face-orbit orbit-two"></div><div class="face-shape"><div class="face-eye left"></div><div class="face-eye right"></div><div class="face-nose"></div><div class="face-mouth"></div></div><span class="scan-corner c1"></span><span class="scan-corner c2"></span><span class="scan-corner c3"></span><span class="scan-corner c4"></span><div class="scan-line"></div><span class="visual-label">ILLUMINATION → ENHANCEMENT → IDENTITY</span></div></section>
-  <div class="stats-grid" v-loading="busy"><div v-for="s in [{label:'已注册身份',key:'persons',icon:User,unit:'人'},{label:'历史检测任务',key:'detections',icon:Aim,unit:'次'},{label:'实验任务',key:'experiments',icon:DataAnalysis,unit:'组'},{label:'已导入数据集',key:'datasets',icon:Collection,unit:'个'}]" :key="s.key" class="stat-card"><span>{{s.label}}<el-icon><component :is="s.icon"/></el-icon></span><strong>{{overview ? overview[s.key] : '—'}}<small>{{s.unit}}</small></strong><div class="stat-foot">实时数据库统计</div></div></div>
-  <div class="section-heading"><h2>开始你的研究</h2><span>从一张图像，到可复现的实验</span></div><div class="shortcut-grid"><RouterLink v-for="s in shortcuts" :key="s.to" :to="s.to" class="shortcut"><span :class="['shortcut-icon',s.color]">{{s.icon}}</span><h3>{{s.label}} <span>↗</span></h3><p>{{s.description}}</p></RouterLink></div>
-  <div class="dashboard-bottom"><section class="card"><div class="section-heading"><h2>实验流程</h2><span class="pill">可追溯 · 可对比</span></div><div class="workflow"><div v-for="(s,i) in ['注册参考身份','导入标注数据','校准并冻结阈值','测试与消融评估']" :key="s"><span>{{String(i+1).padStart(2,'0')}}</span><strong>{{s}}</strong><small>{{['单人脸 · 多参考样本','独立采集 · 场景标签','已知确认 · 未知拒识','真实预测 · 分组统计'][i]}}</small></div></div><div class="note">研究目标：红外补光 ≥95% · 强逆光 ≥90% · 综合 ≥95%。<br>目标值不代表已达到的实验结果。</div></section><section class="card"><div class="section-heading"><h2>模型与实验状态</h2><el-button text @click="refresh">刷新</el-button></div><template v-if="overview"><div class="model-status"><span :class="['live-dot',{'warning':!overview.model.ready}]"></span><strong>{{overview.model.ready?'真实模型已加载':'模型待加载'}}</strong><el-tag size="small" type="info">{{overview.model.model}}</el-tag></div><p class="muted">{{overview.model.providers.join(' / ') || (overview.model.weights_present?'权重已就绪，可加载后开始检测':'请先下载官方模型权重')}}</p><el-button v-if="!overview.model.ready" :loading="busy" @click="run(async()=>{await post('/system/model/load');overview=await get('/system/overview')})">加载模型</el-button><div class="latest-experiment" v-if="overview.latest_experiment"><strong>最近实验 #{{overview.latest_experiment.id}}</strong><el-tag size="small">{{overview.latest_experiment.status}}</el-tag><p v-for="(s,m) in overview.latest_experiment.summary" :key="m">{{methodLabel(String(m))}} <b>{{percent((s as any).overall.confirmation_rate)}}</b></p><RouterLink to="/experiments">查看实验记录 →</RouterLink></div><el-empty v-else description="尚无实验记录" :image-size="55"/></template><el-empty v-else description="等待后端连接" :image-size="60"/></section></div>
+  <div class="dashboard-toolbar">
+    <h2>运行概况</h2>
+    <div class="toolbar-actions">
+      <el-button :icon="Refresh" :loading="busy" @click="refresh">刷新</el-button
+      ><RouterLink to="/enhance" class="primary-link"
+        >图像增强 <el-icon><ArrowRight /></el-icon
+      ></RouterLink>
+    </div>
+  </div>
+  <div class="stats-grid" v-loading="busy">
+    <div v-for="s in stats" :key="s.key" class="stat-card">
+      <span>{{ s.label }}</span
+      ><strong
+        >{{ overview ? overview[s.key] : '—' }}<small>{{ s.unit }}</small></strong
+      >
+    </div>
+  </div>
+  <div class="overview-grid">
+    <section class="card recent-tasks">
+      <div class="section-heading">
+        <h2>最近实验</h2>
+        <RouterLink to="/experiments" class="text-link"
+          >全部记录 <el-icon><ArrowRight /></el-icon
+        ></RouterLink>
+      </div>
+      <el-table :data="experiments" v-loading="busy"
+        ><el-table-column label="任务" min-width="170"
+          ><template #default="{ row }"
+            ><span class="task-id">#{{ row.id }}</span
+            >{{ row.config.dataset.name }}</template
+          ></el-table-column
+        ><el-table-column label="状态" width="90"
+          ><template #default="{ row }"
+            ><el-tag
+              size="small"
+              :type="
+                row.status === 'failed' ? 'danger' : row.status === 'completed' ? 'success' : 'info'
+              "
+              >{{ statusLabels[row.status] || row.status }}</el-tag
+            ></template
+          ></el-table-column
+        ><el-table-column label="完成进度" width="95"
+          ><template #default="{ row }"
+            >{{ row.progress }} / {{ row.total }}</template
+          ></el-table-column
+        ><el-table-column label="创建时间" width="115"
+          ><template #default="{ row }">{{ time(row.created_at) }}</template></el-table-column
+        ><template #empty
+          ><div class="table-empty">
+            <p>暂无实验任务</p>
+            <span>导入标注数据后，可在实验评估中创建任务。</span
+            ><RouterLink to="/experiments" class="text-link"
+              >创建实验 <el-icon><ArrowRight /></el-icon
+            ></RouterLink></div></template
+      ></el-table>
+    </section>
+    <section class="card model-panel">
+      <div class="section-heading">
+        <h2>模型状态</h2>
+        <span v-if="overview" :class="['status-label', { 'is-ready': overview.model.ready }]"
+          ><span :class="['live-dot', { warning: !overview.model.ready }]"></span
+          >{{ overview.model.ready ? '已加载' : '待加载' }}</span
+        >
+      </div>
+      <template v-if="overview"
+        ><dl class="model-details">
+          <div>
+            <dt>模型</dt>
+            <dd>{{ overview.model.model }}</dd>
+          </div>
+          <div>
+            <dt>权重文件</dt>
+            <dd>{{ overview.model.weights_present ? '已就绪' : '未安装' }}</dd>
+          </div>
+          <div>
+            <dt>执行设备</dt>
+            <dd>{{ overview.model.providers.join(' / ') || '加载后显示' }}</dd>
+          </div>
+          <div>
+            <dt>检测输入</dt>
+            <dd>{{ overview.model.detection_size }} × {{ overview.model.detection_size }}</dd>
+          </div>
+        </dl>
+        <p class="muted">
+          将人脸检测和身份特征提取模型载入内存，无需重新训练；图像增强无需加载模型。
+        </p>
+        <p class="muted">
+          {{
+            overview.model.ready
+              ? '本次服务运行期间可直接使用；后端重启后需重新加载。'
+              : '首次检测或注册时会自动加载，也可提前点击下方按钮。'
+          }}
+        </p>
+        <el-button
+          v-if="!overview.model.ready"
+          type="primary"
+          :loading="busy"
+          @click="
+            run(async () => {
+              await post('/system/model/load')
+              await load()
+            })
+          "
+          >加载模型</el-button
+        ><RouterLink v-else to="/detect" class="text-link"
+          >进入人脸检测 <el-icon><ArrowRight /></el-icon></RouterLink
+      ></template>
+      <p v-else class="muted">等待后端连接</p>
+    </section>
+    <section class="card">
+      <div class="section-heading"><h2>功能入口</h2></div>
+      <div class="entry-list">
+        <RouterLink v-for="entry in entries" :key="entry.to" :to="entry.to" class="entry-row"
+          ><el-icon><component :is="entry.icon" /></el-icon>
+          <div>
+            <strong>{{ entry.label }}</strong>
+            <p>{{ entry.description }}</p>
+          </div>
+          <el-icon class="entry-arrow"><ArrowRight /></el-icon
+        ></RouterLink>
+      </div>
+    </section>
+    <section class="card">
+      <div class="section-heading">
+        <h2>评估步骤</h2>
+        <RouterLink to="/experiments" class="text-link">开始评估</RouterLink>
+      </div>
+      <ol class="evaluation-steps">
+        <li v-for="step in steps" :key="step.title">
+          <RouterLink :to="step.to">{{ step.title }}</RouterLink>
+          <p>{{ step.detail }}</p>
+        </li>
+      </ol>
+      <p class="workflow-hint">性能目标与实测结果请在实验评估中核对。</p>
+    </section>
+  </div>
 </template>

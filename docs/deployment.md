@@ -13,7 +13,7 @@ cd /home/zns/3_LumiFace
 bash scripts/start.sh
 ```
 
-进入 http://localhost:5173，API 文档 http://localhost:8000/docs。两个端口已占用时脚本报错，不终止其他用户进程。Ctrl+C 清理脚本启动的前后端进程组。
+进入 http://localhost:5173，API 文档 http://localhost:8000/docs。 若看到 `{"detail":"Not Found"}`，请先核对地址；网页入口为 5173，8000 是后端端口。更新后的后端根地址会跳转到前端，已有后端进程需要重启后才生效。两个端口已占用时脚本报错，不终止其他用户进程。Ctrl+C 清理脚本启动的前后端进程组。
 
 Windows 资源管理器访问 `\\wsl.localhost\Ubuntu-20.04\home\zns\3_LumiFace`；Windows 浏览器通过 WSL localhost 转发访问页面。若转发被主机策略禁用，在 WSL 可用浏览器访问 127.0.0.1，不应直接开放公网来绕过问题。
 

@@ -25,5 +25,5 @@ setsid .venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0
 backend_pid=$!
 setsid npm run dev --prefix frontend &
 frontend_pid=$!
-printf '\nLumiFace: http://localhost:5173\nSwagger: http://localhost:8000/docs\n按 Ctrl+C 停止前后端。首次人脸请求会加载真实模型。\n\n'
+printf '\n网页入口（在浏览器打开）: http://localhost:5173\n后端接口文档: http://localhost:8000/docs\n按 Ctrl+C 停止前后端。首次人脸请求会加载真实模型。\n\n'
 wait -n "$backend_pid" "$frontend_pid"

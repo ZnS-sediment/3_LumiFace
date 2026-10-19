@@ -9,19 +9,21 @@ def now() -> datetime:
 
 
 class Person(Base):
-    __tablename__ = 'persons'
-    __table_args__ = {'sqlite_autoincrement': True}
+    __tablename__ = "persons"
+    __table_args__ = {"sqlite_autoincrement": True}
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(80))
-    note: Mapped[str] = mapped_column(Text, default='')
+    note: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
-    samples: Mapped[list['FaceSample']] = relationship(cascade='all, delete-orphan', lazy='selectin')
+    samples: Mapped[list["FaceSample"]] = relationship(
+        cascade="all, delete-orphan", lazy="selectin"
+    )
 
 
 class FaceSample(Base):
-    __tablename__ = 'face_samples'
+    __tablename__ = "face_samples"
     id: Mapped[int] = mapped_column(primary_key=True)
-    person_id: Mapped[int] = mapped_column(ForeignKey('persons.id', ondelete='CASCADE'))
+    person_id: Mapped[int] = mapped_column(ForeignKey("persons.id", ondelete="CASCADE"))
     path: Mapped[str] = mapped_column(String(100))
     digest: Mapped[str] = mapped_column(String(64), unique=True)
     capture_id: Mapped[str] = mapped_column(String(120))
@@ -31,23 +33,30 @@ class FaceSample(Base):
 
 
 class RecognitionRecord(Base):
-    __tablename__ = 'recognition_records'
+    __tablename__ = "recognition_records"
     id: Mapped[int] = mapped_column(primary_key=True)
-    person_id: Mapped[int | None] = mapped_column(ForeignKey('persons.id', ondelete='SET NULL'))
+    person_id: Mapped[int | None] = mapped_column(ForeignKey("persons.id", ondelete="SET NULL"))
     mode: Mapped[str] = mapped_column(String(20))
     result: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
 
 
+class PendingSampleDeletion(Base):
+    """Persist file cleanup in the same transaction as identity deletion."""
+
+    __tablename__ = "pending_sample_deletions"
+    path: Mapped[str] = mapped_column(String(100), primary_key=True)
+
+
 class DetectionTask(Base):
-    __tablename__ = 'detection_tasks'
+    __tablename__ = "detection_tasks"
     id: Mapped[int] = mapped_column(primary_key=True)
     counts: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
 
 
 class Dataset(Base):
-    __tablename__ = 'datasets'
+    __tablename__ = "datasets"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
     split: Mapped[str] = mapped_column(String(20))
@@ -57,23 +66,23 @@ class Dataset(Base):
 
 
 class Experiment(Base):
-    __tablename__ = 'experiments'
+    __tablename__ = "experiments"
     id: Mapped[int] = mapped_column(primary_key=True)
-    dataset_id: Mapped[int] = mapped_column(ForeignKey('datasets.id'))
-    status: Mapped[str] = mapped_column(String(20), default='queued')
+    dataset_id: Mapped[int] = mapped_column(ForeignKey("datasets.id"))
+    status: Mapped[str] = mapped_column(String(20), default="queued")
     progress: Mapped[int] = mapped_column(default=0)
     total: Mapped[int] = mapped_column(default=0)
     config: Mapped[dict] = mapped_column(JSON)
     summary: Mapped[dict] = mapped_column(JSON, default=dict)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
-    results: Mapped[list['ExperimentResult']] = relationship(cascade='all, delete-orphan')
+    results: Mapped[list["ExperimentResult"]] = relationship(cascade="all, delete-orphan")
 
 
 class ExperimentResult(Base):
-    __tablename__ = 'experiment_results'
+    __tablename__ = "experiment_results"
     id: Mapped[int] = mapped_column(primary_key=True)
-    experiment_id: Mapped[int] = mapped_column(ForeignKey('experiments.id', ondelete='CASCADE'))
+    experiment_id: Mapped[int] = mapped_column(ForeignKey("experiments.id", ondelete="CASCADE"))
     method: Mapped[str] = mapped_column(String(20))
     scene: Mapped[str] = mapped_column(String(20))
     item_index: Mapped[int]
@@ -81,8 +90,8 @@ class ExperimentResult(Base):
 
 
 class Calibration(Base):
-    __tablename__ = 'calibrations'
+    __tablename__ = "calibrations"
     id: Mapped[int] = mapped_column(primary_key=True)
-    experiment_id: Mapped[int] = mapped_column(ForeignKey('experiments.id'))
+    experiment_id: Mapped[int] = mapped_column(ForeignKey("experiments.id"))
     thresholds: Mapped[dict] = mapped_column(JSON)
     detail: Mapped[dict] = mapped_column(JSON)

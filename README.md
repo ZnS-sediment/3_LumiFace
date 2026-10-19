@@ -7,9 +7,9 @@ Vue 3 + TypeScript + Vite + Element Plus + Axios + ECharts + Vue Router；FastAP
 ## 当前交付
 
 - 六个中文页面：系统概览、增强实验室、人脸检测、身份库、身份确认、实验评估。
-- 独立 Gamma、CLAHE、Single Scale Retinex、曝光补偿、归一化及自适应增强；直方图与前后对比。
-- 真实 SCRFD 检测、五点对齐、ArcFace 特征；多图注册、编辑、删除、1:1 验证、1:N 检索、未知拒识。
-- ZIP 标注数据集导入、泄漏检查、独立阈值校准、五组消融、按场景汇总、逐样本结果与 CSV。
+- 网页提供三种增强算法：Gamma 校正（低照度）、CLAHE（逆光）、Retinex（光照不均）；支持直方图与前后对比，实验另设不增强对照组。
+- 真实 SCRFD 检测、五点对齐、ArcFace 特征；多图注册、网页多人文件夹批量导入、编辑、单个及勾选批量删除、1:1 验证、1:N 检索、未知拒识。
+- ZIP 标注数据集导入、泄漏检查、独立阈值校准、三种增强与原图对照、按场景汇总、逐样本结果与 CSV。
 - CPU 已实测；装有兼容 CUDA/cuDNN 与 ONNX Runtime GPU 时尝试自动启用 CUDA，实际 provider 记录在实验里。
 - 新增真实公开数据评估：CBSR 主动近红外与 Yale B 受控光照，五组实际推理、独立未知人员划分、校准后冻结阈值、逐样本 CSV、Wilson 与按人员重采样区间。详见 `docs/real-data-evaluation.md`。
 - **95% / 90% / 95% 现场目标仍需实景验收**：公开 NIR 缺少夜间/独立会话证明，受控照明不能等同实景强逆光。新增实景采集协议与数据审计工具，自动列明缺口。
@@ -23,7 +23,7 @@ cd /home/zns/3_LumiFace
 bash scripts/start.sh
 ```
 
-浏览器打开 http://localhost:5173；Swagger 为 http://localhost:8000/docs。按 Ctrl+C 同时停止前后端。首页可加载模型，首次人脸请求也会延迟加载模型。
+浏览器打开 http://localhost:5173；Swagger 为 http://localhost:8000/docs。按 Ctrl+C 同时停止前后端。首页“加载模型”将 SCRFD 检测与 ArcFace 特征提取权重载入内存，不重新训练；首次人脸请求也会自动加载。图像增强无需加载人脸模型，后端重启后需重新加载。
 
 Windows 资源管理器路径：`\\wsl.localhost\Ubuntu-20.04\home\zns\3_LumiFace`。
 
@@ -41,7 +41,7 @@ bash scripts/start.sh
 
 ## 建议演示顺序
 
-1. 在增强实验室上传 JPG/PNG，选择自适应或手动方法，查看直方图与下载结果。
+1. 在增强实验室上传 JPG/PNG，选择 Gamma（低照度）、CLAHE（逆光）或 Retinex（光照不均），查看直方图与下载结果。
 2. 在人脸检测页比较原始/增强两路，查看边界框、关键点与对齐人脸。
 3. 用单人脸照片注册身份；每次支持 1–10 张，多图同一身份、同一采集会话。
 4. 在身份确认页切换 1:1 / 1:N 和增强开关；低于阈值显示未知身份。
@@ -56,7 +56,7 @@ bash scripts/check.sh
 .venv/bin/python scripts/smoke_real_model.py
 ```
 
-单元测试中的确定性模型替身只存在于 `backend/tests/conftest.py`；真实模型联调脚本不使用替身。当前已通过 68 项后端测试、前端构建和完整真实后端浏览器流程。详细已执行结果见 `docs/verification.md`。完整依赖快照在 `backend/requirements-lock.txt`，前端使用 `frontend/package-lock.json`。
+单元测试中的确定性模型替身只存在于 `backend/tests/conftest.py`；真实模型联调脚本不使用替身。当前已通过 92 项后端测试、前端构建和完整真实后端浏览器流程。详细已执行结果见 `docs/verification.md`。完整依赖快照在 `backend/requirements-lock.txt`，前端使用 `frontend/package-lock.json`。
 
 ## 复现真实数据研究
 
@@ -92,3 +92,17 @@ bash scripts/run_public_study.sh
 详细文档：`docs/architecture.md`、`docs/algorithms.md`、`docs/api.md`、`docs/experiments.md`、`docs/deployment.md`、`docs/project-report.md`。
 
 最后更新：2026-10-17。若此前已启动旧服务，请在普通 WSL 终端执行 `bash scripts/stop.sh`，再执行 `bash scripts/start.sh` 载入新增接口；浏览器进入“实验评估”可查看真实研究结果。旧服务未自动重启。
+
+网页批量导入：身份库管理 → 批量导入身份；公开示例已整理在 `datasets/att_faces_demo/gallery`（40 个匿名身份、120 张参考图），查询图位于同级 query。步骤及数据来源见 `docs/web-identity-import.md`。
+
+身份库批量删除：在“身份库管理”勾选人员（表头可全选当前列表），点击“批量删除”并确认。搜索后勾选清空；只删除本次确认的人员及其照片、特征和关联查询记录，保留其他人员和历史实验编号。后端接口 `POST /api/person/batch-delete`，JSON 为 `{"person_ids":[1,2]}`，每批 1–1000 个正整数；重复编号去重，任一编号不存在则整批拒绝并提示刷新。
+
+增强算法界面已精简为三种，括号表示处理侧重而非效果保证；新建网页实验默认比较三种算法及不增强对照组。旧算法仅保留接口兼容与历史结果读取，已完成实验的数值和原始配置不修改。
+
+## 身份删除与文件清理
+
+删除身份会清理系统导入后生成的 `runtime/samples` 注册照片、数据库特征和关联查询记录。导入窗口下载的 ZIP、`datasets` 原始照片、查询图、模拟数据及模型文件全部保留。
+
+照片清理任务与身份删除在同一数据库事务中登记，提交成功后清理文件。磁盘占用或权限问题会显示待清理数量，在下次删除或后端启动时重试；启动时也清理超过一小时、没有数据库引用的 UUID 注册副本。SQLite 开启 secure_delete 清空删除单元，但不提供文件系统或备份介质的取证级擦除保证。
+
+代码整理说明与验证范围见 `docs/maintenance.md`。新增清理表会在后端启动时自动创建，请重启服务后使用。

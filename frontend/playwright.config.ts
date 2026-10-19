@@ -1,2 +1,15 @@
-import {defineConfig} from '@playwright/test'
-export default defineConfig({testDir:'./tests',workers:1,timeout:420000,expect:{timeout:90000},use:{actionTimeout:20000,baseURL:process.env.LUMIFACE_TEST_BASE_URL||'http://127.0.0.1:5173',viewport:{width:1440,height:1050},trace:'retain-on-failure'},reporter:[['list'],['json',{outputFile:'../work/browser-results.json'}]],outputDir:'../work/playwright-artifacts'})
+import { defineConfig } from '@playwright/test'
+export default defineConfig({
+  testDir: './tests',
+  workers: 1,
+  timeout: 420000,
+  expect: { timeout: 90000 },
+  use: {
+    actionTimeout: 20000,
+    baseURL: process.env.LUMIFACE_TEST_BASE_URL || 'http://127.0.0.1:5173',
+    viewport: { width: 1440, height: 1050 },
+    trace: 'retain-on-failure',
+  },
+  reporter: [['list'], ['json', { outputFile: '../work/browser-results.json' }]],
+  outputDir: '../work/playwright-artifacts',
+})

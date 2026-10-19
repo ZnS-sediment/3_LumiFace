@@ -51,3 +51,7 @@
 致谢：IEEE OTCBVS Workshop Series Benchmark；Center for Biometrics and Security Research (CBSR)；AuthenMetric Co. Ltd (Beijing)。参考 Stan Z. Li, RuFeng Chu, ShengCai Liao, Lun Zhang, “Illumination Invariant Face Recognition Using Near-infrared Images,” IEEE TPAMI 29(4), 627–639, 2007。
 
 Yale 原始数据引用 Athinodoros Georghiades, Peter Belhumeur, David Kriegman, “From Few to Many: Illumination Cone Models for Face Recognition under Variable Lighting and Pose,” IEEE TPAMI, 2001。裁剪处理同时说明 Kuang-Chih Lee, Jeffrey Ho, David Kriegman, “Acquiring Linear Subspaces for Face Recognition under Variable Lighting,” IEEE TPAMI, 2005。
+
+## AT&T / ORL 功能演示数据（2026-10-17）
+
+已从[剑桥大学托管页](https://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html)取得 40 个匿名身份、400 张照片，按来源要求致谢 AT&T Laboratories Cambridge。原始图像和来源页留在 datasets/raw/att-faces；本地整理目录为 datasets/att_faces_demo。身份编号不是真实姓名，转换与固定边框、注册/查询文件划分详见 web-identity-import.md，不作为实景目标证据。

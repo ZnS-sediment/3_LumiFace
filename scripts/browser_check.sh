@@ -17,13 +17,17 @@ for port in (int(os.environ['LUMIFACE_TEST_API_PORT']),int(os.environ['LUMIFACE_
         try:s.bind(('127.0.0.1',port))
         except OSError:raise SystemExit(f'浏览器测试需要空闲端口 {port}，请先停止开发服务器')
 PY
-TEST_RUNTIME="$(mktemp -d "$ROOT/work/browser-run-XXXXXX")"
+TEST_RUNTIME="$(mktemp -d "${TMPDIR:-/tmp}/lumiface-browser-XXXXXX")"
+export LUMIFACE_TEST_DELETE_ISOLATED=1
 backend_pid=''
 frontend_pid=''
 cleanup(){
   trap - EXIT INT TERM
   if [ -n "$frontend_pid" ]; then kill -- -"$frontend_pid" 2>/dev/null || true; fi
   if [ -n "$backend_pid" ]; then kill -- -"$backend_pid" 2>/dev/null || true; fi
+  if [ -n "$frontend_pid" ]; then wait "$frontend_pid" 2>/dev/null || true; fi
+  if [ -n "$backend_pid" ]; then wait "$backend_pid" 2>/dev/null || true; fi
+  rm -rf -- "$TEST_RUNTIME"
 }
 trap cleanup EXIT INT TERM
 setsid env LUMIFACE_DATA="$TEST_RUNTIME" .venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port "$LUMIFACE_TEST_API_PORT" > work/browser-backend.log 2>&1 &
@@ -56,4 +60,4 @@ fi
 if [ -d work/browser-libs/extracted/usr/lib/x86_64-linux-gnu ]; then
   export LD_LIBRARY_PATH="$ROOT/work/browser-libs/extracted/usr/lib/x86_64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi
-frontend/node_modules/.bin/playwright test -c frontend/playwright.config.ts
+frontend/node_modules/.bin/playwright test -c frontend/playwright.config.ts "$@"

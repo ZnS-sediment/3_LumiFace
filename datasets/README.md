@@ -32,3 +32,12 @@
 前端提供空的标注清单下载模板，不含真实数据。先注册 gallery，再导入 calibration/test；已知身份可以在 gallery 和查询集出现，必须是不同采集。未知身份在校准与测试间互斥。
 
 导入时服务自动将已知身份编号与原注册时间绑定。删除后重建身份会使旧标注失效，即使旧 SQLite 表复用了数字编号也会拒绝执行。旧版本导入记录若缺少该绑定，应核实编号后重新导入。
+
+## 可用于网页批量注册的公开身份样例
+
+已准备 `datasets/att_faces_demo/gallery`（40 人、120 张参考照片）及 `datasets/att_faces_demo/query`（280 张查询照片）。原始来源为剑桥托管 AT&T / ORL 数据，提供匿名身份编号，不是真实姓名。请在“身份库管理 → 批量导入身份”选择 gallery；此文件夹不是实验评估用标注 ZIP。来源、格式转换与操作详见 `docs/web-identity-import.md`。
+
+
+## 模拟复杂光照方案（2026-10-17）
+
+主包 `att_lighting_simulation.zip`，Windows 解压后 `gallery` 用于身份注册，`query` 用于四种场景演示。全部标记为模拟，不能替代实景验收。数据与实验说明见 `docs/simulated-lighting-data.md`。CBSR、Yale 的原始归档缓存已清理，保留来源摘要和既有报告，可按原脚本重新下载。

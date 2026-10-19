@@ -5,5 +5,14 @@ export default defineConfig({
   plugins: [vue()],
   server: { port: 5173, strictPort: true, proxy: { '/api': apiTarget } },
   preview: { port: 5173, strictPort: true, proxy: { '/api': apiTarget } },
-  build: { rollupOptions: { output: { manualChunks: { vue: ['vue', 'vue-router'], charts: ['echarts'], element: ['element-plus'] } } } }
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue', 'vue-router'],
+          element: ['element-plus'],
+        },
+      },
+    },
+  },
 })

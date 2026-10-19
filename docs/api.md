@@ -21,7 +21,8 @@ JSON 请求使用 Pydantic；图片接口 multipart/form-data。增强 options �
 | GET /api/person | q 可选 | 人员列表，不含特征 |
 | GET /api/person/{id} | 路径 ID | 样本质量、维数、模型指纹、受控 image_url |
 | PATCH /api/person/{id} | JSON name,note | 更新人员 |
-| DELETE /api/person/{id} | 路径 ID | 删除编号 |
+| DELETE /api/person/{id} | 路径 ID | deleted 编号、cleanup 文件清理状态 |
+| POST /api/person/batch-delete | JSON person_ids，1–1000 个正整数 | 去重后的 deleted 编号数组、count、cleanup |
 | GET /api/person/{id}/samples/{sample_id} | 两个 ID | 私有样本 PNG，no-store |
 | POST /api/recognition/verify | file,person_id,options,threshold | 决策、相似度、阈值、人脸与图像 |
 | POST /api/recognition/identify | file,options,threshold | 同上，最多 5 个候选身份 |
@@ -72,3 +73,11 @@ curl -X POST http://127.0.0.1:8000/api/experiment/run \
 protocol.capture_independence 为 session_disjoint / condition_disjoint / frame_disjoint / unknown；scene_evidence 中记录 source、annotation_basis、modality、active_illumination、night_confirmed、backlight_confirmed、low_light_confirmed。real_capture=true 本身不再足以判为现场目标达成。
 
 实验汇总新增 known_subjects、unknown_subjects、confirmation_ci95、unknown_far_ci95、confirmation_subject_bootstrap_ci95。targets 同时给出 reasons、点估计、区间及证据状态。
+
+`GET /` 为浏览器入口导航，返回 307 跳转到本地前端（默认 http://localhost:5173/；可使用已允许的 LUMIFACE_UI_ORIGIN）。不存在的 API 路径仍返回 404，API 文档仍在 /docs。
+
+网页批量注册按人员顺序调用现有 `POST /api/person/register`，没有新增批量注册 API 或数据库旁路。同名跳过和逐人报告在网页端组织；单人照片事务、重复图/会话检查与真实推理由后端现有服务执行。
+
+身份批量删除先校验整批编号；任一编号不存在返回 409，整批不删除。重复编号仅处理一次，非法/空/超限编号列表返回 422。成功后统一删除所选人员、参考照片、特征，以及在确认身份、候选或验证目标中涉及这些人员的查询记录；其他人员及历史实验标注不改动。
+
+删除响应新增 `cleanup: {deleted_files: 3, pending_files: 0}`。`pending_files` 非零表示数据库身份已删除，但磁盘清理尚未全部完成；网页显示警告，下次删除或服务重启会重试。清理范围仅为系统生成的注册副本，下载的演示 ZIP、原始数据集和独立实验数据不受身份删除影响。
