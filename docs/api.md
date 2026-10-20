@@ -81,3 +81,5 @@ protocol.capture_independence 为 session_disjoint / condition_disjoint / frame_
 身份批量删除先校验整批编号；任一编号不存在返回 409，整批不删除。重复编号仅处理一次，非法/空/超限编号列表返回 422。成功后统一删除所选人员、参考照片、特征，以及在确认身份、候选或验证目标中涉及这些人员的查询记录；其他人员及历史实验标注不改动。
 
 删除响应新增 `cleanup: {deleted_files: 3, pending_files: 0}`。`pending_files` 非零表示数据库身份已删除，但磁盘清理尚未全部完成；网页显示警告，下次删除或服务重启会重试。清理范围仅为系统生成的注册副本，下载的演示 ZIP、原始数据集和独立实验数据不受身份删除影响。
+
+`GET /api/person/simulated-dataset` 当前下载 `datasets/att_lighting_three_scenes.zip`，浏览器文件名为 `att_lighting_three_scenes.zip`；包含逆光、光照不均、低照度三类模拟输入。缺失时提示运行 `scripts/prepare_three_scene_demo.py`。旧 `att_lighting_simulation.zip` 保留于磁盘，不再作为网页默认模拟包。

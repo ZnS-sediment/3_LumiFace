@@ -171,11 +171,11 @@ def person_demo_dataset() -> FileResponse:
 
 @router.get("/person/simulated-dataset")
 def person_simulated_dataset() -> FileResponse:
-    archive = ROOT / "datasets" / "att_lighting_simulation.zip"
+    archive = ROOT / "datasets" / "att_lighting_three_scenes.zip"
     if not archive.is_file():
-        raise AppError("模拟光照数据包尚未准备，请运行 scripts/prepare_simulated_lighting.py", 404)
+        raise AppError("三类光照数据包尚未准备，请运行 scripts/prepare_three_scene_demo.py", 404)
     return FileResponse(
-        archive, media_type="application/zip", filename="att_lighting_simulation.zip"
+        archive, media_type="application/zip", filename="att_lighting_three_scenes.zip"
     )
 
 

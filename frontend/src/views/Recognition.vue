@@ -99,6 +99,7 @@ function execute() {
         :original="result?.original"
         :enhanced="result?.enhanced"
         right-label="处理结果与人脸定位"
+        download-name="lumiface-recognition-result.png"
       /><template v-if="result"
         ><div :class="['recognition-result', result.confirmed ? 'accepted' : 'rejected']">
           <span class="decision-icon">{{ result.confirmed ? '✓' : '?' }}</span>

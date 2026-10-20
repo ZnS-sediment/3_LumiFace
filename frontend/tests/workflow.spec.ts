@@ -154,9 +154,9 @@ test('网页批量导入预览、同名跳过、真实多参考注册与无人�
   expect(dataArchive.suggestedFilename()).toBe('att_faces_demo.zip')
   expect(await dataArchive.failure()).toBeNull()
   const simulatedDownload = page.waitForEvent('download')
-  await dialog.getByRole('link', { name: '下载模拟光照演示包（40 人）', exact: true }).click()
+  await dialog.getByRole('link', { name: '下载三类光照演示包（40 人）', exact: true }).click()
   const simulatedArchive = await simulatedDownload
-  expect(simulatedArchive.suggestedFilename()).toBe('att_lighting_simulation.zip')
+  expect(simulatedArchive.suggestedFilename()).toBe('att_lighting_three_scenes.zip')
   expect(await simulatedArchive.failure()).toBeNull()
   await page
     .getByLabel('选择批量身份文件夹', { exact: true })

@@ -66,6 +66,7 @@ def test_identity_deletion_keeps_downloads_and_original_photos(
     protected = {
         downloads / "att_faces_demo.zip": b"downloaded demo archive",
         downloads / "att_lighting_simulation.zip": b"downloaded simulation archive",
+        downloads / "att_lighting_three_scenes.zip": b"three scene archive",
         downloads / "original.png": photo(),
     }
     for path, content in protected.items():
@@ -86,7 +87,7 @@ def test_identity_deletion_keeps_downloads_and_original_photos(
     )
     assert (
         client.get("/api/person/simulated-dataset").content
-        == protected[downloads / "att_lighting_simulation.zip"]
+        == protected[downloads / "att_lighting_three_scenes.zip"]
     )
 
 

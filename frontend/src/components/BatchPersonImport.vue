@@ -250,9 +250,9 @@ function download() {
       ><span>Windows 用户下载并解压后，选择其中的 gallery 文件夹。</span>
     </p>
     <p class="batch-download">
-      <a href="/api/person/simulated-dataset" download="att_lighting_simulation.zip"
-        >下载模拟光照演示包（40 人）</a
-      ><span>含模拟暗光、逆光和灰度补光查询图，非真实红外采集。</span>
+      <a href="/api/person/simulated-dataset" download="att_lighting_three_scenes.zip"
+        >下载三类光照演示包（40 人）</a
+      ><span>逆光（CLAHE）、光照不均（Retinex）、低照度（Gamma）；按文件夹选择查询图。</span>
     </p>
     <div class="batch-directory-label"><RequiredLabel>照片根目录</RequiredLabel></div>
     <div class="batch-selection">

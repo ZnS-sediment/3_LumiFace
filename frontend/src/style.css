@@ -585,12 +585,21 @@ footer {
 .full-width {
   width: 100%;
 }
-.download-link {
-  display: block;
-  text-align: center;
-  font-size: 14px;
+.image-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
   color: #245baf;
-  padding: 16px 0 0;
+  font-size: 13px;
+  padding: 4px 0;
+}
+.image-download:hover {
+  text-decoration: underline;
+}
+.image-download:focus-visible {
+  outline: 2px solid #245baf;
+  outline-offset: 3px;
 }
 .compare-grid {
   display: grid;

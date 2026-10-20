@@ -91,12 +91,6 @@ const chart = computed(() => ({
             :step="0.05" /></el-form-item></el-form
       ><el-button type="primary" class="full-width" :loading="busy" @click="execute"
         >分析并增强</el-button
-      ><a
-        v-if="result"
-        class="download-link"
-        :href="result.enhanced"
-        download="lumiface-enhanced.png"
-        >下载增强图像 ↓</a
       >
     </section>
     <section class="card result-panel" v-loading="busy">

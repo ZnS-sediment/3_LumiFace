@@ -53,6 +53,7 @@ function execute() {
         :enhanced="result?.enhanced.image"
         left-label="原始图像检测"
         right-label="增强图像检测"
+        download-name="lumiface-detection-enhanced.png"
       />
       <div v-if="result" class="detection-metrics">
         <div v-for="key in ['original', 'enhanced']" :key="key">

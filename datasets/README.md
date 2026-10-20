@@ -41,3 +41,5 @@
 ## 模拟复杂光照方案（2026-10-17）
 
 主包 `att_lighting_simulation.zip`，Windows 解压后 `gallery` 用于身份注册，`query` 用于四种场景演示。全部标记为模拟，不能替代实景验收。数据与实验说明见 `docs/simulated-lighting-data.md`。CBSR、Yale 的原始归档缓存已清理，保留来源摘要和既有报告，可按原脚本重新下载。
+
+当前三类演示包 `att_lighting_three_scenes.zip` 按网页的三种算法整理：逆光_CLAHE、光照不均_Retinex、低照度_Gamma。新生成光照不均输入；不包含伪红外分类。详见 `docs/three-scene-demo.md`。原有两个下载包与研究报告保留。

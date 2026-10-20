@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { Picture } from '@element-plus/icons-vue'
-defineProps<{ original?: string; enhanced?: string; leftLabel?: string; rightLabel?: string }>()
+import { Download, Picture } from '@element-plus/icons-vue'
+defineProps<{
+  original?: string
+  enhanced?: string
+  leftLabel?: string
+  rightLabel?: string
+  downloadName?: string
+}>()
 </script>
 <template>
   <div class="compare-grid">
@@ -16,6 +22,14 @@ defineProps<{ original?: string; enhanced?: string; leftLabel?: string; rightLab
     <div class="image-panel">
       <div class="panel-label">
         <span>{{ rightLabel || '增强结果' }}</span>
+        <a
+          v-if="enhanced"
+          class="image-download"
+          :href="enhanced"
+          :download="downloadName || 'lumiface-enhanced.png'"
+          :aria-label="'下载' + (rightLabel || '增强图像')"
+          ><el-icon aria-hidden="true"><Download /></el-icon>下载图片</a
+        >
       </div>
       <img v-if="enhanced" :src="enhanced" :alt="rightLabel || '增强结果'" />
       <div v-else class="image-empty">
