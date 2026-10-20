@@ -22,7 +22,6 @@ const persons = ref<PersonSummary[]>([]),
   edit = ref<PersonSummary | null>(null)
 const name = ref(''),
   note = ref(''),
-  capture = ref(''),
   files = ref<File[]>([])
 const { busy, run } = useTask()
 const table = ref<TableInstance>()
@@ -41,7 +40,6 @@ function refreshAfterImport() {
 function resetRegistration() {
   name.value = ''
   note.value = ''
-  capture.value = ''
   files.value = []
 }
 function updateSelection(rows: PersonSummary[]) {
@@ -51,7 +49,6 @@ function create() {
   if (
     !validateRequired([
       ['姓名', name.value.trim()],
-      ['采集会话编号', capture.value.trim()],
       ['参考照片', files.value.length],
     ])
   )
@@ -60,7 +57,6 @@ function create() {
     const form = registrationForm({
       name: name.value,
       note: note.value,
-      captureId: capture.value,
       files: files.value,
     })
     await post('/person/register', form)
@@ -170,7 +166,7 @@ async function confirmDelete(rows: PersonSummary[], batch = false) {
         type="selection"
         width="48"
         :selectable="() => !busy && !deleting"
-      /><el-table-column prop="id" label="编号" width="80" /><el-table-column
+      /><el-table-column type="index" label="编号" width="80" /><el-table-column
         label="人员姓名"
         min-width="130"
         ><template #default="{ row }"
@@ -207,7 +203,7 @@ async function confirmDelete(rows: PersonSummary[], batch = false) {
       ></el-table
     >
     <div class="note">
-      注册照片须恰有一张可检测人脸。请为同一采集会话使用一致编号；校准和测试使用独立会话。照片仅保存在本机。
+      注册照片须恰有一张可检测人脸。每次注册自动记录来源编号，无需手动设置。校准和测试仍需使用独立采集的照片。照片仅保存在本机。
     </div>
   </section>
   <el-dialog
@@ -221,12 +217,6 @@ async function confirmDelete(rows: PersonSummary[], batch = false) {
       ><el-form-item
         ><template #label><RequiredLabel>姓名</RequiredLabel></template
         ><el-input v-model="name" maxlength="80" /></el-form-item
-      ><el-form-item
-        ><template #label><RequiredLabel>采集会话编号</RequiredLabel></template
-        ><el-input
-          v-model="capture"
-          maxlength="120"
-          placeholder="例如 enroll-20261016-session01" /></el-form-item
       ><el-form-item label="备注"
         ><el-input v-model="note" maxlength="500" type="textarea" /></el-form-item
       ><el-form-item

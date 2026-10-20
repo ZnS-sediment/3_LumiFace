@@ -27,7 +27,6 @@ test('真实模型六页面完整流程与移动布局', async ({ page }) => {
   await page.getByRole('button', { name: '注册新身份' }).click()
   const dialog = page.getByRole('dialog')
   await dialog.getByRole('textbox').nth(0).fill('浏览器测试参考身份')
-  await dialog.getByRole('textbox').nth(1).fill('browser-enroll-session')
   await dialog.getByLabel('上传图片', { exact: true }).setInputFiles(root + '/work/astronaut.png')
   await dialog.getByRole('button', { name: '提取特征并注册' }).click()
   await expect(dialog).toBeHidden()
@@ -49,6 +48,9 @@ test('真实模型六页面完整流程与移动布局', async ({ page }) => {
   const registered = (await (await page.request.get('/api/person')).json()).data.find(
     (person: { name: string; id: number }) => person.name === '浏览器测试参考身份',
   )
+  const registeredDetail = (await (await page.request.get('/api/person/' + registered.id)).json())
+    .data
+  expect(registeredDetail.samples[0].capture_id).toMatch(/^enroll-[a-f0-9-]{36}$/)
   const { execFileSync } = await import('node:child_process')
   execFileSync(root + '/.venv/bin/python', [root + '/scripts/prepare_browser_fixtures.py'], {
     env: { ...process.env, LUMIFACE_TEST_PERSON_ID: String(registered.id) },
@@ -169,19 +171,28 @@ test('网页批量导入预览、同名跳过、真实多参考注册与无人�
   await expect(dialog.getByText('3 人 · 4 张照片', { exact: true })).toBeVisible()
   await expect(dialog.getByText('待导入', { exact: true })).toHaveCount(3)
   await expect(dialog.getByRole('button', { name: '开始导入', exact: true })).toBeEnabled()
-  const batchInput = dialog.getByPlaceholder('选择目录后自动生成，也可自行填写')
-  await expect(batchInput).toHaveValue(/^batch-\d{14}-[a-f0-9]{6}$/)
-  await batchInput.fill('browser-batch-fixture')
+  await expect(dialog.getByText('数据批次', { exact: true })).toHaveCount(0)
   await dialog.getByRole('button', { name: '开始导入', exact: true }).click()
   await expect(dialog.getByText('已注册', { exact: true })).toHaveCount(1)
   await expect(dialog.getByText('已跳过', { exact: true })).toHaveCount(1)
   await expect(dialog.getByText('失败', { exact: true })).toHaveCount(1)
   await expect(dialog.getByText('已处理 3 / 3 人', { exact: true })).toBeVisible()
-  await expect(dialog.getByText(/身份编号 .*参考照片 2 张/)).toBeVisible()
+  await expect(dialog.getByText('已注册，参考照片 2 张', { exact: true })).toBeVisible()
   await expect(dialog.getByText(/检测到 0 张人脸/)).toBeVisible()
   const download = page.waitForEvent('download')
   await dialog.getByRole('button', { name: '下载导入结果' }).click()
-  expect((await download).suggestedFilename()).toBe('lumiface-identity-import.json')
+  const importReport = await download
+  expect(importReport.suggestedFilename()).toBe('lumiface-identity-import.json')
+  const { readFile } = await import('node:fs/promises')
+  const report = JSON.parse(await readFile((await importReport.path())!, 'utf8'))
+  const importedRow = report.rows.find((row: any) => row.status === 'registered')
+  expect(importedRow.capture_id).toMatch(/^enroll-[a-f0-9-]{36}$/)
+  const imported = (await (await page.request.get('/api/person/' + importedRow.person_id)).json())
+    .data
+  expect(imported.samples.map((sample: any) => sample.capture_id)).toEqual([
+    importedRow.capture_id,
+    importedRow.capture_id,
+  ])
   await page.screenshot({ path: root + '/work/batch-ui/web-batch-import.png', fullPage: true })
   await page.setViewportSize({ width: 390, height: 844 })
   await page.waitForTimeout(350)
@@ -228,7 +239,6 @@ test('AT&T 40 个匿名身份通过网页批量注册', async ({ page }) => {
     .getByLabel('选择批量身份文件夹', { exact: true })
     .setInputFiles(root + '/datasets/att_faces_demo/gallery')
   await expect(dialog.getByText('40 人 · 120 张照片', { exact: true })).toBeVisible()
-  await dialog.getByPlaceholder('选择目录后自动生成，也可自行填写').fill('att-demo-gallery')
   await dialog.getByRole('button', { name: '开始导入', exact: true }).click()
   await expect(dialog.getByText('已处理 40 / 40 人', { exact: true })).toBeVisible({
     timeout: 300000,

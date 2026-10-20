@@ -1251,11 +1251,6 @@ footer {
 .batch-directory-path strong {
   font-weight: 600;
 }
-.batch-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-}
 .batch-face-preview {
   display: block;
   width: 42px;
@@ -1284,10 +1279,6 @@ footer {
   color: #526071;
 }
 @media (max-width: 700px) {
-  .batch-fields {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
   .batch-import-dialog .el-dialog__footer {
     display: flex;
     flex-wrap: wrap;

@@ -22,16 +22,11 @@ export interface PersonDeletion {
   cleanup: { deleted_files: number; pending_files: number }
 }
 
-export function registrationForm(person: {
-  name: string
-  note: string
-  captureId: string
-  files: File[]
-}) {
+export function registrationForm(person: { name: string; note: string; files: File[] }) {
   const form = new FormData()
   form.append('name', person.name.trim())
   form.append('note', person.note.trim())
-  form.append('capture_id', person.captureId.trim())
+  form.append('capture_id', `enroll-${crypto.randomUUID()}`)
   person.files.forEach((file) => form.append('files', file))
   return form
 }

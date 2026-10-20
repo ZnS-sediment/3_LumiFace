@@ -24,7 +24,6 @@ const visible = ref(false),
   stopRequested = ref(false)
 const input = ref<HTMLInputElement>(),
   rows = ref<Row[]>([]),
-  prefix = ref(''),
   note = ref(''),
   selectionError = ref('')
 const selectedRoot = ref('')
@@ -53,7 +52,6 @@ onBeforeUnmount(() => {
 })
 function resetImport() {
   release()
-  prefix.value = ''
   note.value = ''
   selectionError.value = ''
   stopRequested.value = false
@@ -66,10 +64,6 @@ function chooseDirectory() {
   if (running.value || !input.value) return
   input.value.value = ''
   input.value.click()
-}
-function ensureBatch() {
-  if (!prefix.value.trim())
-    prefix.value = `batch-${new Date().toISOString().replace(/\D/g, '').slice(0, 14)}-${crypto.randomUUID().slice(0, 6)}`
 }
 function select(event: Event) {
   const element = event.target as HTMLInputElement
@@ -122,15 +116,14 @@ function select(event: Event) {
     message: '',
   })).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
   selectedRoot.value = selected[0].webkitRelativePath.split('/')[0] + '/'
-  ensureBatch()
 }
 async function register(row: Row): Promise<State> {
   const form = registrationForm({
     name: row.name,
     note: note.value,
-    captureId: row.captureId!,
     files: row.files,
   })
+  row.captureId = form.get('capture_id') as string
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), 300000)
   try {
@@ -155,7 +148,7 @@ async function register(row: Row): Promise<State> {
       throw new Error('响应缺少身份编号；请先到身份库核对该人员。')
     row.status = 'registered'
     row.personId = payload.data.id
-    row.message = `身份编号 ${row.personId}，参考照片 ${payload.data.sample_count} 张`
+    row.message = `已注册，参考照片 ${payload.data.sample_count} 张`
   } catch (error) {
     row.status = 'uncertain'
     row.message = error instanceof Error ? error.message : '连接中断，请核对身份库；未自动重试。'
@@ -166,13 +159,7 @@ async function register(row: Row): Promise<State> {
 }
 async function start() {
   if (running.value || started.value) return
-  if (
-    !validateRequired([
-      ['照片根目录', rows.value.length],
-      ['数据批次', prefix.value.trim()],
-    ])
-  )
-    return
+  if (!validateRequired([['照片根目录', rows.value.length]])) return
   running.value = true
   stopRequested.value = false
   try {
@@ -180,7 +167,6 @@ async function start() {
     const existing = new Set(current.map((person) => person.name))
     for (const row of rows.value) {
       if (stopRequested.value) break
-      row.captureId = `${prefix.value.trim()}:${row.name}`
       if (existing.has(row.name)) {
         row.status = 'skipped'
         row.message = '身份库已有同名人员，未覆盖或追加照片'
@@ -278,15 +264,7 @@ function download() {
       <el-button v-if="rows.length && !running" text @click="chooseDirectory">重新选择</el-button>
     </div>
     <el-alert v-if="selectionError" type="error" :closable="false" :title="selectionError" />
-    <el-form label-position="top" class="batch-fields"
-      ><el-form-item
-        ><template #label><RequiredLabel>数据批次</RequiredLabel></template
-        ><el-input
-          v-model="prefix"
-          :disabled="running || started"
-          maxlength="32"
-          placeholder="选择目录后自动生成，也可自行填写"
-          aria-required="true" /></el-form-item
+    <el-form label-position="top"
       ><el-form-item label="统一备注"
         ><el-input
           v-model="note"

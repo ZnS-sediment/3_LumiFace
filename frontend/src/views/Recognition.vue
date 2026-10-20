@@ -60,7 +60,7 @@ function execute() {
               v-for="p in persons"
               :key="p.id"
               :value="p.id"
-              :label="p.name + ' #' + p.id" /></el-select></el-form-item></el-form
+              :label="p.name" /></el-select></el-form-item></el-form
       ><ImageUpload
         required
         @change="

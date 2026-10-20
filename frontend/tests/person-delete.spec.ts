@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { readFile } from 'node:fs/promises'
+import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 const root = resolve(import.meta.dirname, '../..')
 
@@ -22,7 +22,12 @@ test('身份批量删除：全选、搜索清空、取消、失败重试与实�
         files: {
           name: 'ref.png',
           mimeType: 'image/png',
-          buffer: await readFile(`${root}/datasets/att_faces_demo/gallery/ATT_s0${i}/01.png`),
+          buffer: execFileSync(root + '/.venv/bin/python', [
+            '-c',
+            'import sys,zipfile; sys.stdout.buffer.write(zipfile.ZipFile(sys.argv[1]).read(sys.argv[2]))',
+            root + '/datasets/att_faces_demo.zip',
+            `att_faces_demo/gallery/ATT_s0${i}/01.png`,
+          ]),
         },
       },
     })
@@ -33,11 +38,14 @@ test('身份批量删除：全选、搜索清空、取消、失败重试与实�
   const rows = page.locator('.el-table__body-wrapper tbody tr')
   const bulk = page.getByRole('button', { name: /^批量删除/ })
   await expect(rows).toHaveCount(3)
+  for (let i = 0; i < 3; i++)
+    await expect(rows.nth(i).locator('td').nth(1)).toHaveText(String(i + 1))
   await expect(bulk).toBeDisabled()
   await rows.nth(0).locator('label.el-checkbox').click()
   await expect(bulk).toHaveText('批量删除（1）')
   await page.getByPlaceholder('搜索姓名').fill('批量删除测试3')
   await expect(rows).toHaveCount(1)
+  await expect(rows.locator('td').nth(1)).toHaveText('1')
   await expect(page.getByText('已选择 0 个身份', { exact: false })).toBeVisible()
   await expect(bulk).toBeDisabled()
   await page.getByPlaceholder('搜索姓名').fill('')
@@ -81,6 +89,7 @@ test('身份批量删除：全选、搜索清空、取消、失败重试与实�
   await confirm.getByRole('button', { name: '确认删除', exact: true }).click()
   await expect(rows).toHaveCount(1)
   await expect(rows).toContainText('批量删除测试3')
+  await expect(rows.locator('td').nth(1)).toHaveText('1')
   await expect(page.getByText('已选择 0 个身份', { exact: true })).toBeVisible()
   await expect(bulk).toBeDisabled()
   const remaining = (await (await page.request.get('/api/person')).json()).data
