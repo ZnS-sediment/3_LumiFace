@@ -241,6 +241,10 @@ function download() {
       ><span>逆光（CLAHE）、光照不均（Retinex）、低照度（Gamma）；按文件夹选择查询图。</span>
     </p>
     <div class="batch-directory-label"><RequiredLabel>照片根目录</RequiredLabel></div>
+    <p class="batch-download">
+      <a href="/api/person/lfw-dataset" download="lfw_120_demo.zip">下载 LFW 扩充数据包（120 人）</a
+      ><span>每人 2 张注册图、3 张查询图；选择 gallery 导入身份。</span>
+    </p>
     <div class="batch-selection">
       <input
         ref="input"

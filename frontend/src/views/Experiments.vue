@@ -7,6 +7,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Upload, Refresh, Download } from '@element-plus/icons-vue'
 import ChartPanel from '../components/ChartPanel.vue'
 import CompareImages from '../components/CompareImages.vue'
+import BatchImageEvaluation from '../components/BatchImageEvaluation.vue'
 import {
   get,
   post,
@@ -76,6 +77,16 @@ const zipInput = ref<HTMLInputElement>(),
   page = ref(1),
   selectedMethod = ref('gamma')
 const { busy, run } = useTask()
+const isImageBatch = computed(() => selected.value?.config.kind === 'image_batch')
+const outcomeLabels: Record<string, string> = {
+  correct: '识别正确',
+  wrong_identity: '识别错误',
+  rejected: '已知身份被拒识',
+  no_face: '未检测到人脸',
+  multiple_faces: '检测到多张人脸',
+  unknown_rejected: '正确拒绝未知身份',
+  false_accept: '误接受未知身份',
+}
 let timer: ReturnType<typeof setInterval> | undefined
 let polling = false
 const statusLabels: Record<string, string> = {
@@ -98,7 +109,12 @@ async function choose(record: any) {
     ? 'gamma'
     : selected.value.config.methods[0]
   page.value = 1
+  tab.value = 'overview'
   await loadResults()
+}
+async function imageTestCreated(record: any) {
+  await load()
+  await choose(record)
 }
 async function loadResults() {
   if (selected.value)
@@ -107,7 +123,10 @@ async function loadResults() {
     )
 }
 onMounted(() => {
-  run(load)
+  run(async () => {
+    await load()
+    if (experiments.value.length) await choose(experiments.value[0])
+  })
   timer = setInterval(async () => {
     if (
       polling ||
@@ -219,7 +238,14 @@ const sceneRows = computed(() =>
 )
 const chart = computed(() => ({
   tooltip: { trigger: 'axis' as const },
-  legend: { bottom: 0, data: ['身份确认率', '检测召回率', '未知误接受率'] },
+  legend: {
+    bottom: 0,
+    data: [
+      isImageBatch.value ? '正确识别率' : '身份确认率',
+      isImageBatch.value ? '单人脸通过率' : '检测召回率',
+      '未知误接受率',
+    ],
+  },
   grid: { left: 50, right: 20, bottom: 65, top: 20 },
   xAxis: { type: 'category' as const, data: summaryRows.value.map((r) => methodLabel(r.method)) },
   yAxis: {
@@ -231,13 +257,13 @@ const chart = computed(() => ({
   },
   series: [
     {
-      name: '身份确认率',
+      name: isImageBatch.value ? '正确识别率' : '身份确认率',
       type: 'bar' as const,
       data: summaryRows.value.map((r) => r.confirmation_rate),
       itemStyle: { color: '#245baf', borderRadius: [4, 4, 0, 0] },
     },
     {
-      name: '检测召回率',
+      name: isImageBatch.value ? '单人脸通过率' : '检测召回率',
       type: 'bar' as const,
       data: summaryRows.value.map((r) => r.recall),
       itemStyle: { color: '#526e91', borderRadius: [4, 4, 0, 0] },
@@ -252,6 +278,355 @@ const chart = computed(() => ({
 }))
 </script>
 <template>
+  <BatchImageEvaluation
+    :running="experiments.some((record) => ['queued', 'running'].includes(record.status))"
+    @created="imageTestCreated"
+  />
+  <section v-if="selected" class="card quality-card current-experiment">
+    <div class="section-heading">
+      <div>
+        <h2>
+          {{ isImageBatch ? '多图测试' : '实验' }} #{{ selected.id }}
+          <el-tag size="small">{{ statusLabels[selected.status] }}</el-tag>
+        </h2>
+        <p class="muted">{{ selected.config.calibration_note }}</p>
+      </div>
+      <a :href="'/api/experiment/' + selected.id + '/csv'" download
+        ><el-button :icon="Download">导出逐样本 CSV</el-button></a
+      >
+    </div>
+    <div
+      v-if="['queued', 'running'].includes(selected.status)"
+      class="batch-progress"
+      role="status"
+    >
+      <p>已处理 {{ selected.progress }} / {{ selected.total }} 项，完成后自动更新评估。</p>
+      <el-progress
+        :percentage="selected.total ? Math.round((selected.progress / selected.total) * 100) : 0"
+      />
+    </div>
+    <el-alert
+      v-if="selected.error"
+      :title="selected.error"
+      type="error"
+      :closable="false"
+    /><el-alert
+      v-if="!isImageBatch && !selected.config.dataset.real_capture"
+      title="此数据集标记为合成/派生数据，仅用于流程验证，不用于声明真实场景指标达标。"
+      type="warning"
+      :closable="false"
+    /><el-alert
+      v-if="
+        selected.config.localization_protocol && selected.config.localization_protocol !== 'iou'
+      "
+      :closable="false"
+      type="info"
+      :title="
+        '定位协议为 ' +
+        selected.config.localization_protocol +
+        '，下方检测列仅适用于此协议，不代表 IoU 定位精度。'
+      "
+    /><el-alert
+      v-if="isImageBatch"
+      :closable="false"
+      type="info"
+      title="本轮结果按你确认的身份标签计算，使用开始测试时的身份库。手动阈值与单人照片测试不代表独立实景验收。"
+    /><el-tabs v-model="tab"
+      ><el-tab-pane label="算法对比" name="overview"
+        ><ChartPanel :option="chart" /><el-table :data="summaryRows"
+          ><el-table-column label="增强方法" min-width="210"
+            ><template #default="{ row }">{{ methodLabel(row.method) }}</template></el-table-column
+          ><el-table-column prop="images" label="图像数" /><el-table-column
+            v-if="!isImageBatch"
+            label="检测精确率"
+            ><template #default="{ row }">{{ percent(row.precision) }}</template></el-table-column
+          ><el-table-column :label="isImageBatch ? '单人脸通过率' : '检测召回率'"
+            ><template #default="{ row }">{{ percent(row.recall) }}</template></el-table-column
+          ><el-table-column :label="isImageBatch ? '正确识别率' : '身份确认率'"
+            ><template #default="{ row }">{{
+              percent(row.confirmation_rate)
+            }}</template></el-table-column
+          ><el-table-column v-if="isImageBatch" label="已知正确 / 总数" min-width="130"
+            ><template #default="{ row }"
+              >{{ row.correct }} / {{ row.known }}</template
+            ></el-table-column
+          ><el-table-column v-if="isImageBatch" label="无人脸 / 多人脸" min-width="130"
+            ><template #default="{ row }"
+              >{{ row.no_face }} / {{ row.multiple_faces }}</template
+            ></el-table-column
+          ><el-table-column label="较原始变化"
+            ><template #default="{ row }">{{
+              row.delta == null
+                ? '—'
+                : (row.delta >= 0 ? '+' : '') + (row.delta * 100).toFixed(1) + ' 个百分点'
+            }}</template></el-table-column
+          ><el-table-column label="未知误接受率" min-width="145"
+            ><template #default="{ row }"
+              >{{ percent(row.unknown_far)
+              }}<span v-if="isImageBatch"
+                >（{{ row.false_accept }} / {{ row.unknown }}）</span
+              ></template
+            ></el-table-column
+          ><el-table-column label="平均耗时"
+            ><template #default="{ row }">{{ number(row.mean_ms) }} ms</template></el-table-column
+          ></el-table
+        ></el-tab-pane
+      ><el-tab-pane label="分场景统计" name="scenes"
+        ><el-select v-model="selectedMethod" style="width: 270px"
+          ><el-option
+            v-for="m in selected.config.methods"
+            :key="m"
+            :value="m"
+            :label="methodLabel(m)" /></el-select
+        ><el-table :data="sceneRows"
+          ><el-table-column label="场景"
+            ><template #default="{ row }">{{ scenes[row.scene] }}</template></el-table-column
+          ><el-table-column prop="images" label="图像数" /><el-table-column
+            prop="known"
+            label="已知人脸数"
+          /><el-table-column prop="unknown" label="未知人脸数" /><el-table-column
+            :label="isImageBatch ? '正确识别率' : '身份确认率'"
+            ><template #default="{ row }">{{
+              percent(row.confirmation_rate)
+            }}</template></el-table-column
+          ><el-table-column label="误接受率"
+            ><template #default="{ row }"
+              >{{ percent(row.unknown_far)
+              }}<span v-if="isImageBatch"
+                >（{{ row.false_accept }} / {{ row.unknown }}）</span
+              ></template
+            ></el-table-column
+          ></el-table
+        >
+        <div class="target-grid">
+          <div
+            v-for="(value, key) in selected.summary?.[selectedMethod]?.targets"
+            :key="key"
+            class="note"
+          >
+            <strong
+              >{{ String(key) === 'overall' ? '综合' : scenes[String(key)] }} · 目标
+              {{ percent((value as any).target) }}</strong
+            >
+            <p>{{ (value as any).status }}</p>
+            <small v-for="reason in (value as any).reasons" :key="reason" style="display: block">{{
+              reason
+            }}</small>
+          </div>
+        </div></el-tab-pane
+      ><el-tab-pane label="逐样本结果" name="samples"
+        ><el-table :data="results"
+          ><el-table-column
+            type="index"
+            :index="(index: number) => (page - 1) * 50 + index + 1"
+            label="编号"
+            width="70"
+          /><el-table-column
+            v-if="isImageBatch"
+            prop="filename"
+            label="图片"
+            min-width="200"
+          /><el-table-column
+            v-if="isImageBatch"
+            prop="expected_name"
+            label="真实身份"
+            min-width="140"
+          /><el-table-column
+            v-if="isImageBatch"
+            prop="predicted_name"
+            label="识别结果"
+            min-width="140"
+          /><el-table-column v-if="isImageBatch" label="余弦相似度" min-width="120"
+            ><template #default="{ row }">{{
+              number(row.similarity, 4)
+            }}</template></el-table-column
+          ><el-table-column v-if="isImageBatch" label="判定" min-width="160"
+            ><template #default="{ row }">{{
+              outcomeLabels[row.outcome] || row.outcome
+            }}</template></el-table-column
+          ><el-table-column label="方法"
+            ><template #default="{ row }">{{ methodLabel(row.method) }}</template></el-table-column
+          ><el-table-column label="场景"
+            ><template #default="{ row }">{{ scenes[row.scene] }}</template></el-table-column
+          ><el-table-column v-if="!isImageBatch" prop="tp" label="TP" /><el-table-column
+            v-if="!isImageBatch"
+            prop="fp"
+            label="FP"
+          /><el-table-column v-if="!isImageBatch" prop="fn" label="FN" /><el-table-column
+            v-if="!isImageBatch"
+            prop="correct"
+            label="确认正确"
+          /><el-table-column label="图像"
+            ><template #default="{ row }"
+              ><el-button
+                link
+                type="primary"
+                @click="
+                  run(async () => {
+                    preview = await get(`/experiment/${selected.id}/preview/${row.id}`)
+                  })
+                "
+                >查看对比</el-button
+              ></template
+            ></el-table-column
+          ></el-table
+        ><el-pagination
+          v-model:current-page="page"
+          :total="selected.progress"
+          :page-size="50"
+          layout="prev,pager,next,total"
+          @current-change="run(loadResults)" /></el-tab-pane
+      ><el-tab-pane label="复现配置" name="config">
+        <pre class="json-panel">{{ JSON.stringify(selected.config, null, 2) }}</pre>
+      </el-tab-pane></el-tabs
+    >
+    <div
+      v-if="selected.status === 'completed' && selected.config.split === 'calibration'"
+      class="calibration-bar"
+    >
+      <span>从此校准实验选择阈值 · 目标 FAR</span
+      ><el-input-number v-model="targetFar" :min="0" :max="0.2" :step="0.01" /><el-button
+        :loading="busy"
+        @click="
+          run(async () => {
+            await post('/calibration', { experiment_id: selected.id, target_far: targetFar })
+            await load()
+            ElMessage.success('校准阈值已保存，测试时可选择')
+          })
+        "
+        >计算并冻结阈值</el-button
+      >
+    </div>
+  </section>
+  <div v-else class="note quality-card">
+    缺少真实测试数据的场景一律显示“未评估”。综合身份确认率按样本总数汇总，不对场景百分比取平均。
+  </div>
+  <section class="card quality-card">
+    <div class="section-heading">
+      <h2>实验任务</h2>
+      <el-button :icon="Refresh" text @click="run(load)">刷新</el-button>
+    </div>
+    <el-table :data="experiments" empty-text="尚无实验，所有场景均未评估"
+      ><el-table-column prop="id" label="编号" width="75" /><el-table-column label="数据集"
+        ><template #default="{ row }">{{ row.config.dataset.name }}</template></el-table-column
+      ><el-table-column label="状态" width="105"
+        ><template #default="{ row }"
+          ><el-tag
+            :type="
+              row.status === 'failed' ? 'danger' : row.status === 'completed' ? 'success' : 'info'
+            "
+            >{{ statusLabels[row.status] }}</el-tag
+          ></template
+        ></el-table-column
+      ><el-table-column label="进度" min-width="160"
+        ><template #default="{ row }"
+          ><el-progress
+            :percentage="row.total ? Math.round((row.progress / row.total) * 100) : 0"
+            :status="
+              row.status === 'failed' ? 'exception' : undefined
+            " /></template></el-table-column
+      ><el-table-column label="操作" width="150"
+        ><template #default="{ row }"
+          ><el-button link type="primary" @click="run(() => choose(row))">查看结果</el-button
+          ><el-button
+            link
+            type="danger"
+            :disabled="['queued', 'running'].includes(row.status)"
+            @click="removeExperiment(row)"
+            >删除</el-button
+          ></template
+        ></el-table-column
+      ></el-table
+    >
+  </section>
+  <div class="experiment-top">
+    <section class="card">
+      <div class="section-heading">
+        <h2>数据集管理</h2>
+        <div>
+          <input
+            ref="zipInput"
+            type="file"
+            accept=".zip"
+            class="sr-only"
+            aria-label="导入数据集 ZIP"
+            @change="importZip"
+          /><el-button :icon="Upload" :loading="busy" @click="zipInput?.click()"
+            >导入 ZIP</el-button
+          >
+        </div>
+      </div>
+      <p class="muted">根目录包含 manifest.json 和标注图片，压缩包 ≤100 MB，最多 500 张图片。</p>
+      <el-table :data="datasets" max-height="280" empty-text="尚未导入真实标注数据"
+        ><el-table-column prop="name" label="数据集" min-width="130" /><el-table-column
+          label="划分"
+          width="100"
+          ><template #default="{ row }"
+            ><el-tag size="small" :type="row.split === 'test' ? 'success' : 'warning'">{{
+              row.split === 'test' ? '测试' : '校准'
+            }}</el-tag></template
+          ></el-table-column
+        ><el-table-column prop="count" label="图像" width="65" /><el-table-column
+          label="操作"
+          width="110"
+          ><template #default="{ row }"
+            ><el-button
+              link
+              @click="
+                run(async () => {
+                  datasetInfo = await get('/dataset/' + row.id)
+                })
+              "
+              >详情</el-button
+            ><el-button link type="danger" @click="removeDataset(row)">删除</el-button></template
+          ></el-table-column
+        ></el-table
+      >
+      <div class="note">
+        标注需含场景、采集会话、人脸框与身份编号；未知身份设 person_id:
+        null。红外场景必须来自真实红外采集。
+      </div>
+      <el-button text @click="downloadTemplate">下载标注清单模板 ↓</el-button>
+    </section>
+    <section class="card">
+      <div class="section-heading">
+        <h2>创建消融实验</h2>
+        <span class="pill">固定模型与身份库</span>
+      </div>
+      <el-form label-position="top"
+        ><el-form-item
+          ><template #label><RequiredLabel>数据集</RequiredLabel></template
+          ><el-select v-model="datasetId" placeholder="选择数据集"
+            ><el-option
+              v-for="d in datasets"
+              :key="d.id"
+              :label="d.name + ' · ' + d.split"
+              :value="d.id" /></el-select></el-form-item
+        ><el-form-item
+          ><template #label><RequiredLabel>实验组</RequiredLabel></template
+          ><el-checkbox-group v-model="methods"
+            ><el-checkbox v-for="m in experimentMethods" :key="m.value" :value="m.value">{{
+              m.label
+            }}</el-checkbox></el-checkbox-group
+          ></el-form-item
+        >
+        <div class="form-row">
+          <el-form-item label="冻结阈值来源"
+            ><el-select v-model="calibrationId" clearable placeholder="手动阈值（探索性）"
+              ><el-option
+                v-for="c in calibrations"
+                :key="c.id"
+                :value="c.id"
+                :label="
+                  '校准 #' + c.id + ' / 实验 #' + c.experiment_id
+                " /></el-select></el-form-item
+          ><el-form-item v-if="!calibrationId"
+            ><template #label><RequiredLabel>手动阈值</RequiredLabel></template
+            ><el-input-number v-model="threshold" :min="-1" :max="1" :step="0.01"
+          /></el-form-item></div></el-form
+      ><el-button type="primary" :loading="busy" @click="start">开始批量评估</el-button>
+    </section>
+  </div>
   <section class="card research-card">
     <div class="section-heading">
       <div>
@@ -368,284 +743,6 @@ const chart = computed(() => ({
       </div></template
     ><el-empty v-else description="真实评估尚未完成；完成后点击刷新查看" :image-size="55" />
   </section>
-  <div class="experiment-top">
-    <section class="card">
-      <div class="section-heading">
-        <h2>数据集管理</h2>
-        <div>
-          <input
-            ref="zipInput"
-            type="file"
-            accept=".zip"
-            class="sr-only"
-            aria-label="导入数据集 ZIP"
-            @change="importZip"
-          /><el-button :icon="Upload" :loading="busy" @click="zipInput?.click()"
-            >导入 ZIP</el-button
-          >
-        </div>
-      </div>
-      <p class="muted">根目录包含 manifest.json 和标注图片，压缩包 ≤100 MB，最多 500 张图片。</p>
-      <el-table :data="datasets" max-height="280" empty-text="尚未导入真实标注数据"
-        ><el-table-column prop="name" label="数据集" min-width="130" /><el-table-column
-          label="划分"
-          width="100"
-          ><template #default="{ row }"
-            ><el-tag size="small" :type="row.split === 'test' ? 'success' : 'warning'">{{
-              row.split === 'test' ? '测试' : '校准'
-            }}</el-tag></template
-          ></el-table-column
-        ><el-table-column prop="count" label="图像" width="65" /><el-table-column
-          label="操作"
-          width="110"
-          ><template #default="{ row }"
-            ><el-button
-              link
-              @click="
-                run(async () => {
-                  datasetInfo = await get('/dataset/' + row.id)
-                })
-              "
-              >详情</el-button
-            ><el-button link type="danger" @click="removeDataset(row)">删除</el-button></template
-          ></el-table-column
-        ></el-table
-      >
-      <div class="note">
-        标注需含场景、采集会话、人脸框与身份编号；未知身份设 person_id:
-        null。红外场景必须来自真实红外采集。
-      </div>
-      <el-button text @click="downloadTemplate">下载标注清单模板 ↓</el-button>
-    </section>
-    <section class="card">
-      <div class="section-heading">
-        <h2>创建消融实验</h2>
-        <span class="pill">固定模型与身份库</span>
-      </div>
-      <el-form label-position="top"
-        ><el-form-item
-          ><template #label><RequiredLabel>数据集</RequiredLabel></template
-          ><el-select v-model="datasetId" placeholder="选择数据集"
-            ><el-option
-              v-for="d in datasets"
-              :key="d.id"
-              :label="d.name + ' · ' + d.split"
-              :value="d.id" /></el-select></el-form-item
-        ><el-form-item
-          ><template #label><RequiredLabel>实验组</RequiredLabel></template
-          ><el-checkbox-group v-model="methods"
-            ><el-checkbox v-for="m in experimentMethods" :key="m.value" :value="m.value">{{
-              m.label
-            }}</el-checkbox></el-checkbox-group
-          ></el-form-item
-        >
-        <div class="form-row">
-          <el-form-item label="冻结阈值来源"
-            ><el-select v-model="calibrationId" clearable placeholder="手动阈值（探索性）"
-              ><el-option
-                v-for="c in calibrations"
-                :key="c.id"
-                :value="c.id"
-                :label="
-                  '校准 #' + c.id + ' / 实验 #' + c.experiment_id
-                " /></el-select></el-form-item
-          ><el-form-item v-if="!calibrationId"
-            ><template #label><RequiredLabel>手动阈值</RequiredLabel></template
-            ><el-input-number v-model="threshold" :min="-1" :max="1" :step="0.01"
-          /></el-form-item></div></el-form
-      ><el-button type="primary" :loading="busy" @click="start">开始批量评估</el-button>
-    </section>
-  </div>
-  <section class="card quality-card">
-    <div class="section-heading">
-      <h2>实验任务</h2>
-      <el-button :icon="Refresh" text @click="run(load)">刷新</el-button>
-    </div>
-    <el-table :data="experiments" empty-text="尚无实验，所有场景均未评估"
-      ><el-table-column prop="id" label="编号" width="75" /><el-table-column label="数据集"
-        ><template #default="{ row }">{{ row.config.dataset.name }}</template></el-table-column
-      ><el-table-column label="状态" width="105"
-        ><template #default="{ row }"
-          ><el-tag
-            :type="
-              row.status === 'failed' ? 'danger' : row.status === 'completed' ? 'success' : 'info'
-            "
-            >{{ statusLabels[row.status] }}</el-tag
-          ></template
-        ></el-table-column
-      ><el-table-column label="进度" min-width="160"
-        ><template #default="{ row }"
-          ><el-progress
-            :percentage="row.total ? Math.round((row.progress / row.total) * 100) : 0"
-            :status="
-              row.status === 'failed' ? 'exception' : undefined
-            " /></template></el-table-column
-      ><el-table-column label="操作" width="150"
-        ><template #default="{ row }"
-          ><el-button link type="primary" @click="run(() => choose(row))">查看结果</el-button
-          ><el-button
-            link
-            type="danger"
-            :disabled="['queued', 'running'].includes(row.status)"
-            @click="removeExperiment(row)"
-            >删除</el-button
-          ></template
-        ></el-table-column
-      ></el-table
-    >
-  </section>
-  <section v-if="selected" class="card quality-card">
-    <div class="section-heading">
-      <div>
-        <h2>
-          实验 #{{ selected.id }} <el-tag size="small">{{ statusLabels[selected.status] }}</el-tag>
-        </h2>
-        <p class="muted">{{ selected.config.calibration_note }}</p>
-      </div>
-      <a :href="'/api/experiment/' + selected.id + '/csv'" download
-        ><el-button :icon="Download">导出逐样本 CSV</el-button></a
-      >
-    </div>
-    <el-alert
-      v-if="selected.error"
-      :title="selected.error"
-      type="error"
-      :closable="false"
-    /><el-alert
-      v-if="!selected.config.dataset.real_capture"
-      title="此数据集标记为合成/派生数据，仅用于流程验证，不用于声明真实场景指标达标。"
-      type="warning"
-      :closable="false"
-    /><el-alert
-      v-if="
-        selected.config.localization_protocol && selected.config.localization_protocol !== 'iou'
-      "
-      :closable="false"
-      type="info"
-      :title="
-        '定位协议为 ' +
-        selected.config.localization_protocol +
-        '，下方检测列仅适用于此协议，不代表 IoU 定位精度。'
-      "
-    /><el-tabs v-model="tab"
-      ><el-tab-pane label="算法对比" name="overview"
-        ><ChartPanel :option="chart" /><el-table :data="summaryRows"
-          ><el-table-column label="增强方法" min-width="210"
-            ><template #default="{ row }">{{ methodLabel(row.method) }}</template></el-table-column
-          ><el-table-column prop="images" label="图像数" /><el-table-column label="检测精确率"
-            ><template #default="{ row }">{{ percent(row.precision) }}</template></el-table-column
-          ><el-table-column label="检测召回率"
-            ><template #default="{ row }">{{ percent(row.recall) }}</template></el-table-column
-          ><el-table-column label="身份确认率"
-            ><template #default="{ row }">{{
-              percent(row.confirmation_rate)
-            }}</template></el-table-column
-          ><el-table-column label="较原始变化"
-            ><template #default="{ row }">{{
-              row.delta == null
-                ? '—'
-                : (row.delta >= 0 ? '+' : '') + (row.delta * 100).toFixed(1) + ' 个百分点'
-            }}</template></el-table-column
-          ><el-table-column label="未知误接受率"
-            ><template #default="{ row }">{{ percent(row.unknown_far) }}</template></el-table-column
-          ><el-table-column label="平均耗时"
-            ><template #default="{ row }">{{ number(row.mean_ms) }} ms</template></el-table-column
-          ></el-table
-        ></el-tab-pane
-      ><el-tab-pane label="分场景统计" name="scenes"
-        ><el-select v-model="selectedMethod" style="width: 270px"
-          ><el-option
-            v-for="m in selected.config.methods"
-            :key="m"
-            :value="m"
-            :label="methodLabel(m)" /></el-select
-        ><el-table :data="sceneRows"
-          ><el-table-column label="场景"
-            ><template #default="{ row }">{{ scenes[row.scene] }}</template></el-table-column
-          ><el-table-column prop="images" label="图像数" /><el-table-column
-            prop="known"
-            label="已知人脸数"
-          /><el-table-column prop="unknown" label="未知人脸数" /><el-table-column label="身份确认率"
-            ><template #default="{ row }">{{
-              percent(row.confirmation_rate)
-            }}</template></el-table-column
-          ><el-table-column label="误接受率"
-            ><template #default="{ row }">{{ percent(row.unknown_far) }}</template></el-table-column
-          ></el-table
-        >
-        <div class="target-grid">
-          <div
-            v-for="(value, key) in selected.summary?.[selectedMethod]?.targets"
-            :key="key"
-            class="note"
-          >
-            <strong
-              >{{ String(key) === 'overall' ? '综合' : scenes[String(key)] }} · 目标
-              {{ percent((value as any).target) }}</strong
-            >
-            <p>{{ (value as any).status }}</p>
-            <small v-for="reason in (value as any).reasons" :key="reason" style="display: block">{{
-              reason
-            }}</small>
-          </div>
-        </div></el-tab-pane
-      ><el-tab-pane label="逐样本结果" name="samples"
-        ><el-table :data="results"
-          ><el-table-column prop="item_index" label="样本索引" /><el-table-column label="方法"
-            ><template #default="{ row }">{{ methodLabel(row.method) }}</template></el-table-column
-          ><el-table-column label="场景"
-            ><template #default="{ row }">{{ scenes[row.scene] }}</template></el-table-column
-          ><el-table-column prop="tp" label="TP" /><el-table-column
-            prop="fp"
-            label="FP"
-          /><el-table-column prop="fn" label="FN" /><el-table-column
-            prop="correct"
-            label="确认正确"
-          /><el-table-column label="图像"
-            ><template #default="{ row }"
-              ><el-button
-                link
-                type="primary"
-                @click="
-                  run(async () => {
-                    preview = await get(`/experiment/${selected.id}/preview/${row.id}`)
-                  })
-                "
-                >查看对比</el-button
-              ></template
-            ></el-table-column
-          ></el-table
-        ><el-pagination
-          v-model:current-page="page"
-          :total="selected.progress"
-          :page-size="50"
-          layout="prev,pager,next,total"
-          @current-change="run(loadResults)" /></el-tab-pane
-      ><el-tab-pane label="复现配置" name="config">
-        <pre class="json-panel">{{ JSON.stringify(selected.config, null, 2) }}</pre>
-      </el-tab-pane></el-tabs
-    >
-    <div
-      v-if="selected.status === 'completed' && selected.config.split === 'calibration'"
-      class="calibration-bar"
-    >
-      <span>从此校准实验选择阈值 · 目标 FAR</span
-      ><el-input-number v-model="targetFar" :min="0" :max="0.2" :step="0.01" /><el-button
-        :loading="busy"
-        @click="
-          run(async () => {
-            await post('/calibration', { experiment_id: selected.id, target_far: targetFar })
-            await load()
-            ElMessage.success('校准阈值已保存，测试时可选择')
-          })
-        "
-        >计算并冻结阈值</el-button
-      >
-    </div>
-  </section>
-  <div v-else class="note quality-card">
-    缺少真实测试数据的场景一律显示“未评估”。综合身份确认率按样本总数汇总，不对场景百分比取平均。
-  </div>
   <el-dialog :model-value="!!preview" title="实验图像对比" width="900px" @close="preview = null"
     ><CompareImages :original="preview?.original" :enhanced="preview?.enhanced" /></el-dialog
   ><el-dialog

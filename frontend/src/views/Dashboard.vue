@@ -18,7 +18,7 @@ const stats = [
   { label: '已注册身份', key: 'persons', unit: '人' },
   { label: '检测记录', key: 'detections', unit: '次' },
   { label: '实验任务', key: 'experiments', unit: '组' },
-  { label: '标注数据集', key: 'datasets', unit: '个' },
+  { label: '评估数据集', key: 'datasets', unit: '个' },
 ]
 const entries = [
   { to: '/enhance', label: '图像增强', description: '调整参数，比较处理前后的图像', icon: Sunny },
@@ -27,7 +27,7 @@ const entries = [
   {
     to: '/experiments',
     label: '批量评估',
-    description: '导入标注数据，运行对照实验',
+    description: '多图测试识别正确率，查看对照实验',
     icon: DataAnalysis,
   },
 ]

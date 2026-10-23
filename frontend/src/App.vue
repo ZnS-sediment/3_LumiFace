@@ -47,10 +47,7 @@ const group = computed(() => nav.find((item) => item.to === route.path)?.group)
           >
         </template>
       </nav>
-      <div class="sidebar-bottom">
-        <span class="live-dot"></span> 本地环境
-        <div class="version">LumiFace <span>1.0</span></div>
-      </div>
+
     </aside>
     <div class="main-shell">
       <header class="topbar">
@@ -66,7 +63,7 @@ const group = computed(() => nav.find((item) => item.to === route.path)?.group)
           /><span>{{ group }}</span
           ><el-icon><ArrowRight /></el-icon><strong>{{ title }}</strong>
         </div>
-        <span class="local-badge">数据保存在本机</span>
+
       </header>
       <main>
         <div class="page-heading">
@@ -75,7 +72,6 @@ const group = computed(() => nav.find((item) => item.to === route.path)?.group)
         </div>
         <RouterView />
       </main>
-      <footer><span>LumiFace · 人脸增强实验系统</span><span>教学研究用途</span></footer>
     </div>
   </div>
 </template>

@@ -77,6 +77,7 @@ def test_backend_root_redirects_to_ui_without_masking_unknown_api_routes(client)
     [
         ("demo-dataset", "att_faces_demo.zip", "prepare_att_faces_demo.py"),
         ("simulated-dataset", "att_lighting_three_scenes.zip", "prepare_three_scene_demo.py"),
+        ("lfw-dataset", "lfw_120_demo.zip", "prepare_lfw_demo.py"),
     ],
 )
 def test_demo_dataset_download_and_missing_archive(

@@ -61,7 +61,7 @@ test('真实模型六页面完整流程与移动布局', async ({ page }) => {
   await expect(page.getByText('已完成', { exact: true }).first()).toBeVisible({ timeout: 90000 })
   await page.getByRole('tab', { name: '分场景统计' }).click()
   await expect(page.getByText('红外补光 · 目标 95.0%').last()).toBeVisible()
-  await expect(page.locator('.target-grid').last().getByText('未评估')).toHaveCount(3)
+  await expect(page.locator('.current-experiment .target-grid').getByText('未评估')).toHaveCount(3)
   await page.getByRole('tab', { name: '逐样本结果' }).click()
   await page.getByRole('button', { name: '查看对比', exact: true }).first().click()
   await expect(page.getByRole('dialog').getByAltText('增强结果')).toBeVisible()
@@ -253,4 +253,123 @@ test('AT&T 40 个匿名身份通过网页批量注册', async ({ page }) => {
   expect(people.every((p: any) => p.sample_count === 3)).toBe(true)
   await page.waitForTimeout(700)
   await page.screenshot({ path: root + '/work/batch-ui/att-web-import.png', fullPage: true })
+})
+
+test('多图识别测试：多选、目录标签、逐图结果、连续测试更新及刷新保留', async ({ page }) => {
+  test.skip(process.env.LUMIFACE_TEST_DELETE_ISOLATED !== '1', '仅使用隔离测试库')
+  const { execFileSync } = await import('node:child_process')
+  const { readFile } = await import('node:fs/promises')
+  execFileSync(root + '/.venv/bin/python', [
+    '-c',
+    `
+from pathlib import Path
+from zipfile import ZipFile
+import cv2,numpy as np
+root=Path(${JSON.stringify(root)})
+out=root/'work/browser-multi-query/ATT_s04'
+out.mkdir(parents=True,exist_ok=True)
+with ZipFile(root/'datasets/att_faces_demo.zip') as z:
+    for n in ['01','04','05']:
+        (out/(n+'.png') if n!='01' else root/'work/browser-multi-reference.png').write_bytes(z.read('att_faces_demo/gallery/ATT_s04/'+n+'.png' if n=='01' else 'att_faces_demo/query/ATT_s04/'+n+'.png'))
+cv2.imwrite(str(out/'blank.png'),np.zeros((64,64,3),dtype=np.uint8))
+`,
+  ])
+  const people = (await (await page.request.get('/api/person')).json()).data
+  if (!people.some((person: any) => person.name === 'ATT_s04')) {
+    const registration = await page.request.post('/api/person/register', {
+      multipart: {
+        name: 'ATT_s04',
+        capture_id: 'multi-browser-reference',
+        files: {
+          name: '01.png',
+          mimeType: 'image/png',
+          buffer: await readFile(root + '/work/browser-multi-reference.png'),
+        },
+      },
+    })
+    expect(registration.status(), await registration.text()).toBe(200)
+  }
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.goto('/experiments')
+  const form = page.locator('.image-batch-card')
+  const current = page.locator('.current-experiment')
+  await form.getByRole('button', { name: '开始多图测试', exact: true }).click()
+  await expect(page.locator('.el-message--error').last()).toContainText('测试图片')
+  await form
+    .getByLabel('选择多张测试图片', { exact: true })
+    .setInputFiles([
+      root + '/work/browser-multi-query/ATT_s04/04.png',
+      root + '/work/browser-multi-query/ATT_s04/05.png',
+    ])
+  await expect(form.getByRole('status')).toContainText('2 张待标注')
+  await form.getByRole('button', { name: '开始多图测试', exact: true }).click()
+  await expect(page.locator('.el-message--error').last()).toContainText('每张图片的真实身份')
+  await form.getByRole('combobox', { name: '统一真实身份', exact: true }).click()
+  await page.getByRole('option', { name: 'ATT_s04', exact: true }).click()
+  await form.getByRole('button', { name: '应用到全部图片', exact: true }).click()
+  await expect(form.getByRole('status')).not.toContainText('待标注')
+  const firstResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/api/experiment/images') && response.request().method() === 'POST',
+  )
+  await form.getByRole('button', { name: '开始多图测试', exact: true }).click()
+  const first = (await (await firstResponse).json()).data
+  await expect(current.getByRole('heading')).toContainText('多图测试 #' + first.id)
+  await expect(current.getByText('已完成', { exact: true })).toBeVisible()
+  const firstSaved = (await (await page.request.get('/api/experiment/' + first.id)).json()).data
+  expect(firstSaved.summary.original.overall.known).toBe(2)
+  await form
+    .getByLabel('选择测试图片目录', { exact: true })
+    .setInputFiles(root + '/work/browser-multi-query')
+  await expect(form.getByRole('status')).toHaveText('已选择 3 张')
+  await form.locator('label.el-checkbox').filter({ hasText: 'Gamma' }).click()
+  const secondResponse = page.waitForResponse(
+    (response) =>
+      response.url().endsWith('/api/experiment/images') && response.request().method() === 'POST',
+  )
+  await form.getByRole('button', { name: '开始多图测试', exact: true }).click()
+  const second = (await (await secondResponse).json()).data
+  expect(second.id).not.toBe(first.id)
+  await expect(current.getByRole('heading')).toContainText('多图测试 #' + second.id)
+  await expect(current.getByText('已完成', { exact: true })).toBeVisible()
+  const latest = (await (await page.request.get('/api/experiment/' + second.id)).json()).data
+  expect(latest.progress).toBe(6)
+  expect(latest.summary.original.overall.known).toBe(3)
+  expect(latest.summary.original.overall.no_face).toBe(1)
+  expect(latest.summary.original.overall.confirmation_rate).toBe(
+    latest.summary.original.overall.correct / 3,
+  )
+  await expect(current).toContainText(latest.summary.original.overall.correct + ' / 3')
+  await current.getByRole('tab', { name: '逐样本结果', exact: true }).click()
+  await expect(current.getByText('未检测到人脸', { exact: true }).first()).toBeVisible()
+  const csvDownload = page.waitForEvent('download')
+  await current.getByRole('link').filter({ hasText: '导出逐样本 CSV' }).click()
+  const csv = await csvDownload
+  expect(await readFile((await csv.path())!, 'utf8')).toContain(
+    'filename,expected_name,predicted_name,similarity,outcome',
+  )
+  await page.reload()
+  await expect(current.getByRole('heading')).toContainText('多图测试 #' + second.id)
+  await expect(current).toContainText(latest.summary.original.overall.correct + ' / 3')
+  const unchanged = (await (await page.request.get('/api/experiment/' + first.id)).json()).data
+  expect(unchanged.summary).toEqual(firstSaved.summary)
+  const lfw = page.waitForEvent('download')
+  await form.getByRole('link', { name: '下载 LFW 扩充数据包（120 人）', exact: true }).click()
+  const archive = await lfw
+  expect(archive.suggestedFilename()).toBe('lfw_120_demo.zip')
+  expect(await archive.failure()).toBeNull()
+  await page.setViewportSize({ width: 390, height: 844 })
+  await form
+    .getByLabel('选择测试图片目录', { exact: true })
+    .setInputFiles(root + '/work/browser-multi-query')
+  await expect(form.getByRole('status')).toHaveText('已选择 3 张')
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+  ).toBe(true)
+  await page.screenshot({
+    path: root + '/work/batch-ui/multi-image-evaluation.png',
+    fullPage: true,
+  })
+  expect(errors).toEqual([])
 })

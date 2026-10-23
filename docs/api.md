@@ -19,6 +19,7 @@ JSON 请求使用 Pydantic；图片接口 multipart/form-data。增强 options �
 | POST /api/face/detect | file,options | original/enhanced 中的 faces,count,elapsed_ms,image；增强组另含 enhancement_ms,total_ms |
 | POST /api/person/register | name,note,capture_id,files(可重复字段) | 人员与样本元信息 |
 | GET /api/person | q 可选 | 人员列表，不含特征 |
+| GET /api/person/lfw-dataset | 无 | LFW 120 人扩充 ZIP：240 张参考图、360 张查询图 |
 | GET /api/person/{id} | 路径 ID | 样本质量、维数、模型指纹、受控 image_url |
 | PATCH /api/person/{id} | JSON name,note | 更新人员 |
 | DELETE /api/person/{id} | 路径 ID | deleted 编号、cleanup 文件清理状态 |
@@ -32,6 +33,7 @@ JSON 请求使用 Pydantic；图片接口 multipart/form-data。增强 options �
 | GET /api/dataset/{id} | ID | 元信息与标注清单 |
 | DELETE /api/dataset/{id} | ID | 无实验引用时删除数据和图片 |
 | POST /api/experiment/run | JSON dataset_id,methods,threshold,calibration_id | 排队任务与冻结配置 |
+| POST /api/experiment/images | multipart files（重复字段）、labels（JSON） | 多图测试任务，复用实验记录、进度、结果与 CSV |
 | GET /api/experiment | 无 | 最近 100 个任务及汇总 |
 | GET /api/experiment/{id} | ID | 状态、进度、参数、环境、summary,error |
 | GET /api/experiment/{id}/results | offset=0,limit=50 (≤100) | 逐样本真实预测、计数、耗时 |
@@ -61,6 +63,8 @@ curl -X POST http://127.0.0.1:8000/api/experiment/run \
 `confirmed=false` 时返回的 person_id 为 null，最高候选只在 candidates 中呈现。若未检测到人脸或出现多人脸，身份确认返回 422，不写入一次成功确认。注册验证所有输入后一次提交，不会因为第二张照片失败而留下半个身份。
 
 实验 summary 各方法含 overall/scenes/targets。分母为零的指标为 null；前端显示“未评估”。queued/running 为未完成，failed 保存错误，不生成达标汇总。
+
+多图测试的 `labels` 结构为 `{"methods":["original","gamma"],"threshold":0.45,"items":[{"filename":"query/人员/04.png","person_id":1,"scene":"normal"}]}`，items 与 files 数量、顺序和上传文件名一致，未知身份显式使用 null。每次 1–500 图，合计不超过 100 MB；同批重复或注册重叠图拒绝。`config.kind=image_batch`，使用 single_face_presence，仅评估每图单人识别。逐图结果新增 filename、expected_name、predicted_name、similarity、outcome；overall 新增 no_face、multiple_faces。已知正确率分母包括漏检、多人脸、拒识和认错的图片。每轮生成独立任务，原有真实研究报告不被覆盖。删除该任务时清理其独占的自动生成测试数据副本。
 
 ## 真实研究结果与场景证据
 

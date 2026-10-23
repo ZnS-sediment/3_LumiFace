@@ -32,6 +32,7 @@ from app.schemas.contracts import (
     PersonBatchDelete,
     ExperimentRequest,
     CalibrationRequest,
+    ImageTestRequest,
 )
 from app.services.images import read_upload, data_url, decode
 from app.services.persons import register, get_person, person_view, gallery, delete_people
@@ -177,6 +178,14 @@ def person_simulated_dataset() -> FileResponse:
     return FileResponse(
         archive, media_type="application/zip", filename="att_lighting_three_scenes.zip"
     )
+
+
+@router.get("/person/lfw-dataset")
+def person_lfw_dataset() -> FileResponse:
+    archive = ROOT / "datasets" / "lfw_120_demo.zip"
+    if not archive.is_file():
+        raise AppError("LFW 扩充数据包尚未准备，请运行 scripts/prepare_lfw_demo.py", 404)
+    return FileResponse(archive, media_type="application/zip", filename="lfw_120_demo.zip")
 
 
 @router.post("/person/batch-delete", response_model=Response)
@@ -333,6 +342,24 @@ def experiment_run(
     return {"data": experiment_view(record)}
 
 
+@router.post("/experiment/images", response_model=Response)
+def experiment_images(
+    background: BackgroundTasks,
+    files: list[UploadFile] = File(...),
+    labels: str = Form(...),
+    db: Session = Depends(get_db),
+) -> dict:
+    from app.services.image_tests import create_image_test
+
+    try:
+        request = ImageTestRequest.model_validate_json(labels)
+    except ValidationError as exc:
+        raise AppError(f"图片标签或测试参数无效：{exc}", 422) from exc
+    record, templates = create_image_test(db, files, request)
+    background.add_task(run_experiment, record.id, templates)
+    return {"data": experiment_view(record)}
+
+
 @router.get("/experiment", response_model=Response)
 def experiments(db: Session = Depends(get_db)) -> dict:
     return {
@@ -401,7 +428,7 @@ def experiment_preview(experiment_id: int, result_id: int, db: Session = Depends
 
 @router.get("/experiment/{experiment_id}/csv")
 def experiment_csv(experiment_id: int, db: Session = Depends(get_db)) -> RawResponse:
-    experiment_detail(experiment_id, db)
+    record = experiment_detail(experiment_id, db)["data"]
     rows = db.scalars(
         select(ExperimentResult)
         .where(ExperimentResult.experiment_id == experiment_id)
@@ -421,9 +448,16 @@ def experiment_csv(experiment_id: int, db: Session = Depends(get_db)) -> RawResp
         "detected_unknown",
         "elapsed_ms",
     ]
+    if record["config"].get("kind") == "image_batch":
+        fields.extend(["filename", "expected_name", "predicted_name", "similarity", "outcome"])
     writer.writerow(["method", "scene", "item_index", *fields])
     for row in rows:
-        writer.writerow([row.method, row.scene, row.item_index, *[row.detail[k] for k in fields]])
+        values = [row.detail.get(k) for k in fields]
+        values = [
+            "'" + v if isinstance(v, str) and v.startswith(("=", "+", "-", "@", "\t", "\r")) else v
+            for v in values
+        ]
+        writer.writerow([row.method, row.scene, row.item_index, *values])
     return RawResponse(
         "\ufeff" + buffer.getvalue(),
         media_type="text/csv",
@@ -433,6 +467,8 @@ def experiment_csv(experiment_id: int, db: Session = Depends(get_db)) -> RawResp
 
 @router.delete("/experiment/{experiment_id}", response_model=Response)
 def experiment_delete(experiment_id: int, db: Session = Depends(get_db)) -> dict:
+    import shutil
+
     record = db.get(Experiment, experiment_id)
     if record is None:
         raise AppError("实验不存在", 404)
@@ -446,8 +482,20 @@ def experiment_delete(experiment_id: int, db: Session = Depends(get_db)) -> dict
         ):
             raise AppError("此校准被测试实验引用，须先删除测试实验", 409)
         db.delete(calibration)
+    dataset = (
+        db.get(Dataset, record.dataset_id) if record.config.get("kind") == "image_batch" else None
+    )
     db.delete(record)
+    db.flush()
+    if dataset and not db.scalar(
+        select(Experiment.id).where(Experiment.dataset_id == dataset.id).limit(1)
+    ):
+        db.delete(dataset)
+    else:
+        dataset = None
     db.commit()
+    if dataset:
+        shutil.rmtree(DATA / "datasets" / dataset.directory, ignore_errors=True)
     return {"data": {"deleted": experiment_id}}
 
 

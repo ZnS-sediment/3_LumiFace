@@ -30,7 +30,7 @@ export default createRouter({
     {
       path: '/experiments',
       component: () => import('../views/Experiments.vue'),
-      meta: { title: '实验评估', description: '管理标注数据、运行消融实验并查看评估结果。' },
+      meta: { title: '实验评估', description: '批量测试识别正确率，对比增强算法并查看历史结果。' },
     },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],

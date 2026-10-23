@@ -120,6 +120,7 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
         calibration_real = previous.config["dataset"]["real_capture"]
         calibration_note = "使用独立校准集冻结的分方法阈值"
     config = {
+        "kind": dataset.manifest.get("kind", "annotated_dataset"),
         "dataset": {k: v for k, v in dataset.manifest.items() if k != "items"},
         "dataset_digest": hashlib.sha256(
             json.dumps(dataset.manifest, sort_keys=True).encode()
@@ -167,6 +168,7 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
             )
             engine.infer(first)
             grouped = {m: [] for m in record.config["methods"]}
+            names = {p["id"]: p["name"] for p in templates}
             for index, item in enumerate(dataset.manifest["items"]):
                 image = decode(
                     (DATA / "datasets" / dataset.directory / item["stored_file"]).read_bytes()
@@ -195,6 +197,32 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                     )
                     detail["capture_id"] = item["capture_id"]
                     detail["steps"] = steps
+                    if record.config.get("kind") == "image_batch":
+                        truth_id = item["faces"][0]["person_id"]
+                        prediction = predictions[0]["match"] if len(predictions) == 1 else None
+                        if not predictions:
+                            outcome = "no_face"
+                        elif len(predictions) > 1:
+                            outcome = "multiple_faces"
+                        elif truth_id is None:
+                            outcome = (
+                                "false_accept" if prediction["confirmed"] else "unknown_rejected"
+                            )
+                        elif detail["correct"]:
+                            outcome = "correct"
+                        else:
+                            outcome = "wrong_identity" if prediction["confirmed"] else "rejected"
+                        detail.update(
+                            {
+                                "filename": item["display_file"],
+                                "expected_name": names.get(truth_id, "未知身份"),
+                                "predicted_name": prediction["name"]
+                                if prediction
+                                else "未执行匹配",
+                                "similarity": prediction["similarity"] if prediction else None,
+                                "outcome": outcome,
+                            }
+                        )
                     grouped[method].append((item["scene"], detail))
                     db.add(
                         ExperimentResult(
@@ -211,6 +239,13 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
             for method, rows in grouped.items():
                 scenes = {scene: aggregate([r for s, r in rows if s == scene]) for scene in SCENES}
                 summary[method] = {"overall": aggregate([r for _, r in rows]), "scenes": scenes}
+                if record.config.get("kind") == "image_batch":
+                    summary[method]["overall"]["no_face"] = sum(
+                        r.get("outcome") == "no_face" for _, r in rows
+                    )
+                    summary[method]["overall"]["multiple_faces"] = sum(
+                        r.get("outcome") == "multiple_faces" for _, r in rows
+                    )
                 actual = dataset.manifest["real_capture"] and record.config["split"] == "test"
                 calibrated = record.config["calibration_id"] is not None and record.config.get(
                     "calibration_real_capture", False

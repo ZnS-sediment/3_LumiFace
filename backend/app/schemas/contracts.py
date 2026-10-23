@@ -104,3 +104,17 @@ class CalibrationRequest(BaseModel):
     model_config = ConfigDict(allow_inf_nan=False)
     experiment_id: int
     target_far: float = Field(default=0.01, ge=0, le=0.2)
+
+
+class ImageTestItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    filename: str = Field(min_length=1, max_length=200)
+    person_id: Annotated[int, Field(strict=True, ge=1)] | None
+    scene: Scene = "normal"
+
+
+class ImageTestRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+    items: list[ImageTestItem] = Field(min_length=1, max_length=MAX_DATASET_IMAGES)
+    methods: list[Method] = Field(default=["original"], min_length=1, max_length=7)
+    threshold: float = Field(default=DEFAULT_THRESHOLD, ge=-1, le=1)
