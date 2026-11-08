@@ -2,11 +2,11 @@
 
 ## 目标与分层
 
-本系统为单机教学研究平台，前后端分离。浏览器只负责上传、参数选择、预览与图表；所有图像处理、人脸模型和指标计算在 Python 后端执行。
+本系统为单机教学研究平台，前后端分离。浏览器只负责上传、参数选择、预览与结果查看；所有图像处理、人脸模型和指标计算在 Python 后端执行。
 
 ```mermaid
 flowchart LR
-  UI[Vue 3 六页面] --> API[FastAPI /api]
+  UI[Vue 3 五页面] --> API[FastAPI /api]
   API --> S[业务服务]
   S --> A[光照分析与增强]
   S --> F[InsightFace 检测与识别]
@@ -23,15 +23,17 @@ flowchart LR
 
 ## 前端
 
-Vue Router 动态路由分包；Axios 封装 API 错误与超时；Element Plus 表单、加载和提示；ECharts 显示真实返回数据。首页统计直接读数据库，没有预置虚构业务数字。图片只在浏览器对象 URL 和接口请求中流转。共享组件负责图片上传、前后对比、图表销毁与自适应尺寸。
+Vue Router 动态路由分包；Axios 封装 API 错误与超时；Element Plus 仅加载实际使用的表单、表格、加载和提示组件。共享图片组件负责预览与单图下载；网页不提供模型状态或手动加载入口，实验对比集中在实验评估页面。
 
 UI 使用深灰蓝侧栏、浅灰工作台和蓝色强调，手机折叠菜单。Pinia 未引入：页面间无复杂全局状态，不增加无用途依赖。
 
 ## 模型与运行时
 
-InsightFace 0.7.3 FaceAnalysis 的 `allowed_modules=['detection','recognition']`，固定 `buffalo_l` 包的 SCRFD 检测器和 ResNet50 ArcFace 特征模型。检测输入 640×640，检测阈值 0.5；特征网络使用五点对齐的 112×112 图像。
+后端启动时在线程池自动加载本地模型，完成后才开始接收请求；加载失败记入日志并保留图像增强功能，人脸请求会重试并返回具体错误。加载使用同一线程锁和实例，重复请求不会重复加载。
 
-默认 ONNX Runtime CPU；GPU 安装见部署说明。有 CUDA provider 时优先尝试 CUDA，ORT 实际 session providers 写入配置，不将检测到 GPU 包误报为实测 GPU 加速。此环境只验证 CPU。推理由 RLock 串行保护；两个 ORT 内部计算线程避免 CPU 过度并发。
+显式创建两个 ONNX Runtime 会话，使用 InsightFace 0.7.3 对应的检测/特征封装，固定 `buffalo_l` 包的 SCRFD 检测器和 ResNet50 ArcFace 特征模型。检测输入 640×640，检测阈值 0.5；特征网络使用五点对齐的 112×112 图像。
+
+默认 ONNX Runtime CPU；GPU 安装见部署说明。有 CUDA provider 时优先尝试 CUDA，ORT 实际 session providers 写入配置，不将检测到 GPU 包误报为实测 GPU 加速。此环境只验证 CPU。推理由 RLock 串行保护；每个 ORT 会话 intra=2、inter=1，OpenCV 2 线程。直接构造会话绕过该版本 get_model 丢弃 sess_options 的问题，并避免加载三个人脸属性/额外关键点模型。实际线程配置可从模型状态查询。
 
 PyTorch 模型训练不属于本实训的必要路径。保留可选依赖文件和硬件诊断脚本，推理使用官方 ONNX 权重，避免重复加载另一套深度学习模型。
 
@@ -43,7 +45,7 @@ PyTorch 模型训练不属于本实训的必要路径。保留可选依赖文件
 | FaceSample | 原始图片路径、像素摘要、采集会话、特征、质量、模型指纹 | 人员删除级联删除样本，服务层删除文件 |
 | RecognitionRecord | 验证/检索决策、阈值、耗时 | 人员引用 SET NULL；删除服务清理关联查询记录 |
 | PendingSampleDeletion | 等待清理的 UUID 注册照片路径 | 与身份删除一起提交；文件清理成功后移除，失败保留重试 |
-| DetectionTask | 双路检测计数、增强方法 | 支撑首页真实任务统计 |
+| DetectionTask | 单次检测计数、增强方法 | 保存实际检测记录 |
 | Dataset | 数据来源、许可、划分、清单、场景和标注 | 图片保存在私有随机目录 |
 | Experiment | 参数、环境、快照摘要、进度、状态、汇总 | 关联 Dataset，后台任务逐项更新 |
 | ExperimentResult | 方法、场景、样本索引、真实预测、计数 | 实验删除级联 |
@@ -64,3 +66,9 @@ SQLite 启用外键、WAL 和 30 秒 busy timeout；注册先检查所有照片�
 本地 Origin 和 Host 白名单，禁止公开 runtime 静态目录，接口响应 no-store。它不是具备账号、权限隔离和审计的生产系统。需要多人部署时应先补充认证、授权与 TLS。
 
 已知身份标注同时绑定注册时间，避免旧数据库复用数字编号后误指向另一人；新建 Person 表启用 SQLite AUTOINCREMENT。旧清单没有注册绑定时须核实并重新导入，不默认接受为可信标签。该检查不修改用户原有注册内容。
+
+## 增强识别与多脸评估
+
+自动参数任务使用原图和增强图检测、同位置五点对齐与 0.7/0.3 特征融合。每张脸各自进行阈值决策；增强额外检测保留且按 IoU 去重。注册仍要求单脸。图片级多脸评估只在得到全部独立预测后按精确 person_id 判断任一命中；不会将标签传给融合或身份匹配。新实验冻结算法版本、识别策略、融合权重与计分协议，旧记录不重算。多脸识别记录保存逐脸判定，删除身份也清理这些逐脸判定及其候选涉及的记录。
+
+`face_encodings` 保存兼容模型升级后的派生人脸特征，以 sample_id 和 model_fingerprint 为联合主键，随 FaceSample 删除级联清理。原始照片、FaceSample 特征和历史实验保持不变；启动阶段预先建立新版图库。

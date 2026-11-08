@@ -1,4 +1,5 @@
 import hashlib
+from contextlib import contextmanager
 import importlib.metadata
 import json
 import platform
@@ -7,14 +8,15 @@ from pathlib import Path
 import threading
 import time
 from datetime import datetime, timezone
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from app.algorithms.enhancement import enhance
+from app.algorithms.enhancement import enhance, resolve_options
+from app.algorithms.recognition import recognition_faces, RECOGNITION_POLICY, PREVIOUS_RECOGNITION_POLICY, LEGACY_FUSION_POLICY, ENHANCED_WEIGHT, LOCAL_POLICIES, METHOD_ENHANCED_WEIGHTS
 from app.algorithms.face_detector import engine
 from app.algorithms.face_recognizer import match
 from app.algorithms.metrics import aggregate, score_image, calibrate
 from app.algorithms.evidence import assess_target
-from app.core.config import DATA, ALGORITHM_VERSION
+from app.core.config import DEFAULT_THRESHOLD_POLICY, DATA, ALGORITHM_VERSION
 from app.core.errors import AppError
 from app.database.session import SessionLocal
 from app.models.entities import Dataset, Experiment, ExperimentResult, Calibration, Person
@@ -23,7 +25,25 @@ from app.services.images import decode
 from app.services.persons import gallery
 
 RUN_LOCK = threading.Lock()
+CREATION_LOCK = threading.RLock()
 SCENES = ["normal", "low_light", "backlight", "infrared", "overexposed", "uneven"]
+
+
+@contextmanager
+def experiment_creation(db: Session):
+    # Cover validation/storage through the queued-record commit. Image uploads
+    # reenter this guard when they call create_experiment in the same worker.
+    if not CREATION_LOCK.acquire(blocking=False):
+        raise AppError("已有测试正在创建，请等待当前操作完成", 409)
+    try:
+        active = db.scalar(
+            select(Experiment.id).where(Experiment.status.in_(["queued", "running"])).limit(1)
+        )
+        if active is not None:
+            raise AppError("已有测试正在排队或运行，请等待当前测试结束后再创建", 409)
+        yield
+    finally:
+        CREATION_LOCK.release()
 
 
 def gallery_digest(templates: list[dict]) -> str:
@@ -68,6 +88,11 @@ def environment() -> dict:
 
 
 def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experiment, list[dict]]:
+    with experiment_creation(db):
+        return _create_experiment(db, request)
+
+
+def _create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experiment, list[dict]]:
     dataset = db.get(Dataset, request.dataset_id)
     if dataset is None:
         raise AppError("数据集不存在", 404)
@@ -98,7 +123,13 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
     methods = list(dict.fromkeys(request.methods))
     thresholds = {method: request.threshold for method in methods}
     calibration_real = False
-    calibration_note = "未经校准的手动固定阈值，仅探索性评估"
+    default_threshold = "threshold" not in request.model_fields_set
+    threshold_policy = DEFAULT_THRESHOLD_POLICY if default_threshold else "explicit"
+    calibration_note = (
+        "预置公开模拟数据开发集校准值；不是当前图库或真实场景验收校准"
+        if default_threshold and DEFAULT_THRESHOLD_POLICY != "legacy-uncalibrated"
+        else "未经校准的手动固定阈值，仅探索性评估"
+    )
     if request.calibration_id is not None:
         if dataset.split != "test":
             raise AppError("校准结果仅能应用于测试集")
@@ -114,6 +145,13 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
             != [engine.detection_size, engine.detection_size]
         ):
             raise AppError("校准后模型、算法或身份库已改变，须重新校准", 409)
+        if any(
+            previous.config["parameters"].get(method, {}).get("auto_parameters", False)
+            != request.auto_parameters
+            for method in methods
+            if method != "original"
+        ):
+            raise AppError("校准与测试的自动参数模式不同，须重新校准", 409)
         if any(method not in calibration.thresholds for method in methods):
             raise AppError("校准记录未覆盖所选增强方法")
         thresholds = {method: calibration.thresholds[method] for method in methods}
@@ -128,19 +166,34 @@ def create_experiment(db: Session, request: ExperimentRequest) -> tuple[Experime
         "split": dataset.split,
         "methods": methods,
         "thresholds": thresholds,
+        "threshold_policy": "calibration" if request.calibration_id is not None else threshold_policy,
         "calibration_id": request.calibration_id,
         "calibration_note": calibration_note,
         "calibration_real_capture": calibration_real,
         "gallery_digest": fingerprint,
         "gallery_ids": sorted(known),
         "environment": environment(),
-        "parameters": {m: EnhanceOptions(method=m).model_dump() for m in methods},
+        "parameters": {
+            m: EnhanceOptions(method=m, auto_parameters=request.auto_parameters).model_dump()
+            for m in methods
+        },
+        "parameter_policy": "image-statistics-v1" if request.auto_parameters else "fixed",
+        "recognition_policy": RECOGNITION_POLICY if request.auto_parameters else "processed-v1",
+        "enhanced_feature_weight": None,
+        "recognition_parameters": {
+            m: ({"mode": "face_local_mirror", **LOCAL_POLICIES[m]}
+                if m in LOCAL_POLICIES else {"mode": "aligned_fusion", "enhanced_weight": METHOD_ENHANCED_WEIGHTS.get(m, ENHANCED_WEIGHT)}
+                if m != "original" else {"mode": "original"})
+            for m in methods
+        } if request.auto_parameters else {},
         "protocol": dataset.manifest.get("protocol", {}),
         "localization_protocol": dataset.manifest.get("localization_protocol", "iou"),
         "iou_threshold": 0.5,
         "detector_threshold": 0.5,
         "detector_size": [engine.detection_size, engine.detection_size],
     }
+    if request.name:
+        config["display_name"] = request.name
     record = Experiment(
         dataset_id=dataset.id, total=len(dataset.manifest["items"]) * len(methods), config=config
     )
@@ -173,12 +226,29 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                 image = decode(
                     (DATA / "datasets" / dataset.directory / item["stored_file"]).read_bytes()
                 )
+                policy = record.config.get("recognition_policy", "processed-v1")
+                shared_faces, shared_ms = None, 0.0
+                if policy in (RECOGNITION_POLICY, PREVIOUS_RECOGNITION_POLICY):
+                    shared_start = time.perf_counter()
+                    shared_faces = engine.infer(image)
+                    shared_ms = (time.perf_counter() - shared_start) * 1000
                 for method in record.config["methods"]:
                     start = time.perf_counter()
-                    processed, steps = enhance(
-                        image, EnhanceOptions(**record.config["parameters"][method])
+                    requested = EnhanceOptions(**record.config["parameters"][method])
+                    resolved = resolve_options(image, requested)
+                    processed, steps = enhance(image, resolved)
+                    if requested.auto_parameters and method != "original":
+                        steps = ["自动参数 " + step for step in steps]
+                    faces = shared_faces if method == "original" and shared_faces is not None else recognition_faces(
+                        image,
+                        processed,
+                        policy if method != "original" else "processed-v1",
+                        record.config.get("enhanced_feature_weight") if record.config.get("enhanced_feature_weight") is not None else ENHANCED_WEIGHT,
+                        original_faces=shared_faces,
+                        enhancement_method=method,
                     )
-                    faces = engine.infer(processed)
+                    if policy in (RECOGNITION_POLICY, PREVIOUS_RECOGNITION_POLICY, LEGACY_FUSION_POLICY) and method != "original":
+                        steps.append("对齐后按人脸处理光照并融合镜像特征" if policy == RECOGNITION_POLICY and method in LOCAL_POLICIES else "同位置对齐，融合原图与增强特征")
                     predictions = [
                         {k: v for k, v in f.items() if k != "embedding"}
                         | {
@@ -188,30 +258,43 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                         }
                         for f in faces
                     ]
-                    elapsed = (time.perf_counter() - start) * 1000
+                    method_ms = (time.perf_counter() - start) * 1000
+                    # Charge the original inference to EVERY method, including
+                    # cache hits: these are standalone costs, not free baselines.
+                    elapsed = method_ms + shared_ms
                     detail = score_image(
                         item["faces"],
                         predictions,
                         elapsed,
                         protocol=record.config.get("localization_protocol", "iou"),
                     )
+                    detail["timing"] = {
+                        "original_inference_ms": shared_ms,
+                        "method_ms": method_ms,
+                        "accounting": "standalone_with_shared_original" if shared_faces is not None else "standalone",
+                    }
                     detail["capture_id"] = item["capture_id"]
                     detail["steps"] = steps
+                    detail["parameters"] = resolved.model_dump()
                     if record.config.get("kind") == "image_batch":
                         truth_id = item["faces"][0]["person_id"]
                         prediction = predictions[0]["match"] if len(predictions) == 1 else None
+                        multi_policy = (
+                            record.config.get("localization_protocol") == "image_identity_presence"
+                        )
+                        accepted = [p["match"] for p in predictions if p["match"]["confirmed"]]
                         if not predictions:
                             outcome = "no_face"
-                        elif len(predictions) > 1:
+                        elif len(predictions) > 1 and not multi_policy:
                             outcome = "multiple_faces"
                         elif truth_id is None:
                             outcome = (
-                                "false_accept" if prediction["confirmed"] else "unknown_rejected"
+                                "false_accept" if accepted else "unknown_rejected"
                             )
                         elif detail["correct"]:
                             outcome = "correct"
                         else:
-                            outcome = "wrong_identity" if prediction["confirmed"] else "rejected"
+                            outcome = "wrong_identity" if accepted else "rejected"
                         detail.update(
                             {
                                 "filename": item["display_file"],
@@ -223,6 +306,16 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                                 "outcome": outcome,
                             }
                         )
+                        if multi_policy:
+                            detail["face_count"] = len(predictions)
+                            detail["recognized_identities"] = list({
+                                m["person_id"]: {"person_id": m["person_id"], "name": m["name"]}
+                                for m in accepted
+                            }.values())
+                            detail["predicted_name"] = "、".join(
+                                identity["name"] for identity in detail["recognized_identities"]
+                            ) or ("未知身份" if predictions else "未检测到人脸")
+                            detail["similarity"] = detail["decisions"][0]["score"]
                     grouped[method].append((item["scene"], detail))
                     db.add(
                         ExperimentResult(
@@ -244,7 +337,7 @@ def run_experiment(experiment_id: int, templates: list[dict]) -> None:
                         r.get("outcome") == "no_face" for _, r in rows
                     )
                     summary[method]["overall"]["multiple_faces"] = sum(
-                        r.get("outcome") == "multiple_faces" for _, r in rows
+                        len(r["predictions"]) > 1 for _, r in rows
                     )
                 actual = dataset.manifest["real_capture"] and record.config["split"] == "test"
                 calibrated = record.config["calibration_id"] is not None and record.config.get(
@@ -285,6 +378,8 @@ def save_calibration(db: Session, experiment_id: int, target_far: float) -> Cali
     record = db.get(Experiment, experiment_id)
     if record is None or record.status != "completed" or record.config["split"] != "calibration":
         raise AppError("必须选择已完成的 calibration 实验")
+    if record.config.get("localization_protocol") == "image_identity_presence":
+        raise AppError("多脸图片的存在性评估不可用于单脸阈值校准，请使用逐脸标注校准集", 422)
     details = {}
     for method in record.config["methods"]:
         rows = db.scalars(
@@ -308,10 +403,51 @@ def save_calibration(db: Session, experiment_id: int, target_far: float) -> Cali
     return result
 
 
+def error_summary(db: Session, record: Experiment) -> dict | None:
+    """Count saved outcomes across the entire batch, including historical runs."""
+    if record.config.get("kind") != "image_batch":
+        return None
+    error_types = ("no_face", "multiple_faces", "rejected", "wrong_identity", "false_accept")
+
+    def empty() -> dict:
+        return {
+            "images": 0,
+            "total_errors": 0,
+            "unclassified": 0,
+            "counts": dict.fromkeys(error_types, 0),
+        }
+
+    summary = {
+        method: {"overall": empty(), "scenes": {scene: empty() for scene in SCENES}}
+        for method in record.config["methods"]
+    }
+    outcome = ExperimentResult.detail["outcome"].as_string()
+    rows = db.execute(
+        select(ExperimentResult.method, ExperimentResult.scene, outcome, func.count())
+        .where(ExperimentResult.experiment_id == record.id)
+        .group_by(ExperimentResult.method, ExperimentResult.scene, outcome)
+    )
+    for method, scene, kind, count in rows:
+        if method not in summary:
+            continue
+        scopes = [summary[method]["overall"]]
+        if scene in summary[method]["scenes"]:
+            scopes.append(summary[method]["scenes"][scene])
+        for stats in scopes:
+            stats["images"] += count
+            if kind in error_types:
+                stats["counts"][kind] += count
+                stats["total_errors"] += count
+            elif kind not in ("correct", "unknown_rejected"):
+                stats["unclassified"] += count
+    return summary
+
+
 def experiment_view(record: Experiment) -> dict:
     return {
         "id": record.id,
         "dataset_id": record.dataset_id,
+        "name": record.config.get("display_name") or record.config["dataset"]["name"],
         "status": record.status,
         "progress": record.progress,
         "total": record.total,

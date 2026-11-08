@@ -78,16 +78,18 @@ def download(archive: Path) -> None:
     temporary.replace(archive)
 
 
-def prepare(archive: Path, destination: Path) -> dict:
+def prepare(archive: Path, destination: Path, people_limit: int = 120, selected_people: list[str] | None = None) -> dict:
     groups = defaultdict(list)
     with tarfile.open(archive, "r:gz") as source:
         for item in source.getmembers():
             parts = item.name.split("/")
             if item.isfile() and len(parts) == 3 and parts[-1].lower().endswith(".jpg"):
                 groups[parts[-2]].append(item)
-        people = sorted(name for name, images in groups.items() if len(images) >= 5)[:120]
-        if len(people) != 120:
-            raise RuntimeError("原始包不足 120 个各有至少 5 张照片的身份")
+        eligible = sorted(name for name, images in groups.items() if len(images) >= 5)
+        people = eligible[:people_limit] if selected_people is None else sorted(selected_people)
+        if len(people) != people_limit or len(set(people)) != people_limit or not set(people) <= set(eligible):
+            raise RuntimeError("原始包中符合每人至少 5 张要求的身份数量不足")
+        prefix = f"lfw_{people_limit}_demo"
         provenance = []
         staging = destination.with_suffix(".tmp.zip")
         with zipfile.ZipFile(staging, "w", zipfile.ZIP_DEFLATED) as output:
@@ -96,7 +98,7 @@ def prepare(archive: Path, destination: Path) -> dict:
                     original = source.extractfile(item).read()
                     content = single_person_image(original)
                     role = "gallery" if index < 2 else "query"
-                    path = f"lfw_120_demo/{role}/LFW_{name}/{Path(item.name).stem}.png"
+                    path = f"{prefix}/{role}/LFW_{name}/{Path(item.name).stem}.png"
                     output.writestr(path, content)
                     provenance.append(
                         {
@@ -107,11 +109,11 @@ def prepare(archive: Path, destination: Path) -> dict:
                         }
                     )
             protocol = {
-                "dataset": "LFW funneled, deterministic 120-person demonstration subset",
-                "persons": 120,
-                "gallery_images": 240,
-                "query_images": 360,
-                "selection": "First 120 names in lexical order with at least five images; first two files for gallery, next three for query; no model-based filtering",
+                "dataset": f"LFW funneled, deterministic {people_limit}-person demonstration subset",
+                "persons": people_limit,
+                "gallery_images": people_limit * 2,
+                "query_images": people_limit * 3,
+                "selection": f"First {people_limit} eligible names in lexical order; first two files for gallery, next three for query; no query-score filtering. " + ("References checked for exactly one detectable face." if selected_people is not None else "No model-based filtering."),
                 "source_url": SOURCE,
                 "source_page": SOURCE_PAGE,
                 "source_sha256": SOURCE_SHA256,
@@ -130,14 +132,16 @@ def prepare(archive: Path, destination: Path) -> dict:
                 ],
             }
             output.writestr(
-                "lfw_120_demo/protocol.json", json.dumps(protocol, ensure_ascii=False, indent=2)
+                f"{prefix}/protocol.json", json.dumps(protocol, ensure_ascii=False, indent=2)
             )
             output.writestr(
-                "lfw_120_demo/provenance.json", json.dumps(provenance, ensure_ascii=False, indent=2)
+                f"{prefix}/provenance.json", json.dumps(provenance, ensure_ascii=False, indent=2)
             )
             output.writestr(
-                "lfw_120_demo/使用说明.txt",
-                "LFW 扩充数据：120 人、600 张彩色照片\n\n1. 身份库管理 → 批量导入，选择 gallery：120 人，每人 2 张。\n2. 实验评估 → 多图识别测试 → 选择查询目录，选择 query：360 张，每人 3 张。\n3. 检查自动匹配的身份；未注册成功的人员请先处理，不能把待标注直接当作未知。\n4. 选择不增强或 Gamma/CLAHE/Retinex，开始多图测试，查看正确率、逐张结果与 CSV。\n\n图库与查询使用不同原始文件。所有图固定中心裁剪 x=65:185、y=55:210，加 64px 灰色边框，排除外围背景人脸；不使用 AI 重绘，未按查询识别分数筛选。\n不含真实姓名之外的私人身份资料；姓名标签来自公开 LFW。\n来源："
+                f"{prefix}/使用说明.txt",
+                f"LFW 身份数据：{people_limit} 人、{people_limit * 5} 张照片\n\n"
+                f"gallery：{people_limit} 人，每人 2 张，导入身份库。query：每人另外 3 张，供测试使用。\n"
+                "固定中心裁剪并加中性边框；不按查询识别结果筛选，不使用 AI 改脸。\n来源："
                 + SOURCE_PAGE
                 + "\n\n"
                 + "\n".join(protocol["limitations"]),

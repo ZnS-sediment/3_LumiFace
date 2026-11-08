@@ -60,3 +60,57 @@ def test_unknown_rejection_and_empty_gallery():
     assert match([0, 1], people, 0.45)["person_id"] is None
     assert match([1, 0], people, 0.45)["confirmed"]
     assert match([1, 0], [], 0.45)["similarity"] is None
+
+
+def test_automatic_gamma_responds_to_brightness_and_preserves_input():
+    from app.algorithms.enhancement import resolve_options
+
+    dark = np.full((64, 96, 3), 25, np.uint8)
+    bright = np.full_like(dark, 180)
+    options = EnhanceOptions(method="gamma", auto_parameters=True)
+    dark_options = resolve_options(dark, options)
+    bright_options = resolve_options(bright, options)
+    assert dark_options.gamma < 1 < bright_options.gamma
+    enhanced, steps = enhance(dark, options)
+    assert 100 < enhanced.mean() < 125
+    assert (dark == 25).all() and options.auto_parameters
+    assert "自动参数" in steps[0]
+    assert resolve_options(dark, options) == dark_options
+
+
+def test_automatic_clahe_limits_noise_and_retinex_uses_size_and_unevenness():
+    from app.algorithms.enhancement import resolve_options
+
+    rng = np.random.default_rng(104)
+    uniform = np.full((128, 128, 3), 100, np.uint8)
+    noisy = np.clip(
+        uniform.astype(float) + rng.normal(0, 18, uniform.shape[:2])[:, :, None], 0, 255
+    ).astype(np.uint8)
+    clahe_options = EnhanceOptions(method="clahe", auto_parameters=True)
+    assert (
+        resolve_options(noisy, clahe_options).clip_limit
+        < resolve_options(uniform, clahe_options).clip_limit
+    )
+    uneven = uniform.copy()
+    uneven[:, :64] = 20
+    uneven[:, 64:] = 180
+    retinex_options = EnhanceOptions(method="retinex", auto_parameters=True)
+    flat = resolve_options(uniform, retinex_options)
+    shadow = resolve_options(uneven, retinex_options)
+    large = resolve_options(np.repeat(np.repeat(uneven, 2, axis=0), 2, axis=1), retinex_options)
+    assert flat.strength < shadow.strength and flat.sigma < shadow.sigma < large.sigma
+    assert 3 <= large.sigma <= 100 and 0 <= shadow.strength <= 1
+
+
+@pytest.mark.parametrize("method", ["gamma", "clahe", "retinex"])
+@pytest.mark.parametrize("value", [0, 25, 120, 255])
+def test_automatic_extremes_are_finite_and_fixed_mode_is_compatible(method, value):
+    from app.algorithms.enhancement import resolve_options
+
+    image = np.full((8, 8, 3), value, np.uint8)
+    options = EnhanceOptions(method=method, auto_parameters=True)
+    output, _ = enhance(image, options)
+    assert output.dtype == np.uint8 and output.shape == image.shape
+    assert np.array_equal(output, enhance(image, resolve_options(image, options))[0])
+    fixed = EnhanceOptions(method=method)
+    assert resolve_options(image, fixed) == fixed

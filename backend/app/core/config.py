@@ -12,12 +12,17 @@ MODEL_ROOT = Path(
     os.environ.get("LUMIFACE_MODELS", str(ROOT / "runtime" / "insightface"))
 ).resolve()
 MODEL_NAME = "buffalo_l"
+RECOGNITION_BACKBONE = os.environ.get("LUMIFACE_RECOGNIZER", "glintr100")
+if RECOGNITION_BACKBONE not in ("w600k_r50", "glintr100"):
+    raise ValueError("LUMIFACE_RECOGNIZER must be w600k_r50 or glintr100")
 MAX_UPLOAD = 12 * 1024 * 1024
 MAX_PIXELS = 16_000_000
 MAX_ARCHIVE = 100 * 1024 * 1024
-MAX_DATASET_IMAGES = 500
-DEFAULT_THRESHOLD = 0.45  # Demonstration default, not an empirically calibrated threshold.
-ALGORITHM_VERSION = "lumiface-1.0"
+MAX_DATASET_IMAGES = 1500
+# Frozen by scripts/calibrate_default_threshold.py; never fitted to a submitted test.
+DEFAULT_THRESHOLD = 0.435 if RECOGNITION_BACKBONE == "glintr100" else 0.45
+DEFAULT_THRESHOLD_POLICY = "glintr100-development-balanced-v1" if RECOGNITION_BACKBONE == "glintr100" else "legacy-uncalibrated"
+ALGORITHM_VERSION = "lumiface-1.4"
 
 
 def prepare_storage() -> None:

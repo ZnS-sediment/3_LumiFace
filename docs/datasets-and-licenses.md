@@ -17,11 +17,11 @@
 
 ## 预训练模型
 
-使用 InsightFace 0.7.3 的 buffalo_l 检测和识别权重。官方说明库代码采用 MIT，预训练模型限非商业研究。项目用途为教学研究；未经额外许可不转为商业系统。
+使用 InsightFace 0.7.3 的 buffalo_l 检测权重，以及 antelopev2 的 glintr100 识别权重；旧 w600k_r50 保留用于历史复现。官方说明库代码采用 MIT，预训练模型限非商业研究。项目用途为教学研究；未经额外许可不转为商业系统。
 
 [InsightFace 模型与授权](https://github.com/deepinsight/insightface/blob/master/python-package/docs/model_zoo.md)
 
-下载脚本先尝试 v0.7 release，再尝试官方 model-zoo release；两者均属于 deepinsight/insightface。运行时不会因为缺权重静默联网或替换模型。此次实际来源为：
+下载脚本先尝试官方 model-zoo release，再尝试 v0.7 release；两者均属于 deepinsight/insightface。运行时不会因为缺权重静默联网或替换模型。此次实际来源为：
 
 `https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip`
 
@@ -54,4 +54,7 @@ Yale 原始数据引用 Athinodoros Georghiades, Peter Belhumeur, David Kriegman
 
 ## AT&T / ORL 功能演示数据（2026-10-17）
 
-已从[剑桥大学托管页](https://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html)取得 40 个匿名身份、400 张照片，按来源要求致谢 AT&T Laboratories Cambridge。原始图像和来源页留在 datasets/raw/att-faces；本地整理目录为 datasets/att_faces_demo。身份编号不是真实姓名，转换与固定边框、注册/查询文件划分详见 web-identity-import.md，不作为实景目标证据。
+已从[剑桥大学托管页](https://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html)取得 40 个匿名身份、400 张照片，按来源要求致谢 AT&T Laboratories Cambridge。原始图像和来源页留在 datasets/raw/att-faces；本地整理目录为 datasets/att_faces_demo。身份编号不是真实姓名，该旧包已从网页下线，归档保留，不作为实景目标证据。当前 LFW 统一数据包见 multi-image-evaluation.md。
+
+
+2026-11-04 识别头更新：官方 [antelopev2.zip](https://github.com/deepinsight/insightface/releases/download/model-zoo/antelopev2.zip) 中只安装 `glintr100.onnx`（260665334 字节），SHA-256 `4ab1d6435d639628a6f3e5008dd4f929edf4c4124b1a7169e1048f9fef534cdf`。权重用途仍限非商业研究，当前只声称对本机数据的实测效果，不把公开数据成绩当作真实采集验收。

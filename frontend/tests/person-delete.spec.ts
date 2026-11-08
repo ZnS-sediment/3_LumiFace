@@ -24,9 +24,9 @@ test('身份批量删除：全选、搜索清空、取消、失败重试与实�
           mimeType: 'image/png',
           buffer: execFileSync(root + '/.venv/bin/python', [
             '-c',
-            'import sys,zipfile; sys.stdout.buffer.write(zipfile.ZipFile(sys.argv[1]).read(sys.argv[2]))',
-            root + '/datasets/att_faces_demo.zip',
-            `att_faces_demo/gallery/ATT_s0${i}/01.png`,
+            'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); names=sorted(n for n in z.namelist() if "/gallery/" in n); sys.stdout.buffer.write(z.read(names[int(sys.argv[2])*2]))',
+            root + '/datasets/lfw_120_demo.zip',
+            String(i - 1),
           ]),
         },
       },

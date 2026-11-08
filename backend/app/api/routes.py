@@ -1,18 +1,19 @@
-import csv
-import io
 import json
 import math
 import time
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Query, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Header, Query, UploadFile, Request
 from fastapi.responses import FileResponse, Response as RawResponse
+from starlette.concurrency import run_in_threadpool
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from pydantic import ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from app.algorithms.enhancement import enhance
+from app.algorithms.enhancement import enhance, resolve_options
 from app.algorithms.face_detector import annotate, detect, engine, public_faces
-from app.algorithms.face_recognizer import match
+from app.algorithms.face_recognizer import match, summarize_matches
+from app.algorithms.recognition import recognition_faces, RECOGNITION_POLICY
 from app.algorithms.light_analysis import analyze
-from app.core.config import DATA, MAX_ARCHIVE, ROOT, DEFAULT_THRESHOLD
+from app.core.config import DATA, MAX_ARCHIVE, ROOT, DEFAULT_THRESHOLD, DEFAULT_THRESHOLD_POLICY, MAX_DATASET_IMAGES
 from app.core.errors import AppError
 from app.database.session import get_db
 from app.models.entities import (
@@ -31,9 +32,11 @@ from app.schemas.contracts import (
     PersonEdit,
     PersonBatchDelete,
     ExperimentRequest,
+    ExperimentRename,
     CalibrationRequest,
     ImageTestRequest,
 )
+from app.services import directory_picker
 from app.services.images import read_upload, data_url, decode
 from app.services.persons import register, get_person, person_view, gallery, delete_people
 from app.services.datasets import import_dataset, dataset_view
@@ -41,6 +44,7 @@ from app.services.experiments import (
     create_experiment,
     run_experiment,
     experiment_view,
+    error_summary,
     save_calibration,
 )
 
@@ -52,6 +56,39 @@ def options_from_json(raw: str) -> EnhanceOptions:
         return EnhanceOptions.model_validate_json(raw)
     except ValidationError as exc:
         raise AppError(f"增强参数无效：{exc}", 422) from exc
+
+
+@router.get("/system/directory-picker", response_model=Response)
+def directory_picker_status() -> dict:
+    return {"data": {"available": directory_picker.available()}}
+
+
+@router.post("/system/directory-picker", response_model=Response)
+def select_identity_directory(x_lumiface_picker: str = Header("")) -> dict:
+    if x_lumiface_picker != "1":
+        raise AppError("请从批量导入身份窗口选择目录", 403)
+    return {"data": directory_picker.choose()}
+
+
+@router.get("/system/directory-picker/{token}/photos/{index}")
+def selected_photo(token: str, index: int, preview: bool = False) -> RawResponse:
+    raw, media_type = directory_picker.read_photo(token, index)
+    if preview:
+        import cv2
+
+        image = decode(raw)
+        h, w = image.shape[:2]
+        scale = min(1, 96 / max(h, w))
+        image = cv2.resize(image, (max(1, round(w * scale)), max(1, round(h * scale))))
+        _, encoded = cv2.imencode(".jpg", image, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        raw, media_type = encoded.tobytes(), "image/jpeg"
+    return RawResponse(raw, media_type=media_type, headers={"Cache-Control": "private, no-store"})
+
+
+@router.delete("/system/directory-picker/{token}", response_model=Response)
+def release_identity_directory(token: str) -> dict:
+    directory_picker.release(token)
+    return {"data": True}
 
 
 @router.get("/system/overview", response_model=Response)
@@ -71,6 +108,11 @@ def overview(db: Session = Depends(get_db)) -> dict:
     }
 
 
+@router.get("/system/model", response_model=Response)
+def model_status() -> dict:
+    return {"data": engine.status()}
+
+
 @router.post("/system/model/load", response_model=Response)
 def load_model() -> dict:
     engine.load()
@@ -88,7 +130,10 @@ def process(file: UploadFile = File(...), options: str = Form("{}")) -> dict:
     params = options_from_json(options)
     _, image = read_upload(file)
     start = time.perf_counter()
-    processed, steps = enhance(image, params)
+    resolved = resolve_options(image, params)
+    processed, steps = enhance(image, resolved)
+    if params.auto_parameters:
+        steps = ["自动参数 " + step for step in steps]
     elapsed = (time.perf_counter() - start) * 1000
     return {
         "data": {
@@ -98,7 +143,8 @@ def process(file: UploadFile = File(...), options: str = Form("{}")) -> dict:
             "after": analyze(processed),
             "steps": steps,
             "elapsed_ms": elapsed,
-            "parameters": params.model_dump(),
+            "parameters": resolved.model_dump(),
+            "parameter_mode": "auto" if params.auto_parameters else "fixed",
         }
     }
 
@@ -110,18 +156,16 @@ def face_detect(
     params = options_from_json(options)
     _, image = read_upload(file)
     engine.load()
-    original = detect(image)
     start = time.perf_counter()
     processed, steps = enhance(image, params)
     enhancement_ms = (time.perf_counter() - start) * 1000
-    enhanced = detect(processed)
-    enhanced["enhancement_ms"] = enhancement_ms
-    enhanced["total_ms"] = enhanced["elapsed_ms"] + enhancement_ms
+    result = detect(processed)
+    result["enhancement_ms"] = enhancement_ms
+    result["total_ms"] = result["elapsed_ms"] + enhancement_ms
     db.add(
         DetectionTask(
             counts={
-                "original": original["count"],
-                "enhanced": enhanced["count"],
+                "count": result["count"],
                 "method": params.method,
             }
         )
@@ -129,8 +173,7 @@ def face_detect(
     db.commit()
     return {
         "data": {
-            "original": original,
-            "enhanced": enhanced,
+            **result,
             "steps": steps,
             "analysis": analyze(image),
         }
@@ -154,38 +197,36 @@ def person_register(
 
 @router.get("/person", response_model=Response)
 def person_list(q: str = Query("", max_length=80), db: Session = Depends(get_db)) -> dict:
-    rows = db.scalars(
-        select(Person).where(Person.name.contains(q, autoescape=True)).order_by(Person.id.asc())
-    )
-    return {"data": [person_view(p) for p in rows]}
-
-
-@router.get("/person/demo-dataset")
-def person_demo_dataset() -> FileResponse:
-    archive = ROOT / "datasets" / "att_faces_demo.zip"
-    if not archive.is_file():
-        raise AppError(
-            "演示数据包尚未准备，请在项目目录运行 scripts/prepare_att_faces_demo.py", 404
+    rows = db.execute(
+        select(
+            Person.id,
+            Person.name,
+            Person.note,
+            Person.created_at,
+            func.count(FaceSample.id).label("sample_count"),
         )
-    return FileResponse(archive, media_type="application/zip", filename="att_faces_demo.zip")
-
-
-@router.get("/person/simulated-dataset")
-def person_simulated_dataset() -> FileResponse:
-    archive = ROOT / "datasets" / "att_lighting_three_scenes.zip"
-    if not archive.is_file():
-        raise AppError("三类光照数据包尚未准备，请运行 scripts/prepare_three_scene_demo.py", 404)
-    return FileResponse(
-        archive, media_type="application/zip", filename="att_lighting_three_scenes.zip"
-    )
+        .outerjoin(FaceSample, FaceSample.person_id == Person.id)
+        .where(Person.name.contains(q, autoescape=True))
+        .group_by(Person.id)
+        .order_by(Person.id.asc())
+    ).mappings()
+    return {"data": [{**row, "created_at": row["created_at"].isoformat()} for row in rows]}
 
 
 @router.get("/person/lfw-dataset")
 def person_lfw_dataset() -> FileResponse:
-    archive = ROOT / "datasets" / "lfw_120_demo.zip"
+    archive = ROOT / "datasets" / "lfw_120_lighting.zip"
     if not archive.is_file():
-        raise AppError("LFW 扩充数据包尚未准备，请运行 scripts/prepare_lfw_demo.py", 404)
-    return FileResponse(archive, media_type="application/zip", filename="lfw_120_demo.zip")
+        raise AppError("原 120 人数据尚未准备，请运行 scripts/prepare_lfw_lighting.py", 404)
+    return FileResponse(archive, media_type="application/zip", filename=archive.name)
+
+
+@router.get("/person/lfw-new-dataset")
+def person_lfw_new_dataset() -> FileResponse:
+    archive = ROOT / "datasets" / "lfw_280_new_lighting.zip"
+    if not archive.is_file():
+        raise AppError("新增人员数据尚未准备，请运行 scripts/prepare_lfw_disjoint.py", 404)
+    return FileResponse(archive, media_type="application/zip", filename=archive.name)
 
 
 @router.post("/person/batch-delete", response_model=Response)
@@ -238,10 +279,17 @@ def recognize(
     templates = gallery(db, target)
     start = time.perf_counter()
     processed, steps = enhance(image, params)
-    faces = engine.infer(processed)
-    if len(faces) != 1:
-        raise AppError(f"身份确认须恰有一张人脸，当前检测到 {len(faces)} 张", 422)
-    result = match(faces[0]["embedding"], templates, threshold)
+    policy = (
+        RECOGNITION_POLICY
+        if params.auto_parameters and params.method != "original" else "processed-v1"
+    )
+    faces = recognition_faces(image, processed, policy, enhancement_method=params.method)
+    if policy == RECOGNITION_POLICY:
+        steps.append("对齐后按人脸处理光照并融合镜像特征" if params.method == "clahe" else "同位置对齐，融合原图与增强特征")
+    if not faces:
+        raise AppError("未检测到人脸，请更换图片", 422)
+    matches = [match(face["embedding"], templates, threshold) for face in faces]
+    result = summarize_matches(matches, threshold)
     elapsed = (time.perf_counter() - start) * 1000
     result.update(
         {
@@ -250,6 +298,8 @@ def recognize(
             "mode": "verify" if target is not None else "identify",
             "model_fingerprint": engine.fingerprint,
             "target_person_id": target,
+            "face_matches": matches,
+            "recognition_policy": policy,
         }
     )
     db.add(RecognitionRecord(person_id=result["person_id"], mode=result["mode"], result=result))
@@ -259,10 +309,13 @@ def recognize(
             **result,
             "original": data_url(image),
             "enhanced": data_url(annotate(processed, faces)),
-            "faces": public_faces(processed, faces),
+            "faces": [
+                {**face, "match": decision}
+                for face, decision in zip(public_faces(processed, faces), matches)
+            ],
             "steps": steps,
             "analysis": analyze(image),
-            "threshold_note": "手动阈值仅用于演示；正式报告请使用独立校准集",
+            "threshold_policy": DEFAULT_THRESHOLD_POLICY if threshold == DEFAULT_THRESHOLD else "explicit",
         }
     }
 
@@ -343,21 +396,28 @@ def experiment_run(
 
 
 @router.post("/experiment/images", response_model=Response)
-def experiment_images(
+async def experiment_images(
+    http_request: Request,
     background: BackgroundTasks,
-    files: list[UploadFile] = File(...),
-    labels: str = Form(...),
     db: Session = Depends(get_db),
 ) -> dict:
     from app.services.image_tests import create_image_test
 
-    try:
-        request = ImageTestRequest.model_validate_json(labels)
-    except ValidationError as exc:
-        raise AppError(f"图片标签或测试参数无效：{exc}", 422) from exc
-    record, templates = create_image_test(db, files, request)
+    # Starlette defaults to 1000 files, below the 1200 queries in one 400-person scene.
+    # Spool multipart files, bound their count and bytes, and close all handles on errors too.
+    async with http_request.form(max_files=MAX_DATASET_IMAGES, max_fields=1) as form:
+        files = form.getlist("files")
+        labels = form.get("labels")
+        if not isinstance(labels, str) or not files or any(not isinstance(f, StarletteUploadFile) for f in files):
+            raise AppError("请提交测试图片及对应的身份标签", 422)
+        try:
+            request = ImageTestRequest.model_validate_json(labels)
+        except ValidationError as exc:
+            raise AppError(f"图片标签或测试参数无效：{exc}", 422) from exc
+        record, templates = await run_in_threadpool(create_image_test, db, files, request)
+        result = experiment_view(record)
     background.add_task(run_experiment, record.id, templates)
-    return {"data": experiment_view(record)}
+    return {"data": result}
 
 
 @router.get("/experiment", response_model=Response)
@@ -375,7 +435,21 @@ def experiment_detail(experiment_id: int, db: Session = Depends(get_db)) -> dict
     record = db.get(Experiment, experiment_id)
     if record is None:
         raise AppError("实验不存在", 404)
-    return {"data": experiment_view(record)}
+    return {"data": {**experiment_view(record), "error_summary": error_summary(db, record)}}
+
+
+@router.patch("/experiment/{experiment_id}", response_model=Response)
+def experiment_rename(
+    experiment_id: int, request: ExperimentRename, db: Session = Depends(get_db)
+) -> dict:
+    record = db.get(Experiment, experiment_id)
+    if record is None:
+        raise AppError("实验不存在", 404)
+    if record.status in ("queued", "running"):
+        raise AppError("请等待测试结束后再重命名", 409)
+    record.config = {**record.config, "display_name": request.name}
+    db.commit()
+    return experiment_detail(experiment_id, db)
 
 
 @router.get("/experiment/{experiment_id}/results", response_model=Response)
@@ -385,7 +459,8 @@ def experiment_results(
     limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
 ) -> dict:
-    experiment_detail(experiment_id, db)
+    if db.get(Experiment, experiment_id) is None:
+        raise AppError("实验不存在", 404)
     rows = db.scalars(
         select(ExperimentResult)
         .where(ExperimentResult.experiment_id == experiment_id)
@@ -416,7 +491,10 @@ def experiment_preview(experiment_id: int, result_id: int, db: Session = Depends
     dataset = db.get(Dataset, experiment.dataset_id)
     item = dataset.manifest["items"][row.item_index]
     image = decode((DATA / "datasets" / dataset.directory / item["stored_file"]).read_bytes())
-    processed, _ = enhance(image, EnhanceOptions(**experiment.config["parameters"][row.method]))
+    processed, _ = enhance(
+        image,
+        EnhanceOptions(**row.detail.get("parameters", experiment.config["parameters"][row.method])),
+    )
     return {
         "data": {
             "original": data_url(image),
@@ -424,45 +502,6 @@ def experiment_preview(experiment_id: int, result_id: int, db: Session = Depends
             "truth": item["faces"],
         }
     }
-
-
-@router.get("/experiment/{experiment_id}/csv")
-def experiment_csv(experiment_id: int, db: Session = Depends(get_db)) -> RawResponse:
-    record = experiment_detail(experiment_id, db)["data"]
-    rows = db.scalars(
-        select(ExperimentResult)
-        .where(ExperimentResult.experiment_id == experiment_id)
-        .order_by(ExperimentResult.id)
-    )
-    buffer = io.StringIO()
-    writer = csv.writer(buffer)
-    fields = [
-        "tp",
-        "fp",
-        "fn",
-        "known",
-        "unknown",
-        "correct",
-        "false_accept",
-        "detected_known",
-        "detected_unknown",
-        "elapsed_ms",
-    ]
-    if record["config"].get("kind") == "image_batch":
-        fields.extend(["filename", "expected_name", "predicted_name", "similarity", "outcome"])
-    writer.writerow(["method", "scene", "item_index", *fields])
-    for row in rows:
-        values = [row.detail.get(k) for k in fields]
-        values = [
-            "'" + v if isinstance(v, str) and v.startswith(("=", "+", "-", "@", "\t", "\r")) else v
-            for v in values
-        ]
-        writer.writerow([row.method, row.scene, row.item_index, *values])
-    return RawResponse(
-        "\ufeff" + buffer.getvalue(),
-        media_type="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="experiment-{experiment_id}.csv"'},
-    )
 
 
 @router.delete("/experiment/{experiment_id}", response_model=Response)

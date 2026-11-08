@@ -2,7 +2,6 @@
 """Optional PyTorch diagnostics, independent of the ONNX inference pipeline."""
 
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -10,7 +9,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
 from app.services.experiments import environment
 
 report = environment()
-report["cpu_logical_cores"] = os.cpu_count()
 try:
     import torch
 

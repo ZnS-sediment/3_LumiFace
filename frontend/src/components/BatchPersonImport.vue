@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index'
 import { FolderOpened, Download } from '@element-plus/icons-vue'
-import { get } from '../api/client'
+import { api, get } from '../api/client'
 import { registrationForm, type PersonSummary } from '../api/persons'
 import { downloadJson } from '../utils/download'
 import RequiredLabel from './RequiredLabel.vue'
@@ -11,7 +11,7 @@ import { validateRequired } from '../utils/validation'
 type State = 'pending' | 'importing' | 'registered' | 'skipped' | 'failed' | 'uncertain'
 interface Row {
   name: string
-  files: File[]
+  files: SelectedPhoto[]
   preview: string
   status: State
   message: string
@@ -22,11 +22,26 @@ const emit = defineEmits<{ imported: [] }>()
 const visible = ref(false),
   running = ref(false),
   stopRequested = ref(false)
-const input = ref<HTMLInputElement>(),
-  rows = ref<Row[]>([]),
+const rows = ref<Row[]>([]),
   note = ref(''),
   selectionError = ref('')
-const selectedRoot = ref('')
+let disposed = false
+const pickerReady = ref(false),
+  nativeAvailable = ref(false),
+  choosing = ref(false)
+interface SelectedPhoto {
+  path: string
+  size: number
+  url: string
+  type: string
+}
+interface DirectorySelection {
+  path: string
+  token: string
+  files: SelectedPhoto[]
+}
+const selectionToken = ref('')
+const fullPath = ref('')
 const labels: Record<State, string> = {
   pending: '待导入',
   importing: '正在导入',
@@ -42,11 +57,17 @@ const count = (state: State) => rows.value.filter((r) => r.status === state).len
 const started = computed(() => processed.value > 0)
 const totalPhotos = computed(() => rows.value.reduce((sum, r) => sum + r.files.length, 0))
 function release() {
-  rows.value.forEach((r) => URL.revokeObjectURL(r.preview))
+  if (selectionToken.value) {
+    void fetch(`/api/system/directory-picker/${selectionToken.value}`, { method: 'DELETE' }).catch(
+      () => {},
+    )
+    selectionToken.value = ''
+  }
   rows.value = []
-  selectedRoot.value = ''
+  fullPath.value = ''
 }
 onBeforeUnmount(() => {
+  disposed = true
   stopRequested.value = true
   release()
 })
@@ -56,29 +77,52 @@ function resetImport() {
   selectionError.value = ''
   stopRequested.value = false
 }
-function open() {
+async function open() {
   visible.value = true
+  pickerReady.value = false
+  try {
+    nativeAvailable.value = (
+      await get<{ available: boolean }>('/system/directory-picker')
+    ).available
+  } catch {
+    nativeAvailable.value = false
+  } finally {
+    pickerReady.value = true
+  }
 }
 defineExpose({ open })
-function chooseDirectory() {
-  if (running.value || !input.value) return
-  input.value.value = ''
-  input.value.click()
+async function chooseDirectory() {
+  if (running.value || choosing.value || !pickerReady.value || !nativeAvailable.value) return
+  choosing.value = true
+  try {
+    const response = await api.post<{ data: DirectorySelection | null }>(
+      '/system/directory-picker',
+      null,
+      {
+        headers: { 'X-LumiFace-Picker': '1' },
+        timeout: 330000,
+      },
+    )
+    const selection = response.data.data
+    if (!selection || disposed) return
+    selectPhotos(selection)
+  } catch {
+    // The shared API client displays picker and file errors; retain the previous selection.
+  } finally {
+    choosing.value = false
+  }
 }
-function select(event: Event) {
-  const element = event.target as HTMLInputElement
-  const selected = Array.from(element.files || [])
-  element.value = ''
-  if (running.value || !selected.length) return
+function selectPhotos(selection: DirectorySelection) {
   release()
+  selectionToken.value = selection.token
   selectionError.value = ''
   stopRequested.value = false
-  const groups = new Map<string, File[]>()
+  const groups = new Map<string, SelectedPhoto[]>()
   const originalNames = new Map<string, string>()
   const errors: string[] = []
-  for (const file of selected) {
-    if (!/\.(jpe?g|png)$/i.test(file.name)) continue
-    const parts = file.webkitRelativePath.split('/')
+  for (const file of selection.files) {
+    if (!/\.(jpe?g|png)$/i.test(file.path)) continue
+    const parts = file.path.split('/')
     if (parts.length !== 3 || parts.some((p) => !p || p === '.' || p === '..')) {
       errors.push('照片必须按“所选根目录 / 人员名称 / 照片”存放，请选择正确的根目录。')
       continue
@@ -92,7 +136,7 @@ function select(event: Event) {
       continue
     }
     if (!file.size || file.size > 12 * 1024 * 1024) {
-      errors.push(`${parts[1]} / ${file.name} 为空或超过 12 MB。`)
+      errors.push(`${parts[1]} / ${parts[2]} 为空或超过 12 MB。`)
       continue
     }
     const files = groups.get(name) || []
@@ -101,7 +145,7 @@ function select(event: Event) {
   }
   if (!groups.size)
     errors.push('未找到 JPG/PNG。每个人使用一个子文件夹，请不要直接选择单个人员目录。')
-  if (groups.size > 200) errors.push('每批最多 200 人，请分批选择。')
+  if (groups.size > 500) errors.push('每批最多 500 人，请分批选择。')
   for (const [name, files] of groups)
     if (files.length > 10) errors.push(`${name} 有 ${files.length} 张照片，每人最多 10 张。`)
   if (errors.length) {
@@ -111,22 +155,32 @@ function select(event: Event) {
   rows.value = Array.from(groups, ([name, files]) => ({
     name,
     files,
-    preview: URL.createObjectURL(files[0]),
+    preview: files[0].url + '?preview=true',
     status: 'pending' as State,
     message: '',
   })).sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
-  selectedRoot.value = selected[0].webkitRelativePath.split('/')[0] + '/'
+  fullPath.value = selection.path
 }
 async function register(row: Row): Promise<State> {
-  const form = registrationForm({
-    name: row.name,
-    note: note.value,
-    files: row.files,
-  })
-  row.captureId = form.get('capture_id') as string
   const controller = new AbortController()
   const timer = window.setTimeout(() => controller.abort(), 300000)
+  let submitted = false
   try {
+    const files: File[] = []
+    for (const photo of row.files) {
+      const response = await fetch(photo.url, { signal: controller.signal })
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}))
+        throw new Error(error.message || '无法读取照片，请重新选择目录。')
+      }
+      files.push(
+        new File([await response.blob()], photo.path.split('/').pop()!, { type: photo.type }),
+      )
+    }
+    const form = registrationForm({ name: row.name, note: note.value, files })
+    row.captureId = form.get('capture_id') as string
+    row.message = '正在检测人脸并提取特征'
+    submitted = true
     const response = await fetch('/api/person/register', {
       method: 'POST',
       body: form,
@@ -150,7 +204,7 @@ async function register(row: Row): Promise<State> {
     row.personId = payload.data.id
     row.message = `已注册，参考照片 ${payload.data.sample_count} 张`
   } catch (error) {
-    row.status = 'uncertain'
+    row.status = submitted ? 'uncertain' : 'failed'
     row.message = error instanceof Error ? error.message : '连接中断，请核对身份库；未自动重试。'
   } finally {
     window.clearTimeout(timer)
@@ -158,7 +212,7 @@ async function register(row: Row): Promise<State> {
   return row.status
 }
 async function start() {
-  if (running.value || started.value) return
+  if (running.value || choosing.value || started.value) return
   if (!validateRequired([['照片根目录', rows.value.length]])) return
   running.value = true
   stopRequested.value = false
@@ -173,7 +227,7 @@ async function start() {
         continue
       }
       row.status = 'importing'
-      row.message = '正在检测人脸并提取特征'
+      row.message = '正在读取该人员照片'
       const result = await register(row)
       if (result === 'registered') existing.add(row.name)
       if (result === 'uncertain') {
@@ -184,7 +238,10 @@ async function start() {
     if (count('uncertain')) ElMessage.warning('有人员需要核对，已停止后续导入；请查看结果。')
     else if (count('failed')) ElMessage.warning('部分人员未导入，请查看逐人原因。')
     else if (stopRequested.value) ElMessage.info('已停止后续导入，成功注册的人员已保留。')
-    else ElMessage.success(`处理完成：注册 ${count('registered')} 人，跳过 ${count('skipped')} 人`)
+    else {
+      ElMessage.success(`处理完成：注册 ${count('registered')} 人，跳过 ${count('skipped')} 人`)
+      visible.value = false
+    }
   } catch {
     /* Shared API client displays connection errors before any registration. */
   } finally {
@@ -197,6 +254,7 @@ function download() {
     created_at: new Date().toISOString(),
     processed: processed.value,
     total: rows.value.length,
+    root_directory: fullPath.value,
     registered: count('registered'),
     skipped: count('skipped'),
     failed: count('failed'),
@@ -219,8 +277,8 @@ function download() {
     title="批量导入身份"
     width="940px"
     :close-on-click-modal="false"
-    :close-on-press-escape="!running"
-    :show-close="!running"
+    :close-on-press-escape="!running && !choosing"
+    :show-close="!running && !choosing"
     class="batch-import-dialog"
     @closed="resetImport"
   >
@@ -231,48 +289,49 @@ function download() {
       示例：gallery / 人员001 / 1.png、2.png　　gallery / 人员002 / 1.png
     </div>
     <p class="batch-download">
-      <a href="/api/person/demo-dataset" download="att_faces_demo.zip"
-        >下载 AT&amp;T 演示数据包（40 人）</a
-      ><span>Windows 用户下载并解压后，选择其中的 gallery 文件夹。</span>
+      <a href="/api/person/lfw-dataset?v=original120-v2" download="lfw_120_lighting.zip"
+        >下载原数据包（120 人）</a
+      ><span>240 张注册图，每种光照 360 张查询图。</span>
     </p>
     <p class="batch-download">
-      <a href="/api/person/simulated-dataset" download="att_lighting_three_scenes.zip"
-        >下载三类光照演示包（40 人）</a
-      ><span>逆光（CLAHE）、光照不均（Retinex）、低照度（Gamma）；按文件夹选择查询图。</span>
+      <a href="/api/person/lfw-new-dataset?v=new280-v1" download="lfw_280_new_lighting.zip"
+        >下载新数据包（280 人）</a
+      ><span>与原包无重复身份；560 张注册图，每种光照 840 张查询图。</span>
+    </p>
+    <p class="batch-intro">
+      解压后选择 gallery 注册；测试时选择 query 下的正常光照、逆光、光照不均或低照度目录。
     </p>
     <div class="batch-directory-label"><RequiredLabel>照片根目录</RequiredLabel></div>
-    <p class="batch-download">
-      <a href="/api/person/lfw-dataset" download="lfw_120_demo.zip">下载 LFW 扩充数据包（120 人）</a
-      ><span>每人 2 张注册图、3 张查询图；选择 gallery 导入身份。</span>
-    </p>
     <div class="batch-selection">
-      <input
-        ref="input"
-        type="file"
-        multiple
-        webkitdirectory
-        class="sr-only"
-        aria-label="选择批量身份文件夹"
-        :disabled="running"
-        @change="select"
-      />
-      <el-button :icon="FolderOpened" :disabled="running" @click="chooseDirectory"
+      <el-button
+        :icon="FolderOpened"
+        :disabled="running || choosing || !pickerReady || !nativeAvailable"
+        :loading="choosing || !pickerReady"
+        @click="chooseDirectory"
         >选择照片根目录</el-button
       >
-      <div v-if="selectedRoot" class="batch-directory" role="status" aria-live="polite">
-        <span class="batch-directory-path" title="浏览器仅提供所选目录名称，不提供本机完整路径"
-          >已读取目录：<strong>{{ selectedRoot }}</strong></span
+      <div v-if="fullPath" class="batch-directory" role="status" aria-live="polite">
+        <span class="batch-directory-path" :title="fullPath"
+          >已读取目录：<strong>{{ fullPath }}</strong></span
         >
         <span>{{ rows.length }} 人 · {{ totalPhotos }} 张照片</span>
       </div>
-      <el-button v-if="rows.length && !running" text @click="chooseDirectory">重新选择</el-button>
+      <el-button v-if="rows.length && !running && !choosing" text @click="chooseDirectory"
+        >重新选择</el-button
+      >
     </div>
+    <el-alert
+      v-if="pickerReady && !nativeAvailable"
+      type="warning"
+      :closable="false"
+      title="系统目录选择不可用，请在本机 Windows/WSL 环境启动后端后重试。"
+    />
     <el-alert v-if="selectionError" type="error" :closable="false" :title="selectionError" />
     <el-form label-position="top"
       ><el-form-item label="统一备注"
         ><el-input
           v-model="note"
-          :disabled="running || started"
+          :disabled="running || choosing || started"
           maxlength="500"
           placeholder="例如 AT&T 公开样例，仅作功能演示" /></el-form-item
     ></el-form>
@@ -331,13 +390,13 @@ function download() {
       ><el-table-column prop="message" label="导入结果" min-width="240"
     /></el-table>
     <template #footer
-      ><el-button v-if="started" :icon="Download" :disabled="running" @click="download"
+      ><el-button v-if="started" :icon="Download" :disabled="running || choosing" @click="download"
         >下载导入结果</el-button
       ><el-button v-if="running" :disabled="stopRequested" @click="stopRequested = true">{{
         stopRequested ? '正在停止' : '停止后续导入'
       }}</el-button
       ><el-button v-else @click="visible = false">关闭</el-button
-      ><el-button type="primary" :disabled="started" :loading="running" @click="start"
+      ><el-button type="primary" :disabled="started || choosing" :loading="running" @click="start"
         >开始导入</el-button
       ></template
     >

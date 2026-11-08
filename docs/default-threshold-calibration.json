@@ -1,0 +1,330 @@
+{
+  "threshold": 0.435,
+  "model": "glintr100",
+  "gallery_size": 165,
+  "model_sha256": "4ab1d6435d639628a6f3e5008dd4f929edf4c4124b1a7169e1048f9fef534cdf",
+  "selection": "Maximum balanced known-image accuracy and unknown rejection on development only; 0.001 grid; midpoint of widest optimal plateau",
+  "optimal_interval": [
+    0.435,
+    0.436
+  ],
+  "calibration_unknown_names": [
+    "Abel_Pacheco",
+    "Brian_Campbell",
+    "Calvin_Joseph_Coleman",
+    "Charlize_Theron",
+    "Cherie_Blair",
+    "Coco_dEste",
+    "Colin_Prescot",
+    "Dinah_Turner",
+    "Don_Henley",
+    "Eric_Hinske",
+    "Erik_Morales",
+    "Ernie_Grunfeld",
+    "Frank_Sinatra",
+    "Franz_Fischler",
+    "Gao_Qiang",
+    "Guillermo_Ortiz",
+    "Hartmut_Mehdorn",
+    "Himmler_Rebu",
+    "Inam-ul-Haq",
+    "Jerome_Golmard",
+    "Jerry_Angelo",
+    "John_Norquist",
+    "Juan_Pablo_Montoya",
+    "Juan_Valencia_Osorio",
+    "Koji_Uehara",
+    "Lewis_Booth",
+    "Liane_Janda",
+    "Luis_Rosario_Huertas",
+    "Mark_Heller",
+    "Meryl_Streep",
+    "Michael_Chiklis",
+    "Michael_Peat",
+    "Michelangelo_Antonioni",
+    "Mike_Price",
+    "Mohammad_Khatami",
+    "Monica_Seles",
+    "Nabil_Shaath",
+    "Neil_Goldman",
+    "Oleksandr_Moroz",
+    "Paula_Abdul",
+    "Rick_Santorum",
+    "Roseanne_Barr",
+    "Shigeo_Nagashima",
+    "Stefaan_Declerk",
+    "Steve_Lavin",
+    "Taylyn_Solomon",
+    "Uma_Thurman",
+    "Vince_Vaughan",
+    "Wendell_Bryant",
+    "Win_Aung"
+  ],
+  "validation_unknown_names": [
+    "Abba_Eban",
+    "Adam_Rich",
+    "Aleksander_Kwasniewski",
+    "Alexis_Dennisoff",
+    "Ali_Abdullah_Saleh",
+    "Bijan_Darvish",
+    "Bill_Clancy",
+    "Buzz_Hargrove",
+    "Carlos_Arroyo",
+    "Casy_Preslar",
+    "Charlotte_Church",
+    "Chris_Matthews",
+    "Christian_Bale",
+    "Claire_Danes",
+    "Cristiano_da_Matta",
+    "Dave_Williams",
+    "Edmund_Hillary",
+    "Edwin_Edwards",
+    "Enrik_Vendt",
+    "Estella_Warren",
+    "Felix_Sanchez",
+    "Frank_Beamer",
+    "Ismail_Cem",
+    "James_Coviello",
+    "Jamie_Dimon",
+    "Johnny_Unitas",
+    "Jonathan_Schroeder",
+    "Kwon_Young-gil",
+    "Leo_Ramirez",
+    "Leszek_Miller",
+    "Lew_Rywin",
+    "Lim_Dong-won",
+    "Magdalena_Maleeva",
+    "Manfred_Stolpe",
+    "Matt_Dillon",
+    "Misty_Dawn_Clymer",
+    "Nick_Nolte",
+    "Paul_Henderson",
+    "Raul_Rivero",
+    "Robert_Morvillo",
+    "Roger_Federer",
+    "Rohman_al-Ghozi",
+    "Shavon_Earp",
+    "Sinead_OConnor",
+    "Steve_Blake",
+    "Suzanne_Haik_Terrell",
+    "Thomas_Stewart",
+    "Tom_Vilsack",
+    "Wanda_de_la_Jesus",
+    "Zach_Parise"
+  ],
+  "source_sha256": {
+    "r100-development.json": "a3a3302d55f54bd013a98f2222c59e368deb0982ab485c9cbc853b91fcc5b0ce",
+    "r100-validation.json": "fadca7a651ba848f117218379149b1261d8d32a647dd5c1c11833b1e7e4f7996",
+    "r100-unknown.json": "4e5874b0252de0e9e3fa85dc57ff68b9e55d1f1e1bbdf85c26eadb2bbd20c40e",
+    "r100-package.json": "edb3dc0548924ab33746cc5e14d5da3a8aee18b7205162738805f1688dc06192",
+    "r100-independent-gallery.json": "194af699ffc0d0f573d909278a4b16272548b2d0bb7fd6776b1186134abc947b",
+    "r100-package-gallery.json": "f831e7804a7088be1691bb4d1cbb03afc718c32f48a9bc88a237694fe469d750"
+  },
+  "limitations": "Simulated LFW lighting, not real-capture acceptance. Original/enhanced and lighting variants share source photos. Calibration is not universal or gallery-independent; larger galleries require revalidation.",
+  "results": {
+    "calibration": {
+      "before": {
+        "known": 414,
+        "correct": 413,
+        "unknown": 300,
+        "false_accept": 4,
+        "known_accuracy": 0.9975845410628019,
+        "unknown_far": 0.013333333333333334
+      },
+      "after": {
+        "known": 414,
+        "correct": 414,
+        "unknown": 300,
+        "false_accept": 4,
+        "known_accuracy": 1.0,
+        "unknown_far": 0.013333333333333334
+      },
+      "groups": {
+        "backlight/original": {
+          "known": 69,
+          "correct": 69,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.0
+        },
+        "backlight/enhanced": {
+          "known": 69,
+          "correct": 69,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.0
+        },
+        "low_light/original": {
+          "known": 69,
+          "correct": 69,
+          "unknown": 50,
+          "false_accept": 1,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.02
+        },
+        "low_light/enhanced": {
+          "known": 69,
+          "correct": 69,
+          "unknown": 50,
+          "false_accept": 1,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.02
+        },
+        "uneven/original": {
+          "known": 69,
+          "correct": 69,
+          "unknown": 50,
+          "false_accept": 1,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.02
+        },
+        "uneven/enhanced": {
+          "known": 69,
+          "correct": 69,
+          "unknown": 50,
+          "false_accept": 1,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.02
+        }
+      }
+    },
+    "held_out": {
+      "before": {
+        "known": 396,
+        "correct": 394,
+        "unknown": 300,
+        "false_accept": 0,
+        "known_accuracy": 0.9949494949494949,
+        "unknown_far": 0.0
+      },
+      "after": {
+        "known": 396,
+        "correct": 394,
+        "unknown": 300,
+        "false_accept": 0,
+        "known_accuracy": 0.9949494949494949,
+        "unknown_far": 0.0
+      },
+      "groups": {
+        "backlight/original": {
+          "known": 66,
+          "correct": 65,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 0.9848484848484849,
+          "unknown_far": 0.0
+        },
+        "backlight/enhanced": {
+          "known": 66,
+          "correct": 65,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 0.9848484848484849,
+          "unknown_far": 0.0
+        },
+        "low_light/original": {
+          "known": 66,
+          "correct": 66,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.0
+        },
+        "low_light/enhanced": {
+          "known": 66,
+          "correct": 66,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.0
+        },
+        "uneven/original": {
+          "known": 66,
+          "correct": 66,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.0
+        },
+        "uneven/enhanced": {
+          "known": 66,
+          "correct": 66,
+          "unknown": 50,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": 0.0
+        }
+      }
+    },
+    "existing_package": {
+      "before": {
+        "known": 2160,
+        "correct": 2157,
+        "unknown": 0,
+        "false_accept": 0,
+        "known_accuracy": 0.9986111111111111,
+        "unknown_far": null
+      },
+      "after": {
+        "known": 2160,
+        "correct": 2158,
+        "unknown": 0,
+        "false_accept": 0,
+        "known_accuracy": 0.9990740740740741,
+        "unknown_far": null
+      },
+      "groups": {
+        "backlight/original": {
+          "known": 360,
+          "correct": 359,
+          "unknown": 0,
+          "false_accept": 0,
+          "known_accuracy": 0.9972222222222222,
+          "unknown_far": null
+        },
+        "backlight/enhanced": {
+          "known": 360,
+          "correct": 359,
+          "unknown": 0,
+          "false_accept": 0,
+          "known_accuracy": 0.9972222222222222,
+          "unknown_far": null
+        },
+        "low_light/original": {
+          "known": 360,
+          "correct": 360,
+          "unknown": 0,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": null
+        },
+        "low_light/enhanced": {
+          "known": 360,
+          "correct": 360,
+          "unknown": 0,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": null
+        },
+        "uneven/original": {
+          "known": 360,
+          "correct": 360,
+          "unknown": 0,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": null
+        },
+        "uneven/enhanced": {
+          "known": 360,
+          "correct": 360,
+          "unknown": 0,
+          "false_accept": 0,
+          "known_accuracy": 1.0,
+          "unknown_far": null
+        }
+      }
+    }
+  }
+}

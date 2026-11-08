@@ -57,6 +57,10 @@ def main() -> None:
                 return response.json()["data"]
 
             report["model"] = require(client.post("/api/system/model/load"))
+            assert report["model"]["inference_threads"] == {
+                "detection": {"intra": 2, "inter": 1},
+                "recognition": {"intra": 2, "inter": 1},
+            }
             person = require(
                 client.post(
                     "/api/person/register",
@@ -97,8 +101,34 @@ def main() -> None:
                     files={"file": ("multi.png", png(multi), "image/png")},
                 )
             )
-            assert detected["original"]["count"] >= 2
-            report["checks"]["multi_face_count"] = detected["original"]["count"]
+            assert detected["count"] >= 2
+            report["checks"]["multi_face_count"] = detected["count"]
+            group = require(client.post(
+                "/api/recognition/identify",
+                data={"options": '{"method":"gamma","auto_parameters":true}'},
+                files={"file": ("group.png", png(multi), "image/png")},
+            ))
+            assert len(group["faces"]) >= 2
+            assert any(f["match"]["person_id"] == pid for f in group["faces"])
+            assert any(not f["match"]["confirmed"] for f in group["faces"])
+            batch = require(client.post(
+                "/api/experiment/images",
+                data={"labels": json.dumps({
+                    "items": [{"filename": "group.png", "person_id": pid}],
+                    "methods": ["original", "gamma", "clahe", "retinex"],
+                    "threshold": .45,
+                })},
+                files=[("files", ("group.png", png(multi), "image/png"))],
+            ))
+            batch = require(client.get(f"/api/experiment/{batch['id']}"))
+            assert batch["status"] == "completed", batch["error"]
+            assert all(s["overall"]["correct"] == 1 for s in batch["summary"].values())
+            assert all(s["overall"]["known"] == 1 for s in batch["summary"].values())
+            report["checks"]["multi_face_any_confirmed_identity"] = {
+                "faces": len(group["faces"]),
+                "decisions": group["face_matches"],
+                "methods_correct": list(batch["summary"]),
+            }
             items = []
             images = {}
             # Explicit approximate manual face boxes; never detector-generated ground truth.
@@ -161,13 +191,10 @@ def main() -> None:
             rows = require(client.get(f"/api/experiment/{experiment['id']}/results"))
             report["experiment"] = result
             report["predictions"] = rows
-            csv = client.get(f"/api/experiment/{experiment['id']}/csv")
-            assert csv.status_code == 200
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.with_suffix(".csv").write_text(csv.text, encoding="utf-8")
             require(client.delete(f"/api/person/{pid}"))
             assert require(client.get("/api/person")) == []
             report["checks"]["delete_person_and_samples"] = True
+        args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
         print(
             json.dumps(

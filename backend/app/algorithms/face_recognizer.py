@@ -26,5 +26,23 @@ def match(embedding: list | np.ndarray, gallery: list[dict], threshold: float) -
         "threshold": threshold,
         "confirmed": confirmed,
         "candidates": candidates[:5],
-        "diagnostic": "通过阈值" if confirmed else ("相似度低于阈值" if best else "身份库为空"),
+        "diagnostic": "身份已确认" if confirmed else ("未达到身份确认标准" if best else "身份库为空"),
+    }
+
+
+def summarize_matches(matches: list[dict], threshold: float) -> dict:
+    """Keep each face's threshold decision; never promote diagnostic candidates."""
+    if len(matches) == 1:
+        return matches[0].copy()
+    accepted = {m["person_id"]: m["name"] for m in matches if m["confirmed"]}
+    scores = [m["similarity"] for m in matches if m["similarity"] is not None]
+    return {
+        "person_id": None,
+        "person_ids": list(accepted),
+        "name": "、".join(accepted.values()) or "未知身份",
+        "similarity": max(scores, default=None),
+        "threshold": threshold,
+        "confirmed": bool(accepted),
+        "candidates": [],
+        "diagnostic": f"逐一识别 {len(matches)} 张人脸，确认 {len(accepted)} 个身份",
     }

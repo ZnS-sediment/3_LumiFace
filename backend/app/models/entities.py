@@ -30,6 +30,20 @@ class FaceSample(Base):
     embedding: Mapped[list] = mapped_column(JSON)
     quality: Mapped[dict] = mapped_column(JSON)
     model_fingerprint: Mapped[str] = mapped_column(String(64))
+    encodings: Mapped[list["FaceEncoding"]] = relationship(
+        cascade="all, delete-orphan", lazy="selectin"
+    )
+
+
+class FaceEncoding(Base):
+    """Derived features for another supported backbone; original samples stay intact."""
+
+    __tablename__ = "face_encodings"
+    sample_id: Mapped[int] = mapped_column(
+        ForeignKey("face_samples.id", ondelete="CASCADE"), primary_key=True
+    )
+    model_fingerprint: Mapped[str] = mapped_column(String(64), primary_key=True)
+    embedding: Mapped[list] = mapped_column(JSON)
 
 
 class RecognitionRecord(Base):

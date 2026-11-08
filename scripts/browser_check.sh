@@ -30,23 +30,23 @@ cleanup(){
   rm -rf -- "$TEST_RUNTIME"
 }
 trap cleanup EXIT INT TERM
-setsid env LUMIFACE_DATA="$TEST_RUNTIME" .venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port "$LUMIFACE_TEST_API_PORT" > work/browser-backend.log 2>&1 &
+setsid env LUMIFACE_NATIVE_PICKER=0 LUMIFACE_DATA="$TEST_RUNTIME" .venv/bin/python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port "$LUMIFACE_TEST_API_PORT" > work/browser-backend.log 2>&1 &
 backend_pid=$!
 setsid npm run dev --prefix frontend -- --port "$LUMIFACE_TEST_UI_PORT" > work/browser-frontend.log 2>&1 &
 frontend_pid=$!
 .venv/bin/python - <<'PY'
 import time,urllib.request,os
 for address in (os.environ['LUMIFACE_API_URL']+'/api/system/overview',os.environ['LUMIFACE_UI_ORIGIN']):
-    for attempt in range(100):
+    for attempt in range(300):
         try:
             with urllib.request.urlopen(address,timeout=2) as r:
                 if r.status==200:break
         except OSError:time.sleep(.2)
     else:raise SystemExit(f'Server startup failed: {address}')
-# Load the actual weights before timing UI interactions on a busy CPU host.
-request=urllib.request.Request(os.environ['LUMIFACE_API_URL']+'/api/system/model/load',method='POST')
-with urllib.request.urlopen(request,timeout=180) as response:
-    if response.status!=200:raise SystemExit('Real model warmup failed')
+# Prove startup loaded the real model without issuing a manual load request.
+with urllib.request.urlopen(os.environ['LUMIFACE_API_URL']+'/api/system/model',timeout=10) as response:
+    import json
+    if not json.load(response)['data']['ready']:raise SystemExit('Automatic model startup failed')
 PY
 # The verified WSL host uses its existing Windows fonts for headless screenshots.
 if [ -d /mnt/c/Windows/Fonts ]; then

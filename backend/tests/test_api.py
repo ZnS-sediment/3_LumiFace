@@ -75,9 +75,8 @@ def test_backend_root_redirects_to_ui_without_masking_unknown_api_routes(client)
 @pytest.mark.parametrize(
     "route,archive_name,prepare_script",
     [
-        ("demo-dataset", "att_faces_demo.zip", "prepare_att_faces_demo.py"),
-        ("simulated-dataset", "att_lighting_three_scenes.zip", "prepare_three_scene_demo.py"),
-        ("lfw-dataset", "lfw_120_demo.zip", "prepare_lfw_demo.py"),
+        ("lfw-dataset", "lfw_120_lighting.zip", "prepare_lfw_lighting.py"),
+        ("lfw-new-dataset", "lfw_280_new_lighting.zip", "prepare_lfw_disjoint.py"),
     ],
 )
 def test_demo_dataset_download_and_missing_archive(
@@ -89,7 +88,7 @@ def test_demo_dataset_download_and_missing_archive(
     archive = tmp_path / "datasets" / archive_name
     archive.parent.mkdir()
     with zipfile.ZipFile(archive, "w") as bundle:
-        bundle.writestr("att_faces_demo/README.zh-CN.md", "AT&T 公开演示数据")
+        bundle.writestr("lfw_120_lighting/使用说明.txt", "LFW 身份与光照数据")
     response = client.get("/api/person/" + route)
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/zip"
@@ -168,7 +167,7 @@ def test_recognition_and_detection(client, model):
     )
     assert response.json()["data"]["confirmed"]
     response = client.post("/api/face/detect", files={"file": ("x.png", photo(80), "image/png")})
-    assert response.status_code == 200 and response.json()["data"]["original"]["count"] == 1
+    assert response.status_code == 200 and response.json()["data"]["count"] == 1
     assert client.get("/api/system/overview").json()["data"]["detections"] == 1
     assert (
         client.post(
@@ -178,6 +177,28 @@ def test_recognition_and_detection(client, model):
         ).status_code
         == 422
     )
+
+
+def test_detection_uses_one_inference_and_one_result_image(client, model, monkeypatch):
+    original = model.infer
+    calls = []
+
+    def infer(image):
+        calls.append(image.copy())
+        return original(image)
+
+    monkeypatch.setattr(model, "infer", infer)
+    response = client.post(
+        "/api/face/detect",
+        data={"options": '{"method":"gamma"}'},
+        files={"file": ("input.png", photo(80), "image/png")},
+    )
+    assert response.status_code == 200
+    result = response.json()["data"]
+    assert len(calls) == 1 and calls[0].mean() > 80
+    assert result["count"] == 1 and len(result["faces"]) == 1
+    assert result["image"].startswith("data:image/png")
+    assert "original" not in result and "enhanced" not in result
 
 
 def test_dataset_leakage_and_unknown_subject_split(client, model):
@@ -231,7 +252,7 @@ def test_batch_persistence_metrics_csv_and_preview(client, model):
     assert record["summary"]["original"]["overall"]["confirmation_rate"] == 1
     assert record["summary"]["original"]["targets"]["infrared"]["status"] == "未评估"
     assert record["summary"]["original"]["targets"]["overall"]["status"] == "未评估"
-    assert client.get(f"/api/experiment/{eid}/csv").text.count("\n") == 3
+    assert client.get(f"/api/experiment/{eid}/csv").status_code == 404
     rows = client.get(f"/api/experiment/{eid}/results").json()["data"]
     assert client.get(f"/api/experiment/{eid}/preview/{rows[0]['id']}").status_code == 200
     assert client.delete(f"/api/dataset/{did}").status_code == 409
@@ -485,3 +506,33 @@ def test_batch_delete_stale_selection_is_rejected_without_partial_deletion(clien
 )
 def test_batch_delete_requires_explicit_bounded_positive_integer_ids(client, payload):
     assert client.post("/api/person/batch-delete", json=payload).status_code == 422
+
+
+def test_person_summary_does_not_load_reference_vectors(client, model):
+    from sqlalchemy import event
+    from app.database.session import engine as database_engine
+
+    enroll(client)
+    queries = []
+
+    def capture(_conn, _cursor, statement, *_args):
+        if statement.lstrip().upper().startswith("SELECT"):
+            queries.append(statement)
+
+    event.listen(database_engine, "before_cursor_execute", capture)
+    try:
+        response = client.get("/api/person")
+    finally:
+        event.remove(database_engine, "before_cursor_execute", capture)
+    assert response.status_code == 200
+    assert response.json()["data"][0]["sample_count"] == 1
+    assert len(queries) == 1 and "embedding" not in queries[0].lower()
+
+
+def test_model_status_does_not_query_database(client, monkeypatch):
+    from app.api import routes
+
+    monkeypatch.setattr(routes.engine, "status", lambda: {"ready": False, "model": "test"})
+    response = client.get("/api/system/model")
+    assert response.status_code == 200
+    assert response.json()["data"] == {"ready": False, "model": "test"}

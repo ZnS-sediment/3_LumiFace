@@ -1,11 +1,14 @@
 import { test, expect } from '@playwright/test'
+import { mockDirectoryPicker } from './helpers/directory'
 import { resolve } from 'node:path'
 const root = resolve(import.meta.dirname, '../..')
 
 test('必填校验：批量导入只需选择目录，缺少目录时提示且不提交', async ({ page }) => {
+  const chooseDirectory = await mockDirectoryPicker(page)
   const mutations: string[] = []
   page.on('request', (request) => {
-    if (request.method() === 'POST') mutations.push(request.url())
+    if (request.method() === 'POST' && request.url().endsWith('/person/register'))
+      mutations.push(request.url())
   })
   await page.goto('/persons')
   await page.getByRole('button', { name: '批量导入身份', exact: true }).click()
@@ -18,9 +21,10 @@ test('必填校验：批量导入只需选择目录，缺少目录时提示且�
   await expect(page.locator('.el-message--error').last()).toContainText(
     '请补全必填项：照片根目录。',
   )
-  await page
-    .getByLabel('选择批量身份文件夹', { exact: true })
-    .setInputFiles(root + '/work/browser-batch-identities')
+  await chooseDirectory(
+    root + '/work/browser-batch-identities',
+    dialog.getByRole('button', { name: '选择照片根目录', exact: true }),
+  )
   await expect(dialog.getByText('3 人 · 4 张照片', { exact: true })).toBeVisible()
   await expect(dialog.getByRole('textbox')).toHaveCount(1)
   await expect(dialog.getByRole('button', { name: '开始导入', exact: true })).toBeEnabled()
@@ -56,7 +60,7 @@ test('必填校验：图像处理、身份验证及实验缺项不提交', async
   })
   for (const [route, button] of [
     ['/enhance', '分析并增强'],
-    ['/detect', '运行双路检测'],
+    ['/detect', '开始检测'],
     ['/recognition', '开始身份确认'],
   ]) {
     await page.goto(route)
@@ -72,14 +76,14 @@ test('必填校验：图像处理、身份验证及实验缺项不提交', async
     '请补全必填项：输入图像、目标身份。',
   )
   await page.goto('/experiments')
-  const form = page
-    .locator('section.card')
-    .filter({ has: page.getByRole('heading', { name: '创建消融实验', exact: true }) })
+  const form = page.locator('.image-batch-card')
   await expect(form.getByRole('checkbox')).toHaveCount(4)
-  for (const checkbox of await form.locator('label.el-checkbox').all()) await checkbox.click()
-  await form.getByRole('button', { name: '开始批量评估', exact: true }).click()
+  for (const checkbox of await form.locator('label.el-checkbox').all()) {
+    if (await checkbox.getByRole('checkbox').isChecked()) await checkbox.click()
+  }
+  await form.getByRole('button', { name: '开始多图测试', exact: true }).click()
   await expect(page.locator('.el-message--error').last()).toContainText(
-    '请补全必填项：数据集、实验组。',
+    '请补全必填项：测试图片、测试方法。',
   )
   expect(mutations).toEqual([])
 })

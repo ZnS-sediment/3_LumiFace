@@ -1,0 +1,5780 @@
+{
+  "date": "2026-11-06",
+  "algorithm_version": "lumiface-1.4",
+  "recognition_policy": "face-local-v4",
+  "comparisons": {
+    "clahe": {
+      "new_280": {
+        "images": 840,
+        "original_correct": 828,
+        "enhanced_correct": 829,
+        "original_accuracy": 0.9857142857142858,
+        "enhanced_accuracy": 0.986904761904762,
+        "strictly_better": true
+      },
+      "original_120": {
+        "images": 360,
+        "original_correct": 359,
+        "enhanced_correct": 359,
+        "original_accuracy": 0.9972222222222222,
+        "enhanced_accuracy": 0.9972222222222222,
+        "strictly_better": false
+      },
+      "combined_400": {
+        "images": 1200,
+        "original_correct": 1187,
+        "enhanced_correct": 1188,
+        "original_accuracy": 0.9891666666666666,
+        "enhanced_accuracy": 0.99,
+        "strictly_better": true
+      },
+      "new_package_changed_predictions": [
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Tim_Henman/Tim_Henman_0003.png",
+          "original_correct": false,
+          "enhanced_correct": true
+        }
+      ]
+    },
+    "retinex": {
+      "new_280": {
+        "images": 840,
+        "original_correct": 837,
+        "enhanced_correct": 838,
+        "original_accuracy": 0.9964285714285714,
+        "enhanced_accuracy": 0.9976190476190476,
+        "strictly_better": true
+      },
+      "original_120": {
+        "images": 360,
+        "original_correct": 360,
+        "enhanced_correct": 360,
+        "original_accuracy": 1.0,
+        "enhanced_accuracy": 1.0,
+        "strictly_better": false
+      },
+      "combined_400": {
+        "images": 1200,
+        "original_correct": 1197,
+        "enhanced_correct": 1198,
+        "original_accuracy": 0.9975,
+        "enhanced_accuracy": 0.9983333333333333,
+        "strictly_better": true
+      },
+      "new_package_changed_predictions": [
+        {
+          "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Susan_Sarandon/Susan_Sarandon_0004.png",
+          "original_correct": false,
+          "enhanced_correct": true
+        }
+      ]
+    },
+    "gamma": {
+      "new_280": {
+        "images": 840,
+        "original_correct": 838,
+        "enhanced_correct": 839,
+        "original_accuracy": 0.9976190476190476,
+        "enhanced_accuracy": 0.9988095238095238,
+        "strictly_better": true
+      },
+      "original_120": {
+        "images": 360,
+        "original_correct": 360,
+        "enhanced_correct": 360,
+        "original_accuracy": 1.0,
+        "enhanced_accuracy": 1.0,
+        "strictly_better": false
+      },
+      "combined_400": {
+        "images": 1200,
+        "original_correct": 1198,
+        "enhanced_correct": 1199,
+        "original_accuracy": 0.9983333333333333,
+        "enhanced_accuracy": 0.9991666666666666,
+        "strictly_better": true
+      },
+      "new_package_changed_predictions": [
+        {
+          "file": "lfw_280_new_lighting/query/03_低照度_Gamma/LFW_Sarah_Jessica_Parker/Sarah_Jessica_Parker_0003.png",
+          "original_correct": false,
+          "enhanced_correct": true
+        }
+      ]
+    }
+  },
+  "packages": {
+    "new_280": {
+      "protocol": {
+        "archive_sha256": "b5e7a704e18a212b754f23ce88f2ce9b9a44bb53411a3154fc465e3ed78afeec",
+        "gallery_cache_sha256": "5fa0759149be5111e355053adb52ab4d00d9e7312d54af071a2163e2f2e52527",
+        "gallery_size": 400,
+        "queries": 3360,
+        "identities": 280,
+        "model_fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+        "threshold": 0.435,
+        "threshold_policy": "glintr100-development-balanced-v1",
+        "algorithm_version": "lumiface-1.4",
+        "recognition_policy": "face-local-v4",
+        "enhanced_weight": 0.3,
+        "local_policies": {
+          "clahe": {
+            "original_weight": 0.7
+          }
+        },
+        "method_enhanced_weights": {
+          "retinex": 0.5
+        },
+        "scoring": "exact identity in confirmed per-face top1 decisions; every image counted",
+        "methods": {
+          "00_正常光照": "original",
+          "01_逆光_CLAHE": "clahe",
+          "02_光照不均_Retinex": "retinex",
+          "03_低照度_Gamma": "gamma"
+        },
+        "previous_identity_overlap": 0,
+        "targets": {
+          "low_light": 0.95,
+          "backlight": 0.9,
+          "normal_low_light_backlight_combined": 0.95
+        },
+        "limitations": "Software simulated lighting, not infrared/real-capture validation. No unknown subjects in this pack. Gallery contains all 120 old and 280 new identities; no query filtering."
+      },
+      "summary": {
+        "00_正常光照/original": {
+          "images": 840,
+          "correct": 839,
+          "rejected": 0,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.9988095238095238
+        },
+        "01_逆光_CLAHE/original": {
+          "images": 840,
+          "correct": 828,
+          "rejected": 11,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.9857142857142858
+        },
+        "01_逆光_CLAHE/clahe": {
+          "images": 840,
+          "correct": 829,
+          "rejected": 10,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.986904761904762
+        },
+        "02_光照不均_Retinex/original": {
+          "images": 840,
+          "correct": 837,
+          "rejected": 2,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.9964285714285714
+        },
+        "02_光照不均_Retinex/retinex": {
+          "images": 840,
+          "correct": 838,
+          "rejected": 1,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.9976190476190476
+        },
+        "03_低照度_Gamma/original": {
+          "images": 840,
+          "correct": 838,
+          "rejected": 1,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.9976190476190476
+        },
+        "03_低照度_Gamma/gamma": {
+          "images": 840,
+          "correct": 839,
+          "rejected": 0,
+          "wrong_identity": 1,
+          "no_face": 0,
+          "accuracy": 0.9988095238095238
+        }
+      },
+      "predictions": "work/face-local-v4/final-new_280-predictions.jsonl",
+      "prediction_sha256": "e6c0cee969c53638d1d4a045b64beb4bbebacd80ced13a9c4cf6544599a9c22f",
+      "sources": [
+        {
+          "path": "work/face-local-v4/full-package/predictions.jsonl",
+          "sha256": "5d7bdc6a71aa777d2f14e714b980a600d8b691d02910c10c75dd1a90028acb46"
+        },
+        {
+          "path": "work/face-local-v4/retinex-global-final/predictions.jsonl",
+          "sha256": "62d65622096c4f234588b9ca649b049e9133de6e9cffa574fc1f6998ed33f70f"
+        }
+      ],
+      "errors": [
+        {
+          "file": "lfw_280_new_lighting/query/00_正常光照/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+          "scene": "00_正常光照",
+          "expected_name": "LFW_Recep_Tayyip_Erdogan",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.8097941875457764,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.8097941875457764
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.22246965765953064
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.20897480845451355
+                    },
+                    {
+                      "person_id": 182,
+                      "name": "LFW_Joan_Laporta",
+                      "similarity": 0.18319056928157806
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.18297961354255676
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_John_Negroponte/John_Negroponte_0003.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_John_Negroponte",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3961455821990967,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 193,
+                      "name": "LFW_John_Negroponte",
+                      "similarity": 0.3961455821990967
+                    },
+                    {
+                      "person_id": 290,
+                      "name": "LFW_Nicanor_Duarte_Frutos",
+                      "similarity": 0.18451671302318573
+                    },
+                    {
+                      "person_id": 318,
+                      "name": "LFW_Ray_Romano",
+                      "similarity": 0.18273963034152985
+                    },
+                    {
+                      "person_id": 50,
+                      "name": "LFW_Boris_Becker",
+                      "similarity": 0.17358152568340302
+                    },
+                    {
+                      "person_id": 319,
+                      "name": "LFW_Recep_Tayyip_Erdogan",
+                      "similarity": 0.15185146033763885
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3846063017845154,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 193,
+                      "name": "LFW_John_Negroponte",
+                      "similarity": 0.3846063017845154
+                    },
+                    {
+                      "person_id": 290,
+                      "name": "LFW_Nicanor_Duarte_Frutos",
+                      "similarity": 0.1819441020488739
+                    },
+                    {
+                      "person_id": 50,
+                      "name": "LFW_Boris_Becker",
+                      "similarity": 0.18123112618923187
+                    },
+                    {
+                      "person_id": 318,
+                      "name": "LFW_Ray_Romano",
+                      "similarity": 0.1712920218706131
+                    },
+                    {
+                      "person_id": 319,
+                      "name": "LFW_Recep_Tayyip_Erdogan",
+                      "similarity": 0.1515999287366867
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_John_Paul_II/John_Paul_II_0004.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_John_Paul_II",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.41547590494155884,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 194,
+                      "name": "LFW_John_Paul_II",
+                      "similarity": 0.41547590494155884
+                    },
+                    {
+                      "person_id": 183,
+                      "name": "LFW_Joe_Lieberman",
+                      "similarity": 0.19355857372283936
+                    },
+                    {
+                      "person_id": 25,
+                      "name": "LFW_Antonio_Banderas",
+                      "similarity": 0.1702912449836731
+                    },
+                    {
+                      "person_id": 292,
+                      "name": "LFW_Nicole_Kidman",
+                      "similarity": 0.16615714132785797
+                    },
+                    {
+                      "person_id": 383,
+                      "name": "LFW_Tom_Daschle",
+                      "similarity": 0.16467668116092682
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.42485809326171875,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 194,
+                      "name": "LFW_John_Paul_II",
+                      "similarity": 0.42485809326171875
+                    },
+                    {
+                      "person_id": 183,
+                      "name": "LFW_Joe_Lieberman",
+                      "similarity": 0.19515115022659302
+                    },
+                    {
+                      "person_id": 292,
+                      "name": "LFW_Nicole_Kidman",
+                      "similarity": 0.1703890711069107
+                    },
+                    {
+                      "person_id": 25,
+                      "name": "LFW_Antonio_Banderas",
+                      "similarity": 0.17023518681526184
+                    },
+                    {
+                      "person_id": 326,
+                      "name": "LFW_Richard_Myers",
+                      "similarity": 0.1586582064628601
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Keanu_Reeves/Keanu_Reeves_0005.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Keanu_Reeves",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.41448163986206055,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 215,
+                      "name": "LFW_Keanu_Reeves",
+                      "similarity": 0.41448163986206055
+                    },
+                    {
+                      "person_id": 364,
+                      "name": "LFW_Sourav_Ganguly",
+                      "similarity": 0.2437083125114441
+                    },
+                    {
+                      "person_id": 206,
+                      "name": "LFW_Juan_Pablo_Montoya",
+                      "similarity": 0.1688118278980255
+                    },
+                    {
+                      "person_id": 27,
+                      "name": "LFW_Ari_Fleischer",
+                      "similarity": 0.16733074188232422
+                    },
+                    {
+                      "person_id": 359,
+                      "name": "LFW_Sheryl_Crow",
+                      "similarity": 0.1602936089038849
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.4218491315841675,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 215,
+                      "name": "LFW_Keanu_Reeves",
+                      "similarity": 0.4218491315841675
+                    },
+                    {
+                      "person_id": 364,
+                      "name": "LFW_Sourav_Ganguly",
+                      "similarity": 0.24094071984291077
+                    },
+                    {
+                      "person_id": 206,
+                      "name": "LFW_Juan_Pablo_Montoya",
+                      "similarity": 0.16999942064285278
+                    },
+                    {
+                      "person_id": 31,
+                      "name": "LFW_Arnoldo_Aleman",
+                      "similarity": 0.16816109418869019
+                    },
+                    {
+                      "person_id": 110,
+                      "name": "LFW_Fernando_Henrique_Cardoso",
+                      "similarity": 0.16551727056503296
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Larry_Brown/Larry_Brown_0003.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Larry_Brown",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.32408130168914795,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 226,
+                      "name": "LFW_Larry_Brown",
+                      "similarity": 0.32408130168914795
+                    },
+                    {
+                      "person_id": 192,
+                      "name": "LFW_John_McCain",
+                      "similarity": 0.19914484024047852
+                    },
+                    {
+                      "person_id": 36,
+                      "name": "LFW_Benjamin_Netanyahu",
+                      "similarity": 0.17549103498458862
+                    },
+                    {
+                      "person_id": 135,
+                      "name": "LFW_Hal_Gehman",
+                      "similarity": 0.17283222079277039
+                    },
+                    {
+                      "person_id": 283,
+                      "name": "LFW_Naji_Sabri",
+                      "similarity": 0.16062189638614655
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3334648907184601,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 226,
+                      "name": "LFW_Larry_Brown",
+                      "similarity": 0.3334648907184601
+                    },
+                    {
+                      "person_id": 192,
+                      "name": "LFW_John_McCain",
+                      "similarity": 0.20071054995059967
+                    },
+                    {
+                      "person_id": 135,
+                      "name": "LFW_Hal_Gehman",
+                      "similarity": 0.1714794933795929
+                    },
+                    {
+                      "person_id": 110,
+                      "name": "LFW_Fernando_Henrique_Cardoso",
+                      "similarity": 0.1673525869846344
+                    },
+                    {
+                      "person_id": 283,
+                      "name": "LFW_Naji_Sabri",
+                      "similarity": 0.16326215863227844
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Paula_Radcliffe/Paula_Radcliffe_0004.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Paula_Radcliffe",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3294733464717865,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 305,
+                      "name": "LFW_Paula_Radcliffe",
+                      "similarity": 0.3294733464717865
+                    },
+                    {
+                      "person_id": 225,
+                      "name": "LFW_Lance_Armstrong",
+                      "similarity": 0.20379287004470825
+                    },
+                    {
+                      "person_id": 350,
+                      "name": "LFW_Sarah_Jessica_Parker",
+                      "similarity": 0.20168724656105042
+                    },
+                    {
+                      "person_id": 267,
+                      "name": "LFW_Michael_Schumacher",
+                      "similarity": 0.1902438849210739
+                    },
+                    {
+                      "person_id": 75,
+                      "name": "LFW_Claudia_Pechstein",
+                      "similarity": 0.1793343424797058
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3136522173881531,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 305,
+                      "name": "LFW_Paula_Radcliffe",
+                      "similarity": 0.3136522173881531
+                    },
+                    {
+                      "person_id": 225,
+                      "name": "LFW_Lance_Armstrong",
+                      "similarity": 0.20209264755249023
+                    },
+                    {
+                      "person_id": 350,
+                      "name": "LFW_Sarah_Jessica_Parker",
+                      "similarity": 0.1988862156867981
+                    },
+                    {
+                      "person_id": 75,
+                      "name": "LFW_Claudia_Pechstein",
+                      "similarity": 0.18975520133972168
+                    },
+                    {
+                      "person_id": 267,
+                      "name": "LFW_Michael_Schumacher",
+                      "similarity": 0.18206465244293213
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Princess_Caroline/Princess_Caroline_0005.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Princess_Caroline",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.40824204683303833,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 313,
+                      "name": "LFW_Princess_Caroline",
+                      "similarity": 0.40824204683303833
+                    },
+                    {
+                      "person_id": 208,
+                      "name": "LFW_Julie_Gerberding",
+                      "similarity": 0.24374336004257202
+                    },
+                    {
+                      "person_id": 93,
+                      "name": "LFW_Diana_Krall",
+                      "similarity": 0.23337382078170776
+                    },
+                    {
+                      "person_id": 35,
+                      "name": "LFW_Benazir_Bhutto",
+                      "similarity": 0.18575988709926605
+                    },
+                    {
+                      "person_id": 366,
+                      "name": "LFW_Steffi_Graf",
+                      "similarity": 0.16055873036384583
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.4207450747489929,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 313,
+                      "name": "LFW_Princess_Caroline",
+                      "similarity": 0.4207450747489929
+                    },
+                    {
+                      "person_id": 93,
+                      "name": "LFW_Diana_Krall",
+                      "similarity": 0.2352958619594574
+                    },
+                    {
+                      "person_id": 208,
+                      "name": "LFW_Julie_Gerberding",
+                      "similarity": 0.23015472292900085
+                    },
+                    {
+                      "person_id": 35,
+                      "name": "LFW_Benazir_Bhutto",
+                      "similarity": 0.18532198667526245
+                    },
+                    {
+                      "person_id": 366,
+                      "name": "LFW_Steffi_Graf",
+                      "similarity": 0.16354423761367798
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Recep_Tayyip_Erdogan",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7538121342658997,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.7538121342658997
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.20809921622276306
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.18681976199150085
+                    },
+                    {
+                      "person_id": 182,
+                      "name": "LFW_Joan_Laporta",
+                      "similarity": 0.1719484031200409
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.1642683744430542
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.755675733089447,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.755675733089447
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.19966134428977966
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.1875290721654892
+                    },
+                    {
+                      "person_id": 372,
+                      "name": "LFW_Taha_Yassin_Ramadan",
+                      "similarity": 0.1727711707353592
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.16221579909324646
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Romano_Prodi/Romano_Prodi_0004.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Romano_Prodi",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3786596357822418,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.3786596357822418
+                    },
+                    {
+                      "person_id": 183,
+                      "name": "LFW_Joe_Lieberman",
+                      "similarity": 0.20229308307170868
+                    },
+                    {
+                      "person_id": 300,
+                      "name": "LFW_Paul_Burrell",
+                      "similarity": 0.16561321914196014
+                    },
+                    {
+                      "person_id": 57,
+                      "name": "LFW_Carlos_Menem",
+                      "similarity": 0.160084068775177
+                    },
+                    {
+                      "person_id": 7,
+                      "name": "LFW_Alan_Greenspan",
+                      "similarity": 0.15706154704093933
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.40495768189430237,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.40495768189430237
+                    },
+                    {
+                      "person_id": 183,
+                      "name": "LFW_Joe_Lieberman",
+                      "similarity": 0.19629809260368347
+                    },
+                    {
+                      "person_id": 57,
+                      "name": "LFW_Carlos_Menem",
+                      "similarity": 0.16425970196723938
+                    },
+                    {
+                      "person_id": 300,
+                      "name": "LFW_Paul_Burrell",
+                      "similarity": 0.15817324817180634
+                    },
+                    {
+                      "person_id": 385,
+                      "name": "LFW_Tom_Harkin",
+                      "similarity": 0.15335001051425934
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Sarah_Jessica_Parker/Sarah_Jessica_Parker_0003.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Sarah_Jessica_Parker",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.4009897708892822,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 350,
+                      "name": "LFW_Sarah_Jessica_Parker",
+                      "similarity": 0.4009897708892822
+                    },
+                    {
+                      "person_id": 234,
+                      "name": "LFW_Liza_Minnelli",
+                      "similarity": 0.1749592125415802
+                    },
+                    {
+                      "person_id": 93,
+                      "name": "LFW_Diana_Krall",
+                      "similarity": 0.14893881976604462
+                    },
+                    {
+                      "person_id": 103,
+                      "name": "LFW_Elsa_Zylberstein",
+                      "similarity": 0.13458751142024994
+                    },
+                    {
+                      "person_id": 395,
+                      "name": "LFW_Valery_Giscard_dEstaing",
+                      "similarity": 0.1340600848197937
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.41296830773353577,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 350,
+                      "name": "LFW_Sarah_Jessica_Parker",
+                      "similarity": 0.41296830773353577
+                    },
+                    {
+                      "person_id": 234,
+                      "name": "LFW_Liza_Minnelli",
+                      "similarity": 0.1786087155342102
+                    },
+                    {
+                      "person_id": 93,
+                      "name": "LFW_Diana_Krall",
+                      "similarity": 0.15001535415649414
+                    },
+                    {
+                      "person_id": 366,
+                      "name": "LFW_Steffi_Graf",
+                      "similarity": 0.13933363556861877
+                    },
+                    {
+                      "person_id": 132,
+                      "name": "LFW_Gunter_Pleuger",
+                      "similarity": 0.1376449167728424
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Susan_Sarandon/Susan_Sarandon_0004.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Susan_Sarandon",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.3754907250404358,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 370,
+                      "name": "LFW_Susan_Sarandon",
+                      "similarity": 0.3754907250404358
+                    },
+                    {
+                      "person_id": 101,
+                      "name": "LFW_Elizabeth_Hurley",
+                      "similarity": 0.20824787020683289
+                    },
+                    {
+                      "person_id": 140,
+                      "name": "LFW_Heidi_Klum",
+                      "similarity": 0.17422664165496826
+                    },
+                    {
+                      "person_id": 262,
+                      "name": "LFW_Michael_Chiklis",
+                      "similarity": 0.15359649062156677
+                    },
+                    {
+                      "person_id": 20,
+                      "name": "LFW_Angela_Bassett",
+                      "similarity": 0.14444570243358612
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.35645294189453125,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 370,
+                      "name": "LFW_Susan_Sarandon",
+                      "similarity": 0.35645294189453125
+                    },
+                    {
+                      "person_id": 101,
+                      "name": "LFW_Elizabeth_Hurley",
+                      "similarity": 0.21510207653045654
+                    },
+                    {
+                      "person_id": 140,
+                      "name": "LFW_Heidi_Klum",
+                      "similarity": 0.19569836556911469
+                    },
+                    {
+                      "person_id": 284,
+                      "name": "LFW_Nancy_Pelosi",
+                      "similarity": 0.15293891727924347
+                    },
+                    {
+                      "person_id": 262,
+                      "name": "LFW_Michael_Chiklis",
+                      "similarity": 0.13869817554950714
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Tim_Henman/Tim_Henman_0003.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Tim_Henman",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.42137396335601807,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 379,
+                      "name": "LFW_Tim_Henman",
+                      "similarity": 0.42137396335601807
+                    },
+                    {
+                      "person_id": 279,
+                      "name": "LFW_Monica_Seles",
+                      "similarity": 0.2178478240966797
+                    },
+                    {
+                      "person_id": 388,
+                      "name": "LFW_Tommy_Haas",
+                      "similarity": 0.2092738300561905
+                    },
+                    {
+                      "person_id": 63,
+                      "name": "LFW_Celine_Dion",
+                      "similarity": 0.17302727699279785
+                    },
+                    {
+                      "person_id": 160,
+                      "name": "LFW_James_Wolfensohn",
+                      "similarity": 0.16470742225646973
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 379,
+                  "name": "LFW_Tim_Henman",
+                  "similarity": 0.4390261173248291,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 379,
+                      "name": "LFW_Tim_Henman",
+                      "similarity": 0.4390261173248291
+                    },
+                    {
+                      "person_id": 279,
+                      "name": "LFW_Monica_Seles",
+                      "similarity": 0.21154901385307312
+                    },
+                    {
+                      "person_id": 388,
+                      "name": "LFW_Tommy_Haas",
+                      "similarity": 0.20543164014816284
+                    },
+                    {
+                      "person_id": 63,
+                      "name": "LFW_Celine_Dion",
+                      "similarity": 0.16798236966133118
+                    },
+                    {
+                      "person_id": 160,
+                      "name": "LFW_James_Wolfensohn",
+                      "similarity": 0.16344168782234192
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Tim_Henman"
+              ],
+              "correct": true,
+              "outcome": "correct"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Tim_Henman/Tim_Henman_0005.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Tim_Henman",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.34238898754119873,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 379,
+                      "name": "LFW_Tim_Henman",
+                      "similarity": 0.34238898754119873
+                    },
+                    {
+                      "person_id": 381,
+                      "name": "LFW_Tom_Crean",
+                      "similarity": 0.22444209456443787
+                    },
+                    {
+                      "person_id": 8,
+                      "name": "LFW_Alastair_Campbell",
+                      "similarity": 0.19246217608451843
+                    },
+                    {
+                      "person_id": 400,
+                      "name": "LFW_Victoria_Clarke",
+                      "similarity": 0.17265939712524414
+                    },
+                    {
+                      "person_id": 198,
+                      "name": "LFW_Jon_Gruden",
+                      "similarity": 0.1664211004972458
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.37457841634750366,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 379,
+                      "name": "LFW_Tim_Henman",
+                      "similarity": 0.37457841634750366
+                    },
+                    {
+                      "person_id": 381,
+                      "name": "LFW_Tom_Crean",
+                      "similarity": 0.2339043766260147
+                    },
+                    {
+                      "person_id": 8,
+                      "name": "LFW_Alastair_Campbell",
+                      "similarity": 0.17993856966495514
+                    },
+                    {
+                      "person_id": 309,
+                      "name": "LFW_Pete_Sampras",
+                      "similarity": 0.17389363050460815
+                    },
+                    {
+                      "person_id": 269,
+                      "name": "LFW_Michelle_Yeoh",
+                      "similarity": 0.17123952507972717
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Larry_Brown/Larry_Brown_0003.png",
+          "scene": "02_光照不均_Retinex",
+          "expected_name": "LFW_Larry_Brown",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.40039676427841187,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 226,
+                      "name": "LFW_Larry_Brown",
+                      "similarity": 0.40039676427841187
+                    },
+                    {
+                      "person_id": 189,
+                      "name": "LFW_John_Howard",
+                      "similarity": 0.18380291759967804
+                    },
+                    {
+                      "person_id": 330,
+                      "name": "LFW_Robert_Blake",
+                      "similarity": 0.1748255491256714
+                    },
+                    {
+                      "person_id": 374,
+                      "name": "LFW_Tariq_Aziz",
+                      "similarity": 0.16697904467582703
+                    },
+                    {
+                      "person_id": 362,
+                      "name": "LFW_Silvio_Berlusconi",
+                      "similarity": 0.16379591822624207
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "retinex": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.42292070388793945,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 226,
+                      "name": "LFW_Larry_Brown",
+                      "similarity": 0.42292070388793945
+                    },
+                    {
+                      "person_id": 189,
+                      "name": "LFW_John_Howard",
+                      "similarity": 0.17952482402324677
+                    },
+                    {
+                      "person_id": 330,
+                      "name": "LFW_Robert_Blake",
+                      "similarity": 0.1660739779472351
+                    },
+                    {
+                      "person_id": 362,
+                      "name": "LFW_Silvio_Berlusconi",
+                      "similarity": 0.16538682579994202
+                    },
+                    {
+                      "person_id": 173,
+                      "name": "LFW_Jennifer_Garner",
+                      "similarity": 0.16343465447425842
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+          "scene": "02_光照不均_Retinex",
+          "expected_name": "LFW_Recep_Tayyip_Erdogan",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7656038999557495,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.7656038999557495
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.22071786224842072
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.19270062446594238
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.18916217982769012
+                    },
+                    {
+                      "person_id": 53,
+                      "name": "LFW_Bulent_Ecevit",
+                      "similarity": 0.18680956959724426
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            },
+            "retinex": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7789754867553711,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.7789754867553711
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.22597593069076538
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.1953028440475464
+                    },
+                    {
+                      "person_id": 182,
+                      "name": "LFW_Joan_Laporta",
+                      "similarity": 0.19022977352142334
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.18828341364860535
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Susan_Sarandon/Susan_Sarandon_0004.png",
+          "scene": "02_光照不均_Retinex",
+          "expected_name": "LFW_Susan_Sarandon",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.42682185769081116,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 370,
+                      "name": "LFW_Susan_Sarandon",
+                      "similarity": 0.42682185769081116
+                    },
+                    {
+                      "person_id": 207,
+                      "name": "LFW_Julianne_Moore",
+                      "similarity": 0.2876969575881958
+                    },
+                    {
+                      "person_id": 227,
+                      "name": "LFW_Laura_Bush",
+                      "similarity": 0.19650843739509583
+                    },
+                    {
+                      "person_id": 101,
+                      "name": "LFW_Elizabeth_Hurley",
+                      "similarity": 0.18554946780204773
+                    },
+                    {
+                      "person_id": 35,
+                      "name": "LFW_Benazir_Bhutto",
+                      "similarity": 0.17715002596378326
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "retinex": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 370,
+                  "name": "LFW_Susan_Sarandon",
+                  "similarity": 0.4358014464378357,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 370,
+                      "name": "LFW_Susan_Sarandon",
+                      "similarity": 0.4358014464378357
+                    },
+                    {
+                      "person_id": 207,
+                      "name": "LFW_Julianne_Moore",
+                      "similarity": 0.2721044719219208
+                    },
+                    {
+                      "person_id": 396,
+                      "name": "LFW_Vanessa_Redgrave",
+                      "similarity": 0.1910184770822525
+                    },
+                    {
+                      "person_id": 227,
+                      "name": "LFW_Laura_Bush",
+                      "similarity": 0.19082008302211761
+                    },
+                    {
+                      "person_id": 35,
+                      "name": "LFW_Benazir_Bhutto",
+                      "similarity": 0.18878912925720215
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Susan_Sarandon"
+              ],
+              "correct": true,
+              "outcome": "correct"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/03_低照度_Gamma/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+          "scene": "03_低照度_Gamma",
+          "expected_name": "LFW_Recep_Tayyip_Erdogan",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7990173101425171,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.7990173101425171
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.21446633338928223
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.21404722332954407
+                    },
+                    {
+                      "person_id": 182,
+                      "name": "LFW_Joan_Laporta",
+                      "similarity": 0.21207699179649353
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.18133442103862762
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            },
+            "gamma": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.8054998517036438,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 1,
+                      "name": "LFW_Abdullah_Gul",
+                      "similarity": 0.8054998517036438
+                    },
+                    {
+                      "person_id": 116,
+                      "name": "LFW_George_Clooney",
+                      "similarity": 0.2154616117477417
+                    },
+                    {
+                      "person_id": 341,
+                      "name": "LFW_Romano_Prodi",
+                      "similarity": 0.21484723687171936
+                    },
+                    {
+                      "person_id": 182,
+                      "name": "LFW_Joan_Laporta",
+                      "similarity": 0.2143470048904419
+                    },
+                    {
+                      "person_id": 147,
+                      "name": "LFW_Hu_Jintao",
+                      "similarity": 0.18098513782024384
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Abdullah_Gul"
+              ],
+              "correct": false,
+              "outcome": "wrong_identity"
+            }
+          }
+        },
+        {
+          "file": "lfw_280_new_lighting/query/03_低照度_Gamma/LFW_Sarah_Jessica_Parker/Sarah_Jessica_Parker_0003.png",
+          "scene": "03_低照度_Gamma",
+          "expected_name": "LFW_Sarah_Jessica_Parker",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.43318241834640503,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 350,
+                      "name": "LFW_Sarah_Jessica_Parker",
+                      "similarity": 0.43318241834640503
+                    },
+                    {
+                      "person_id": 228,
+                      "name": "LFW_LeBron_James",
+                      "similarity": 0.1592644900083542
+                    },
+                    {
+                      "person_id": 103,
+                      "name": "LFW_Elsa_Zylberstein",
+                      "similarity": 0.15467163920402527
+                    },
+                    {
+                      "person_id": 93,
+                      "name": "LFW_Diana_Krall",
+                      "similarity": 0.1457328200340271
+                    },
+                    {
+                      "person_id": 76,
+                      "name": "LFW_Clay_Aiken",
+                      "similarity": 0.14503903687000275
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "gamma": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.43592968583106995,
+                  "threshold": 0.435,
+                  "confirmed": true,
+                  "candidates": [
+                    {
+                      "person_id": 350,
+                      "name": "LFW_Sarah_Jessica_Parker",
+                      "similarity": 0.43592968583106995
+                    },
+                    {
+                      "person_id": 228,
+                      "name": "LFW_LeBron_James",
+                      "similarity": 0.15975749492645264
+                    },
+                    {
+                      "person_id": 93,
+                      "name": "LFW_Diana_Krall",
+                      "similarity": 0.15797799825668335
+                    },
+                    {
+                      "person_id": 103,
+                      "name": "LFW_Elsa_Zylberstein",
+                      "similarity": 0.15272164344787598
+                    },
+                    {
+                      "person_id": 76,
+                      "name": "LFW_Clay_Aiken",
+                      "similarity": 0.14810249209403992
+                    }
+                  ],
+                  "diagnostic": "身份已确认"
+                }
+              ],
+              "accepted_names": [
+                "LFW_Sarah_Jessica_Parker"
+              ],
+              "correct": true,
+              "outcome": "correct"
+            }
+          }
+        }
+      ]
+    },
+    "original_120": {
+      "protocol": {
+        "archive_sha256": "49d5243287ac350370142c58fb13e37589333c9d6f262fb067891b4226564deb",
+        "gallery_cache_sha256": "5fa0759149be5111e355053adb52ab4d00d9e7312d54af071a2163e2f2e52527",
+        "gallery_size": 400,
+        "queries": 1440,
+        "identities": 120,
+        "model_fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+        "threshold": 0.435,
+        "threshold_policy": "glintr100-development-balanced-v1",
+        "algorithm_version": "lumiface-1.4",
+        "recognition_policy": "face-local-v4",
+        "enhanced_weight": 0.3,
+        "local_policies": {
+          "clahe": {
+            "original_weight": 0.7
+          }
+        },
+        "method_enhanced_weights": {
+          "retinex": 0.5
+        },
+        "scoring": "exact identity in confirmed per-face top1 decisions; every image counted",
+        "methods": {
+          "00_正常光照": "original",
+          "01_逆光_CLAHE": "clahe",
+          "02_光照不均_Retinex": "retinex",
+          "03_低照度_Gamma": "gamma"
+        },
+        "previous_identity_overlap": 120,
+        "targets": {
+          "low_light": 0.95,
+          "backlight": 0.9,
+          "normal_low_light_backlight_combined": 0.95
+        },
+        "limitations": "Software simulated lighting, not infrared/real-capture validation. No unknown subjects in this pack. Gallery contains all 120 old and 280 new identities; no query filtering."
+      },
+      "summary": {
+        "00_正常光照/original": {
+          "images": 360,
+          "correct": 360,
+          "rejected": 0,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 1.0
+        },
+        "01_逆光_CLAHE/original": {
+          "images": 360,
+          "correct": 359,
+          "rejected": 1,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 0.9972222222222222
+        },
+        "01_逆光_CLAHE/clahe": {
+          "images": 360,
+          "correct": 359,
+          "rejected": 1,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 0.9972222222222222
+        },
+        "02_光照不均_Retinex/original": {
+          "images": 360,
+          "correct": 360,
+          "rejected": 0,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 1.0
+        },
+        "02_光照不均_Retinex/retinex": {
+          "images": 360,
+          "correct": 360,
+          "rejected": 0,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 1.0
+        },
+        "03_低照度_Gamma/original": {
+          "images": 360,
+          "correct": 360,
+          "rejected": 0,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 1.0
+        },
+        "03_低照度_Gamma/gamma": {
+          "images": 360,
+          "correct": 360,
+          "rejected": 0,
+          "wrong_identity": 0,
+          "no_face": 0,
+          "accuracy": 1.0
+        }
+      },
+      "predictions": "work/face-local-v4/final-original_120-predictions.jsonl",
+      "prediction_sha256": "61fa37b028f06022d75171519d7079dedcbac4feafa61a0319946909d14277f1",
+      "sources": [
+        {
+          "path": "work/face-local-v4/original-package/predictions.jsonl",
+          "sha256": "fe2d57835ccb92cf9f664ce481b11e17ee9623f28ae13d42fcad8088b8adb12d"
+        },
+        {
+          "path": "work/face-local-v4/retinex-original-final/predictions.jsonl",
+          "sha256": "a73f99dcec2dc5312431a6e38980a2694a6e36f55694634dbc84e6bf78d3324d"
+        }
+      ],
+      "errors": [
+        {
+          "file": "lfw_120_lighting/query/01_逆光_CLAHE/LFW_Colin_Montgomerie/Colin_Montgomerie_0004.png",
+          "scene": "01_逆光_CLAHE",
+          "expected_name": "LFW_Colin_Montgomerie",
+          "decisions": {
+            "original": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.40908509492874146,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 79,
+                      "name": "LFW_Colin_Montgomerie",
+                      "similarity": 0.40908509492874146
+                    },
+                    {
+                      "person_id": 122,
+                      "name": "LFW_Gerhard_Schroeder",
+                      "similarity": 0.22466927766799927
+                    },
+                    {
+                      "person_id": 141,
+                      "name": "LFW_Heizo_Takenaka",
+                      "similarity": 0.20419931411743164
+                    },
+                    {
+                      "person_id": 8,
+                      "name": "LFW_Alastair_Campbell",
+                      "similarity": 0.18239936232566833
+                    },
+                    {
+                      "person_id": 216,
+                      "name": "LFW_Kevin_Costner",
+                      "similarity": 0.17783227562904358
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            },
+            "clahe": {
+              "face_count": 1,
+              "matches": [
+                {
+                  "person_id": null,
+                  "name": "未知身份",
+                  "similarity": 0.40232744812965393,
+                  "threshold": 0.435,
+                  "confirmed": false,
+                  "candidates": [
+                    {
+                      "person_id": 79,
+                      "name": "LFW_Colin_Montgomerie",
+                      "similarity": 0.40232744812965393
+                    },
+                    {
+                      "person_id": 122,
+                      "name": "LFW_Gerhard_Schroeder",
+                      "similarity": 0.22238707542419434
+                    },
+                    {
+                      "person_id": 141,
+                      "name": "LFW_Heizo_Takenaka",
+                      "similarity": 0.20918208360671997
+                    },
+                    {
+                      "person_id": 8,
+                      "name": "LFW_Alastair_Campbell",
+                      "similarity": 0.17921501398086548
+                    },
+                    {
+                      "person_id": 379,
+                      "name": "LFW_Tim_Henman",
+                      "similarity": 0.16765518486499786
+                    }
+                  ],
+                  "diagnostic": "未达到身份确认标准"
+                }
+              ],
+              "accepted_names": [],
+              "correct": false,
+              "outcome": "rejected"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "development_protocol": {
+    "development_known": [
+      "Fernando_Henrique_Cardoso",
+      "Fernando_Gonzalez",
+      "Andy_Roddick",
+      "Ali_Naimi",
+      "Bill_Clinton",
+      "Antonio_Palocci",
+      "David_Beckham",
+      "Bob_Hope",
+      "Charles_Taylor",
+      "Atal_Bihari_Vajpayee",
+      "Ann_Veneman",
+      "Andre_Agassi",
+      "Anna_Kournikova",
+      "Cesar_Gaviria",
+      "Carlos_Menem",
+      "George_Robertson",
+      "Angelina_Jolie",
+      "Celine_Dion",
+      "Charles_Moose",
+      "Condoleezza_Rice",
+      "Amelie_Mauresmo",
+      "Bill_McBride",
+      "Colin_Farrell",
+      "Eduardo_Duhalde"
+    ],
+    "validation_known": [
+      "Alvaro_Uribe",
+      "Bill_Simon",
+      "Catherine_Zeta-Jones",
+      "Bill_Gates",
+      "Arnold_Schwarzenegger",
+      "Dominique_de_Villepin",
+      "George_HW_Bush",
+      "Abdullah_Gul",
+      "Ana_Palacio",
+      "George_Clooney",
+      "Britney_Spears",
+      "Ari_Fleischer",
+      "Ariel_Sharon",
+      "Dick_Cheney",
+      "Bill_Graham",
+      "Bill_Frist",
+      "Edmund_Stoiber",
+      "Colin_Powell",
+      "Carlos_Moya",
+      "David_Nalbandian",
+      "Alejandro_Toledo",
+      "Donald_Rumsfeld",
+      "Fidel_Castro",
+      "Adrien_Brody"
+    ],
+    "development_unknown": [
+      "Rafael_Ramirez",
+      "Chuck_Amato",
+      "Shi_Guangsheng",
+      "Nadia_Forte",
+      "Nizar_Trabelsi",
+      "Daryl_Hannah",
+      "Paul_Cerjan",
+      "Catherine_Bell",
+      "David_Caraway",
+      "Nancy_Smith",
+      "Bruce_Weber",
+      "Mark_Redman",
+      "Meg_Wakeman",
+      "Keith_Foulke",
+      "Carolyn_Kuhl",
+      "Robert_Wiener",
+      "Ellen_Pompeo",
+      "Anzori_Kikalishvili",
+      "Francis_George",
+      "Erin_Hershey_Presley",
+      "Christiane_Wulff",
+      "Thomas_Fargo",
+      "Paul_Li_Calsi",
+      "Juliette_Binoche",
+      "Bryant_Young",
+      "David_Alpay",
+      "Mel_Brooks",
+      "Deb_Santos",
+      "Loretta_Lynn_Harper",
+      "Eriko_Tamura"
+    ],
+    "validation_unknown": [
+      "Mary_Maddux",
+      "Andre_Techine",
+      "Taia_Balk",
+      "Vytas_Danelius",
+      "Angel_Maza",
+      "Danny_Green",
+      "Barbara_Esbin",
+      "Hartmut_Mehdorn",
+      "Chen_Kaige",
+      "Colleen_Jones",
+      "Zdravko_Mucic",
+      "Freddy_Garcia",
+      "Cristian_Barros",
+      "Brian_Lara",
+      "Rey_Sanchez",
+      "Norm_Macdonald",
+      "Arnold_Palmer",
+      "Aaron_Sorkin",
+      "Alonzo_Mourning",
+      "Stefaan_Declerk",
+      "Pedro_Mahecha",
+      "Brian_Mulroney",
+      "Pamela_Melroy",
+      "Maria_Wetterstrand",
+      "Jose_Lopez_Beltran",
+      "Steve_Mariucci",
+      "Diane_Lane",
+      "Steven_Craig",
+      "Adam_Herbert",
+      "Doug_Moe"
+    ],
+    "query_indices": [
+      6,
+      7,
+      8
+    ],
+    "threshold": 0.435,
+    "gallery_fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+    "source_rule": "Photos 6–8 of old-package identities only. No 280-new-package identities or query photos used for development."
+  },
+  "selected_candidates": {
+    "clahe": "local_mirror30",
+    "retinex": "global_50",
+    "gamma": "v3"
+  },
+  "development": {
+    "clahe": {
+      "known": 72,
+      "correct": 71,
+      "unknown": 30,
+      "false_accept": 0,
+      "mean_score": 0.6642233348555036,
+      "p05_score": 0.5250270545482636,
+      "min_score": 0.3847723603248596,
+      "p05_margin": 0.32075812518596647
+    },
+    "retinex": {
+      "known": 72,
+      "correct": 72,
+      "unknown": 30,
+      "false_accept": 0,
+      "mean_score": 0.7120602337850465,
+      "p05_score": 0.5662416458129883,
+      "min_score": 0.44401681423187256,
+      "p05_margin": 0.36983909010887145
+    },
+    "gamma": {
+      "known": 72,
+      "correct": 71,
+      "unknown": 30,
+      "false_accept": 0,
+      "mean_score": 0.7199983393980397,
+      "p05_score": 0.5729505985975265,
+      "min_score": 0.3442552387714386,
+      "p05_margin": 0.3740230903029442
+    }
+  },
+  "identity_disjoint_validation": {
+    "clahe": {
+      "previous": {
+        "known": 72,
+        "correct": 69,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.6463248816629251,
+        "p05_score": 0.48486074805259705,
+        "min_score": 0.2935887575149536,
+        "p05_margin": 0.2578914821147919
+      },
+      "selected": {
+        "known": 72,
+        "correct": 70,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.6476066302922037,
+        "p05_score": 0.49133365899324416,
+        "min_score": 0.29635509848594666,
+        "p05_margin": 0.2655235707759857
+      }
+    },
+    "retinex": {
+      "previous": {
+        "known": 72,
+        "correct": 71,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.7021192817224396,
+        "p05_score": 0.5412199258804321,
+        "min_score": 0.30273646116256714,
+        "p05_margin": 0.30880011469125745
+      },
+      "selected": {
+        "known": 72,
+        "correct": 71,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.7035087322195371,
+        "p05_score": 0.5431843400001526,
+        "min_score": 0.30712318420410156,
+        "p05_margin": 0.3119279071688652
+      }
+    },
+    "gamma": {
+      "previous": {
+        "known": 72,
+        "correct": 71,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.7098697593642606,
+        "p05_score": 0.5468904256820679,
+        "min_score": 0.27563998103141785,
+        "p05_margin": 0.31645275354385377
+      },
+      "selected": {
+        "known": 72,
+        "correct": 71,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.7098697593642606,
+        "p05_score": 0.5468904256820679,
+        "min_score": 0.27563998103141785,
+        "p05_margin": 0.31645275354385377
+      }
+    }
+  },
+  "search_audit": {
+    "first_selection": {
+      "selected": {
+        "clahe": "local_mirror30",
+        "retinex": "balanced_mirror70",
+        "gamma": "v3"
+      },
+      "selection_basis": "CLAHE/Retinex: highest mean genuine cosine on the development split among candidates with no loss of known-correct count or increase in unknown false accepts; Gamma retains the previously verified production policy. Same .435 decision threshold.",
+      "development_input_sha256": "b7a45b8e8d34a5767e2fdb5f623b2a29881cf639febcef00b65b73f2941f91e7",
+      "scores": {
+        "clahe": {
+          "known": 72,
+          "correct": 71,
+          "unknown": 30,
+          "false_accept": 0,
+          "mean_score": 0.6642233348555036,
+          "p05_score": 0.5250270545482636,
+          "min_score": 0.3847723603248596,
+          "p05_margin": 0.32075812518596647
+        },
+        "retinex": {
+          "known": 72,
+          "correct": 72,
+          "unknown": 30,
+          "false_accept": 0,
+          "mean_score": 0.7169331796467304,
+          "p05_score": 0.574589267373085,
+          "min_score": 0.4480816423892975,
+          "p05_margin": 0.3618785306811333
+        },
+        "gamma": {
+          "known": 72,
+          "correct": 71,
+          "unknown": 30,
+          "false_accept": 0,
+          "mean_score": 0.7199983393980397,
+          "p05_score": 0.5729505985975265,
+          "min_score": 0.3442552387714386,
+          "p05_margin": 0.3740230903029442
+        }
+      },
+      "validation_used_for_selection": false
+    },
+    "four_view_selection": {
+      "selected": "retinex/balanced_four_50",
+      "score": {
+        "known": 72,
+        "correct": 72,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.7175762959652476,
+        "p05_score": 0.5781784594058991,
+        "min_score": 0.44927388429641724,
+        "p05_margin": 0.36127568781375885
+      },
+      "basis": "Same development-only mean-genuine score criterion; six added four-view candidates. Package first-attempt outcome informed further research; package is now repeated evaluation, not fresh held-out evidence.",
+      "validation_used_for_selection": false
+    },
+    "final_retinex_selection": {
+      "selected": "retinex/global_50",
+      "score": {
+        "known": 72,
+        "correct": 72,
+        "unknown": 30,
+        "false_accept": 0,
+        "mean_score": 0.7120602337850465,
+        "p05_score": 0.5662416458129883,
+        "min_score": 0.44401681423187256,
+        "p05_margin": 0.36983909010887145
+      },
+      "basis": "Highest mean genuine score among 4 global fusion candidates with no development known-correct/FAR regression. Local/mirror Retinex variants failed to improve repeated package evaluation, so avoid their extra feature passes.",
+      "validation_used_for_selection": false,
+      "package_evaluation_is_repeated": true
+    },
+    "repeated_package_evaluation": true,
+    "note": "Parameters selected using development images; package outcomes informed subsequent candidate families. Reported package accuracy is repeated evaluation, not untouched generalization evidence."
+  },
+  "integrity": {
+    "original_predictions_identical_to_previous_version": true,
+    "failed_images_retained": true,
+    "threshold_equal_across_methods": true,
+    "gallery_and_model_unchanged": true,
+    "source_sha256": {
+      "backend/app/algorithms/recognition.py": "90fa7112a516ad470a6377e1324b8b2015578d0d602006b6bfe1e06ca03b1fa0",
+      "backend/app/algorithms/face_detector.py": "003821d2fb4f4d57b20dc6705ea974b89e76b5054a9487ffe003873db4f8fba9",
+      "backend/app/algorithms/enhancement.py": "8bd6ffa6e8cd386e40a23e88849936388ac81295eb28513b02f7922dc51a5415",
+      "scripts/benchmark_face_local.py": "9e98e344b81459645ba02f5e5d723b9de2b148b5b6be2743d410ab792aa9f571",
+      "scripts/probe_face_local.py": "9baa9cbfcd1ce41d21bc4db2fd8f41db63771c7c0b2284c58542245983b6b89d",
+      "scripts/evaluate_face_local.py": "1664116258cdd897a04a02776a069b85837fb2df8d9491496a5dec2ef38cdf90"
+    }
+  },
+  "engineering_checks": {
+    "full_backend_suite_passed": 187,
+    "added_retinex_history_test_passed": true,
+    "frontend_build": true,
+    "real_model_smoke": {
+      "purpose": "Real inference / API integration smoke test only",
+      "performance_claim": "NOT a real-scene benchmark. Same-source synthetic variants are correlated; no 95%/90% target is validated.",
+      "sources": [
+        "https://scikit-image.org/docs/stable/api/skimage.data.html#skimage.data.astronaut",
+        "https://github.com/matplotlib/matplotlib/tree/main/lib/matplotlib/mpl-data/sample_data"
+      ],
+      "checks": {
+        "known_verification": {
+          "confirmed": true,
+          "similarity": 0.9995174407958984,
+          "threshold": 0.435,
+          "elapsed_ms": 255.69938300000672
+        },
+        "unknown_rejection": {
+          "confirmed": false,
+          "similarity": -0.00388642237521708,
+          "threshold": 0.435,
+          "elapsed_ms": 241.4029920000189
+        },
+        "multi_face_count": 2,
+        "multi_face_any_confirmed_identity": {
+          "faces": 2,
+          "decisions": [
+            {
+              "person_id": 1,
+              "name": "Smoke reference A",
+              "similarity": 0.9895176887512207,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "Smoke reference A",
+                  "similarity": 0.9895176887512207
+                }
+              ],
+              "diagnostic": "身份已确认"
+            },
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": -0.009657293558120728,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "Smoke reference A",
+                  "similarity": -0.009657293558120728
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "methods_correct": [
+            "original",
+            "gamma",
+            "clahe",
+            "retinex"
+          ]
+        },
+        "delete_person_and_samples": true
+      },
+      "model": {
+        "ready": true,
+        "model": "buffalo_l",
+        "recognition_backbone": "glintr100",
+        "providers": [
+          "CPUExecutionProvider"
+        ],
+        "fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+        "error": null,
+        "detection_size": 640,
+        "inference_threads": {
+          "detection": {
+            "intra": 2,
+            "inter": 1
+          },
+          "recognition": {
+            "intra": 2,
+            "inter": 1
+          }
+        },
+        "weights_present": true,
+        "infrared_supported": "未验证；RGB 模型不保证可见光/红外跨模态准确率"
+      },
+      "experiment": {
+        "id": 2,
+        "dataset_id": 2,
+        "name": "Synthetic-variant integration smoke (NOT benchmark)",
+        "status": "completed",
+        "progress": 20,
+        "total": 20,
+        "config": {
+          "kind": "annotated_dataset",
+          "dataset": {
+            "name": "Synthetic-variant integration smoke (NOT benchmark)",
+            "split": "test",
+            "source": "scikit-image astronaut and Matplotlib grace_hopper; deterministic gamma / local darkening derivatives of source pictures",
+            "license": "Upstream sample image terms; astronaut NASA public domain. Retain upstream attribution.",
+            "real_capture": false,
+            "localization_protocol": "iou",
+            "protocol": {
+              "name": "exploratory",
+              "capture_independence": "unknown",
+              "scene_evidence": {}
+            },
+            "person_references": {
+              "1": "2026-11-06T11:25:50.428900"
+            }
+          },
+          "dataset_digest": "7a3f49139a264921a82f30ac0fc603e442955e67be97116945049c029a4ba56d",
+          "split": "test",
+          "methods": [
+            "original",
+            "gamma",
+            "clahe",
+            "retinex",
+            "adaptive"
+          ],
+          "thresholds": {
+            "original": 0.45,
+            "gamma": 0.45,
+            "clahe": 0.45,
+            "retinex": 0.45,
+            "adaptive": 0.45
+          },
+          "threshold_policy": "explicit",
+          "calibration_id": null,
+          "calibration_note": "未经校准的手动固定阈值，仅探索性评估",
+          "calibration_real_capture": false,
+          "gallery_digest": "93764a348861e512ecc2297923b745cc207cb7cb04297578baa62ffbdd647d7e",
+          "gallery_ids": [
+            1
+          ],
+          "environment": {
+            "cpu_model": "AMD Ryzen 9 7940HX with Radeon Graphics",
+            "cpu_logical_cores": 32,
+            "python": "3.12.2",
+            "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.31",
+            "processor": "x86_64",
+            "packages": {
+              "numpy": "1.26.4",
+              "opencv-python-headless": "4.10.0.84",
+              "insightface": "0.7.3",
+              "onnxruntime": "1.20.1",
+              "onnxruntime-gpu": null,
+              "torch": null,
+              "fastapi": "0.115.6"
+            },
+            "model": {
+              "ready": true,
+              "model": "buffalo_l",
+              "recognition_backbone": "glintr100",
+              "providers": [
+                "CPUExecutionProvider"
+              ],
+              "fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+              "error": null,
+              "detection_size": 640,
+              "inference_threads": {
+                "detection": {
+                  "intra": 2,
+                  "inter": 1
+                },
+                "recognition": {
+                  "intra": 2,
+                  "inter": 1
+                }
+              },
+              "weights_present": true,
+              "infrared_supported": "未验证；RGB 模型不保证可见光/红外跨模态准确率"
+            },
+            "algorithm_version": "lumiface-1.4"
+          },
+          "parameters": {
+            "original": {
+              "method": "original",
+              "auto_parameters": false,
+              "gamma": 0.65,
+              "clip_limit": 2.0,
+              "sigma": 30,
+              "target": 115,
+              "strength": 0.6
+            },
+            "gamma": {
+              "method": "gamma",
+              "auto_parameters": false,
+              "gamma": 0.65,
+              "clip_limit": 2.0,
+              "sigma": 30,
+              "target": 115,
+              "strength": 0.6
+            },
+            "clahe": {
+              "method": "clahe",
+              "auto_parameters": false,
+              "gamma": 0.65,
+              "clip_limit": 2.0,
+              "sigma": 30,
+              "target": 115,
+              "strength": 0.6
+            },
+            "retinex": {
+              "method": "retinex",
+              "auto_parameters": false,
+              "gamma": 0.65,
+              "clip_limit": 2.0,
+              "sigma": 30,
+              "target": 115,
+              "strength": 0.6
+            },
+            "adaptive": {
+              "method": "adaptive",
+              "auto_parameters": false,
+              "gamma": 0.65,
+              "clip_limit": 2.0,
+              "sigma": 30,
+              "target": 115,
+              "strength": 0.6
+            }
+          },
+          "parameter_policy": "fixed",
+          "recognition_policy": "processed-v1",
+          "enhanced_feature_weight": null,
+          "recognition_parameters": {},
+          "protocol": {
+            "name": "exploratory",
+            "capture_independence": "unknown",
+            "scene_evidence": {}
+          },
+          "localization_protocol": "iou",
+          "iou_threshold": 0.5,
+          "detector_threshold": 0.5,
+          "detector_size": [
+            640,
+            640
+          ],
+          "finished_at": "2026-11-06T11:26:00.403737+00:00"
+        },
+        "summary": {
+          "original": {
+            "overall": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "known": 3,
+              "unknown": 1,
+              "correct": 3,
+              "detected_known": 3,
+              "detected_unknown": 1,
+              "false_accept": 0,
+              "images": 4,
+              "known_subjects": 1,
+              "unknown_subjects": 1,
+              "confirmation_ci95": [
+                0.4385029682449546,
+                1.0
+              ],
+              "unknown_far_ci95": [
+                0.0,
+                0.7934506856227626
+              ],
+              "confirmation_subject_bootstrap_ci95": null,
+              "precision": 1.0,
+              "recall": 1.0,
+              "confirmation_rate": 1.0,
+              "recognition_accuracy": 1.0,
+              "unknown_far": 0.0,
+              "conditional_unknown_far": 0.0,
+              "mean_ms": 258.2252362500057
+            },
+            "scenes": {
+              "normal": {
+                "tp": 2,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 1,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 1,
+                "false_accept": 0,
+                "images": 2,
+                "known_subjects": 1,
+                "unknown_subjects": 1,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": [
+                  0.0,
+                  0.7934506856227626
+                ],
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": 0.0,
+                "conditional_unknown_far": 0.0,
+                "mean_ms": 272.9080565000146
+              },
+              "low_light": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 241.01504300000443
+              },
+              "backlight": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 246.0697889999892
+              },
+              "infrared": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "overexposed": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "uneven": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              }
+            },
+            "targets": {
+              "infrared": {
+                "target": 0.95,
+                "observed": null,
+                "status": "未评估",
+                "reasons": [
+                  "缺少所需场景的已知身份样本"
+                ]
+              },
+              "backlight": {
+                "target": 0.9,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "subject_ci95": null
+              },
+              "overall": {
+                "target": 0.95,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "normal 缺少可追溯场景证据",
+                  "low_light 缺少可追溯场景证据",
+                  "缺少真实低照度采集证据",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.4385029682449546,
+                  1.0
+                ],
+                "subject_ci95": null
+              }
+            }
+          },
+          "gamma": {
+            "overall": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "known": 3,
+              "unknown": 1,
+              "correct": 3,
+              "detected_known": 3,
+              "detected_unknown": 1,
+              "false_accept": 0,
+              "images": 4,
+              "known_subjects": 1,
+              "unknown_subjects": 1,
+              "confirmation_ci95": [
+                0.4385029682449546,
+                1.0
+              ],
+              "unknown_far_ci95": [
+                0.0,
+                0.7934506856227626
+              ],
+              "confirmation_subject_bootstrap_ci95": null,
+              "precision": 1.0,
+              "recall": 1.0,
+              "confirmation_rate": 1.0,
+              "recognition_accuracy": 1.0,
+              "unknown_far": 0.0,
+              "conditional_unknown_far": 0.0,
+              "mean_ms": 246.01389200000057
+            },
+            "scenes": {
+              "normal": {
+                "tp": 2,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 1,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 1,
+                "false_accept": 0,
+                "images": 2,
+                "known_subjects": 1,
+                "unknown_subjects": 1,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": [
+                  0.0,
+                  0.7934506856227626
+                ],
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": 0.0,
+                "conditional_unknown_far": 0.0,
+                "mean_ms": 249.48729749999643
+              },
+              "low_light": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 238.3043330000021
+              },
+              "backlight": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 246.77664000000732
+              },
+              "infrared": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "overexposed": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "uneven": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              }
+            },
+            "targets": {
+              "infrared": {
+                "target": 0.95,
+                "observed": null,
+                "status": "未评估",
+                "reasons": [
+                  "缺少所需场景的已知身份样本"
+                ]
+              },
+              "backlight": {
+                "target": 0.9,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "subject_ci95": null
+              },
+              "overall": {
+                "target": 0.95,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "normal 缺少可追溯场景证据",
+                  "low_light 缺少可追溯场景证据",
+                  "缺少真实低照度采集证据",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.4385029682449546,
+                  1.0
+                ],
+                "subject_ci95": null
+              }
+            }
+          },
+          "clahe": {
+            "overall": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "known": 3,
+              "unknown": 1,
+              "correct": 3,
+              "detected_known": 3,
+              "detected_unknown": 1,
+              "false_accept": 0,
+              "images": 4,
+              "known_subjects": 1,
+              "unknown_subjects": 1,
+              "confirmation_ci95": [
+                0.4385029682449546,
+                1.0
+              ],
+              "unknown_far_ci95": [
+                0.0,
+                0.7934506856227626
+              ],
+              "confirmation_subject_bootstrap_ci95": null,
+              "precision": 1.0,
+              "recall": 1.0,
+              "confirmation_rate": 1.0,
+              "recognition_accuracy": 1.0,
+              "unknown_far": 0.0,
+              "conditional_unknown_far": 0.0,
+              "mean_ms": 274.29108800000535
+            },
+            "scenes": {
+              "normal": {
+                "tp": 2,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 1,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 1,
+                "false_accept": 0,
+                "images": 2,
+                "known_subjects": 1,
+                "unknown_subjects": 1,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": [
+                  0.0,
+                  0.7934506856227626
+                ],
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": 0.0,
+                "conditional_unknown_far": 0.0,
+                "mean_ms": 245.37470400001382
+              },
+              "low_light": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 262.5711190000004
+              },
+              "backlight": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 343.84382499999333
+              },
+              "infrared": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "overexposed": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "uneven": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              }
+            },
+            "targets": {
+              "infrared": {
+                "target": 0.95,
+                "observed": null,
+                "status": "未评估",
+                "reasons": [
+                  "缺少所需场景的已知身份样本"
+                ]
+              },
+              "backlight": {
+                "target": 0.9,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "subject_ci95": null
+              },
+              "overall": {
+                "target": 0.95,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "normal 缺少可追溯场景证据",
+                  "low_light 缺少可追溯场景证据",
+                  "缺少真实低照度采集证据",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.4385029682449546,
+                  1.0
+                ],
+                "subject_ci95": null
+              }
+            }
+          },
+          "retinex": {
+            "overall": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "known": 3,
+              "unknown": 1,
+              "correct": 3,
+              "detected_known": 3,
+              "detected_unknown": 1,
+              "false_accept": 0,
+              "images": 4,
+              "known_subjects": 1,
+              "unknown_subjects": 1,
+              "confirmation_ci95": [
+                0.4385029682449546,
+                1.0
+              ],
+              "unknown_far_ci95": [
+                0.0,
+                0.7934506856227626
+              ],
+              "confirmation_subject_bootstrap_ci95": null,
+              "precision": 1.0,
+              "recall": 1.0,
+              "confirmation_rate": 1.0,
+              "recognition_accuracy": 1.0,
+              "unknown_far": 0.0,
+              "conditional_unknown_far": 0.0,
+              "mean_ms": 336.8697589999954
+            },
+            "scenes": {
+              "normal": {
+                "tp": 2,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 1,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 1,
+                "false_accept": 0,
+                "images": 2,
+                "known_subjects": 1,
+                "unknown_subjects": 1,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": [
+                  0.0,
+                  0.7934506856227626
+                ],
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": 0.0,
+                "conditional_unknown_far": 0.0,
+                "mean_ms": 263.5647365000011
+              },
+              "low_light": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 260.0432410000053
+              },
+              "backlight": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 560.306321999974
+              },
+              "infrared": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "overexposed": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "uneven": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              }
+            },
+            "targets": {
+              "infrared": {
+                "target": 0.95,
+                "observed": null,
+                "status": "未评估",
+                "reasons": [
+                  "缺少所需场景的已知身份样本"
+                ]
+              },
+              "backlight": {
+                "target": 0.9,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "subject_ci95": null
+              },
+              "overall": {
+                "target": 0.95,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "normal 缺少可追溯场景证据",
+                  "low_light 缺少可追溯场景证据",
+                  "缺少真实低照度采集证据",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.4385029682449546,
+                  1.0
+                ],
+                "subject_ci95": null
+              }
+            }
+          },
+          "adaptive": {
+            "overall": {
+              "tp": 4,
+              "fp": 0,
+              "fn": 0,
+              "known": 3,
+              "unknown": 1,
+              "correct": 3,
+              "detected_known": 3,
+              "detected_unknown": 1,
+              "false_accept": 0,
+              "images": 4,
+              "known_subjects": 1,
+              "unknown_subjects": 1,
+              "confirmation_ci95": [
+                0.4385029682449546,
+                1.0
+              ],
+              "unknown_far_ci95": [
+                0.0,
+                0.7934506856227626
+              ],
+              "confirmation_subject_bootstrap_ci95": null,
+              "precision": 1.0,
+              "recall": 1.0,
+              "confirmation_rate": 1.0,
+              "recognition_accuracy": 1.0,
+              "unknown_far": 0.0,
+              "conditional_unknown_far": 0.0,
+              "mean_ms": 256.3575997499896
+            },
+            "scenes": {
+              "normal": {
+                "tp": 2,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 1,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 1,
+                "false_accept": 0,
+                "images": 2,
+                "known_subjects": 1,
+                "unknown_subjects": 1,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": [
+                  0.0,
+                  0.7934506856227626
+                ],
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": 0.0,
+                "conditional_unknown_far": 0.0,
+                "mean_ms": 258.7512189999899
+              },
+              "low_light": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 253.73134000000164
+              },
+              "backlight": {
+                "tp": 1,
+                "fp": 0,
+                "fn": 0,
+                "known": 1,
+                "unknown": 0,
+                "correct": 1,
+                "detected_known": 1,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 1,
+                "known_subjects": 1,
+                "unknown_subjects": 0,
+                "confirmation_ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": 1.0,
+                "recall": 1.0,
+                "confirmation_rate": 1.0,
+                "recognition_accuracy": 1.0,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": 254.19662099997709
+              },
+              "infrared": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "overexposed": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              },
+              "uneven": {
+                "tp": 0,
+                "fp": 0,
+                "fn": 0,
+                "known": 0,
+                "unknown": 0,
+                "correct": 0,
+                "detected_known": 0,
+                "detected_unknown": 0,
+                "false_accept": 0,
+                "images": 0,
+                "known_subjects": 0,
+                "unknown_subjects": 0,
+                "confirmation_ci95": null,
+                "unknown_far_ci95": null,
+                "confirmation_subject_bootstrap_ci95": null,
+                "precision": null,
+                "recall": null,
+                "confirmation_rate": null,
+                "recognition_accuracy": null,
+                "unknown_far": null,
+                "conditional_unknown_far": null,
+                "mean_ms": null
+              }
+            },
+            "targets": {
+              "infrared": {
+                "target": 0.95,
+                "observed": null,
+                "status": "未评估",
+                "reasons": [
+                  "缺少所需场景的已知身份样本"
+                ]
+              },
+              "backlight": {
+                "target": 0.9,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.20654931437723745,
+                  1.0
+                ],
+                "subject_ci95": null
+              },
+              "overall": {
+                "target": 0.95,
+                "observed": 1.0,
+                "status": "探索性结果，不能判定达标",
+                "reasons": [
+                  "非真实独立采集数据",
+                  "未使用真实校准集冻结阈值",
+                  "未证明采集会话独立",
+                  "normal 缺少可追溯场景证据",
+                  "low_light 缺少可追溯场景证据",
+                  "缺少真实低照度采集证据",
+                  "backlight 缺少可追溯场景证据",
+                  "受控侧光/亮度统计不能替代真实强逆光证据",
+                  "样本不足：至少需 100 次已知查询及 10 名已知人员"
+                ],
+                "ci95": [
+                  0.4385029682449546,
+                  1.0
+                ],
+                "subject_ci95": null
+              }
+            }
+          }
+        },
+        "error": null,
+        "created_at": "2026-11-06T11:25:54.492006",
+        "error_summary": null
+      },
+      "predictions": [
+        {
+          "id": 5,
+          "method": "original",
+          "scene": "normal",
+          "item_index": 0,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 299.011629000006,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9996786117553711,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.88221740722656,
+                59.324867248535156,
+                270.4744873046875,
+                179.0801544189453
+              ],
+              "keypoints": [
+                [
+                  204.34100341796875,
+                  100.88658142089844
+                ],
+                [
+                  247.2342529296875,
+                  102.93961334228516
+                ],
+                [
+                  224.0817108154297,
+                  128.6833038330078
+                ],
+                [
+                  202.6981964111328,
+                  139.06089782714844
+                ],
+                [
+                  244.8251495361328,
+                  141.0688018798828
+                ]
+              ],
+              "confidence": 0.831552267074585,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9996786117553711,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9996786117553711
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 299.011629000006,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-0",
+          "steps": [
+            "关闭增强"
+          ],
+          "parameters": {
+            "method": "original",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 6,
+          "method": "gamma",
+          "scene": "normal",
+          "item_index": 0,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 262.69213099999433,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9976863861083984,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                181.02049255371094,
+                58.9761962890625,
+                270.65289306640625,
+                179.10020446777344
+              ],
+              "keypoints": [
+                [
+                  204.30599975585938,
+                  100.88887023925781
+                ],
+                [
+                  247.18832397460938,
+                  102.9842529296875
+                ],
+                [
+                  223.9174346923828,
+                  128.7493133544922
+                ],
+                [
+                  202.66693115234375,
+                  139.0457763671875
+                ],
+                [
+                  244.8127899169922,
+                  141.11453247070312
+                ]
+              ],
+              "confidence": 0.8296236991882324,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9976863861083984,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9976863861083984
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 262.69213099999433,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-0",
+          "steps": [
+            "Gamma=0.65"
+          ],
+          "parameters": {
+            "method": "gamma",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 7,
+          "method": "clahe",
+          "scene": "normal",
+          "item_index": 0,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 242.32048600001121,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9811403155326843,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.8540496826172,
+                59.23261642456055,
+                270.6189270019531,
+                178.9177703857422
+              ],
+              "keypoints": [
+                [
+                  204.63516235351562,
+                  100.87635040283203
+                ],
+                [
+                  247.1780548095703,
+                  103.10115814208984
+                ],
+                [
+                  224.1389617919922,
+                  128.3916473388672
+                ],
+                [
+                  202.62149047851562,
+                  138.91036987304688
+                ],
+                [
+                  244.885009765625,
+                  141.13137817382812
+                ]
+              ],
+              "confidence": 0.8289326429367065,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9811403155326843,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9811403155326843
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 242.32048600001121,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-0",
+          "steps": [
+            "CLAHE clip=2.0"
+          ],
+          "parameters": {
+            "method": "clahe",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 8,
+          "method": "retinex",
+          "scene": "normal",
+          "item_index": 0,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 263.25575100000265,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9884361624717712,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                181.121337890625,
+                58.51226806640625,
+                270.8018798828125,
+                179.02407836914062
+              ],
+              "keypoints": [
+                [
+                  204.3833770751953,
+                  100.93193817138672
+                ],
+                [
+                  246.9868621826172,
+                  102.9040298461914
+                ],
+                [
+                  223.88272094726562,
+                  128.67779541015625
+                ],
+                [
+                  202.9038543701172,
+                  139.04672241210938
+                ],
+                [
+                  244.77218627929688,
+                  141.0148162841797
+                ]
+              ],
+              "confidence": 0.8336355686187744,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9884361624717712,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9884361624717712
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 263.25575100000265,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-0",
+          "steps": [
+            "SSR sigma=30.0, strength=0.6"
+          ],
+          "parameters": {
+            "method": "retinex",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 9,
+          "method": "adaptive",
+          "scene": "normal",
+          "item_index": 0,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 242.19145600000047,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9996786117553711,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.88221740722656,
+                59.324867248535156,
+                270.4744873046875,
+                179.0801544189453
+              ],
+              "keypoints": [
+                [
+                  204.34100341796875,
+                  100.88658142089844
+                ],
+                [
+                  247.2342529296875,
+                  102.93961334228516
+                ],
+                [
+                  224.0817108154297,
+                  128.6833038330078
+                ],
+                [
+                  202.6981964111328,
+                  139.06089782714844
+                ],
+                [
+                  244.8251495361328,
+                  141.0688018798828
+                ]
+              ],
+              "confidence": 0.831552267074585,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9996786117553711,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9996786117553711
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 242.19145600000047,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-0",
+          "steps": [
+            "正常光照，不增强"
+          ],
+          "parameters": {
+            "method": "adaptive",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 10,
+          "method": "original",
+          "scene": "low_light",
+          "item_index": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 241.01504300000443,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9913215637207031,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.58023071289062,
+                58.57720184326172,
+                270.0260925292969,
+                178.92575073242188
+              ],
+              "keypoints": [
+                [
+                  204.433349609375,
+                  100.96693420410156
+                ],
+                [
+                  247.2643585205078,
+                  102.85499572753906
+                ],
+                [
+                  224.4075164794922,
+                  128.87118530273438
+                ],
+                [
+                  202.73561096191406,
+                  139.161376953125
+                ],
+                [
+                  245.0231170654297,
+                  140.99203491210938
+                ]
+              ],
+              "confidence": 0.8285053968429565,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9913215637207031,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9913215637207031
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 241.01504300000443,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-1",
+          "steps": [
+            "关闭增强"
+          ],
+          "parameters": {
+            "method": "original",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 11,
+          "method": "gamma",
+          "scene": "low_light",
+          "item_index": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 238.3043330000021,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9965880513191223,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.64637756347656,
+                58.8932991027832,
+                270.1937561035156,
+                179.02975463867188
+              ],
+              "keypoints": [
+                [
+                  204.3794403076172,
+                  100.96862030029297
+                ],
+                [
+                  247.15185546875,
+                  102.83980560302734
+                ],
+                [
+                  224.28585815429688,
+                  128.6079864501953
+                ],
+                [
+                  202.87930297851562,
+                  139.18911743164062
+                ],
+                [
+                  244.8504180908203,
+                  141.0237274169922
+                ]
+              ],
+              "confidence": 0.8302618265151978,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9965880513191223,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9965880513191223
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 238.3043330000021,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-1",
+          "steps": [
+            "Gamma=0.65"
+          ],
+          "parameters": {
+            "method": "gamma",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 12,
+          "method": "clahe",
+          "scene": "low_light",
+          "item_index": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 262.5711190000004,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9775736927986145,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.48672485351562,
+                59.193092346191406,
+                270.314453125,
+                178.93063354492188
+              ],
+              "keypoints": [
+                [
+                  204.48193359375,
+                  101.01876831054688
+                ],
+                [
+                  247.152099609375,
+                  103.20094299316406
+                ],
+                [
+                  224.2375030517578,
+                  128.3135986328125
+                ],
+                [
+                  202.5648651123047,
+                  139.0309600830078
+                ],
+                [
+                  244.7379913330078,
+                  141.17393493652344
+                ]
+              ],
+              "confidence": 0.8288373947143555,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9775736927986145,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9775736927986145
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 262.5711190000004,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-1",
+          "steps": [
+            "CLAHE clip=2.0"
+          ],
+          "parameters": {
+            "method": "clahe",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 13,
+          "method": "retinex",
+          "scene": "low_light",
+          "item_index": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 260.0432410000053,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.987606942653656,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.5557861328125,
+                58.503753662109375,
+                270.65692138671875,
+                178.9811553955078
+              ],
+              "keypoints": [
+                [
+                  204.21029663085938,
+                  100.9417724609375
+                ],
+                [
+                  247.1250762939453,
+                  102.83213806152344
+                ],
+                [
+                  224.13186645507812,
+                  128.7952117919922
+                ],
+                [
+                  202.8496856689453,
+                  139.2441864013672
+                ],
+                [
+                  245.1390380859375,
+                  141.0269775390625
+                ]
+              ],
+              "confidence": 0.8418984413146973,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.987606942653656,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.987606942653656
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 260.0432410000053,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-1",
+          "steps": [
+            "SSR sigma=30.0, strength=0.6"
+          ],
+          "parameters": {
+            "method": "retinex",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 14,
+          "method": "adaptive",
+          "scene": "low_light",
+          "item_index": 1,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 253.73134000000164,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9843209981918335,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.66275024414062,
+                58.84760284423828,
+                270.4239196777344,
+                179.01461791992188
+              ],
+              "keypoints": [
+                [
+                  204.619873046875,
+                  100.9805679321289
+                ],
+                [
+                  247.09036254882812,
+                  103.05583190917969
+                ],
+                [
+                  224.2304229736328,
+                  128.45584106445312
+                ],
+                [
+                  202.76759338378906,
+                  139.04380798339844
+                ],
+                [
+                  244.7678680419922,
+                  141.10226440429688
+                ]
+              ],
+              "confidence": 0.8291255235671997,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9843209981918335,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9843209981918335
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 253.73134000000164,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-1",
+          "steps": [
+            "低照度 Gamma=0.630",
+            "CLAHE clip=1.6"
+          ],
+          "parameters": {
+            "method": "adaptive",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 15,
+          "method": "original",
+          "scene": "backlight",
+          "item_index": 2,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 246.0697889999892,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.991610050201416,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.60348510742188,
+                56.74794387817383,
+                270.2920227050781,
+                178.93968200683594
+              ],
+              "keypoints": [
+                [
+                  204.4838104248047,
+                  100.89238739013672
+                ],
+                [
+                  247.20114135742188,
+                  102.85697174072266
+                ],
+                [
+                  224.3479461669922,
+                  128.87490844726562
+                ],
+                [
+                  202.83563232421875,
+                  139.04812622070312
+                ],
+                [
+                  244.9974365234375,
+                  140.9270477294922
+                ]
+              ],
+              "confidence": 0.8394904136657715,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.991610050201416,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.991610050201416
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 246.0697889999892,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-2",
+          "steps": [
+            "关闭增强"
+          ],
+          "parameters": {
+            "method": "original",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 16,
+          "method": "gamma",
+          "scene": "backlight",
+          "item_index": 2,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 246.77664000000732,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9965866804122925,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.8299560546875,
+                56.33256912231445,
+                270.4152526855469,
+                179.09347534179688
+              ],
+              "keypoints": [
+                [
+                  204.45700073242188,
+                  100.91911315917969
+                ],
+                [
+                  247.0739288330078,
+                  102.86962890625
+                ],
+                [
+                  224.160400390625,
+                  128.66851806640625
+                ],
+                [
+                  202.80996704101562,
+                  139.05734252929688
+                ],
+                [
+                  244.9359588623047,
+                  140.95396423339844
+                ]
+              ],
+              "confidence": 0.84201979637146,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9965866804122925,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9965866804122925
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 246.77664000000732,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-2",
+          "steps": [
+            "Gamma=0.65"
+          ],
+          "parameters": {
+            "method": "gamma",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 17,
+          "method": "clahe",
+          "scene": "backlight",
+          "item_index": 2,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 343.84382499999333,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9776395559310913,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.6105194091797,
+                58.30126953125,
+                270.1896057128906,
+                178.9824981689453
+              ],
+              "keypoints": [
+                [
+                  204.6773223876953,
+                  100.95962524414062
+                ],
+                [
+                  247.05325317382812,
+                  103.08729553222656
+                ],
+                [
+                  224.3467559814453,
+                  128.5841522216797
+                ],
+                [
+                  202.78073120117188,
+                  138.97779846191406
+                ],
+                [
+                  244.8831329345703,
+                  141.04861450195312
+                ]
+              ],
+              "confidence": 0.8344647884368896,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9776395559310913,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9776395559310913
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 343.84382499999333,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-2",
+          "steps": [
+            "CLAHE clip=2.0"
+          ],
+          "parameters": {
+            "method": "clahe",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 18,
+          "method": "retinex",
+          "scene": "backlight",
+          "item_index": 2,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 560.306321999974,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.9870055317878723,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.75369262695312,
+                56.1961555480957,
+                270.7335205078125,
+                178.88473510742188
+              ],
+              "keypoints": [
+                [
+                  204.37896728515625,
+                  100.93988037109375
+                ],
+                [
+                  247.0071563720703,
+                  102.8017807006836
+                ],
+                [
+                  224.1184539794922,
+                  128.6180877685547
+                ],
+                [
+                  202.95021057128906,
+                  139.1040496826172
+                ],
+                [
+                  245.1165771484375,
+                  140.8800506591797
+                ]
+              ],
+              "confidence": 0.8485515117645264,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.9870055317878723,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.9870055317878723
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 560.306321999974,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-2",
+          "steps": [
+            "SSR sigma=30.0, strength=0.6"
+          ],
+          "parameters": {
+            "method": "retinex",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 19,
+          "method": "adaptive",
+          "scene": "backlight",
+          "item_index": 2,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 1,
+          "unknown": 0,
+          "correct": 1,
+          "detected_known": 1,
+          "detected_unknown": 0,
+          "false_accept": 0,
+          "elapsed_ms": 254.19662099997709,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": true,
+              "correct": true,
+              "detected": true,
+              "score": 0.991610050201416,
+              "candidate_id": 1,
+              "truth_person_id": 1,
+              "subject": "known-A"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                180.60348510742188,
+                56.74794387817383,
+                270.2920227050781,
+                178.93968200683594
+              ],
+              "keypoints": [
+                [
+                  204.4838104248047,
+                  100.89238739013672
+                ],
+                [
+                  247.20114135742188,
+                  102.85697174072266
+                ],
+                [
+                  224.3479461669922,
+                  128.87490844726562
+                ],
+                [
+                  202.83563232421875,
+                  139.04812622070312
+                ],
+                [
+                  244.9974365234375,
+                  140.9270477294922
+                ]
+              ],
+              "confidence": 0.8394904136657715,
+              "match": {
+                "person_id": 1,
+                "name": "Smoke reference A",
+                "similarity": 0.991610050201416,
+                "threshold": 0.45,
+                "confirmed": true,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.991610050201416
+                  }
+                ],
+                "diagnostic": "身份已确认"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 254.19662099997709,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-2",
+          "steps": [
+            "正常光照，不增强"
+          ],
+          "parameters": {
+            "method": "adaptive",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 20,
+          "method": "original",
+          "scene": "normal",
+          "item_index": 3,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 0,
+          "unknown": 1,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "elapsed_ms": 246.8044840000232,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": false,
+              "correct": false,
+              "detected": true,
+              "score": -0.00388642237521708,
+              "candidate_id": 1,
+              "truth_person_id": null,
+              "subject": "unknown-B"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                179.2227325439453,
+                126.75486755371094,
+                348.46484375,
+                329.97314453125
+              ],
+              "keypoints": [
+                [
+                  223.66282653808594,
+                  191.0480194091797
+                ],
+                [
+                  308.7927551269531,
+                  189.50828552246094
+                ],
+                [
+                  269.3231201171875,
+                  236.0895233154297
+                ],
+                [
+                  234.31825256347656,
+                  278.1164245605469
+                ],
+                [
+                  302.8416748046875,
+                  276.3597106933594
+                ]
+              ],
+              "confidence": 0.8051871061325073,
+              "match": {
+                "person_id": null,
+                "name": "未知身份",
+                "similarity": -0.00388642237521708,
+                "threshold": 0.45,
+                "confirmed": false,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": -0.00388642237521708
+                  }
+                ],
+                "diagnostic": "未达到身份确认标准"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 246.8044840000232,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-3",
+          "steps": [
+            "关闭增强"
+          ],
+          "parameters": {
+            "method": "original",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 21,
+          "method": "gamma",
+          "scene": "normal",
+          "item_index": 3,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 0,
+          "unknown": 1,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "elapsed_ms": 236.28246399999853,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": false,
+              "correct": false,
+              "detected": true,
+              "score": 0.002581339795142412,
+              "candidate_id": 1,
+              "truth_person_id": null,
+              "subject": "unknown-B"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                178.89205932617188,
+                127.34069061279297,
+                348.0642395019531,
+                330.3988952636719
+              ],
+              "keypoints": [
+                [
+                  223.5234832763672,
+                  190.5325164794922
+                ],
+                [
+                  308.12548828125,
+                  189.23684692382812
+                ],
+                [
+                  268.8446350097656,
+                  236.3944549560547
+                ],
+                [
+                  234.4774932861328,
+                  278.4903259277344
+                ],
+                [
+                  302.32281494140625,
+                  276.8880615234375
+                ]
+              ],
+              "confidence": 0.8191645741462708,
+              "match": {
+                "person_id": null,
+                "name": "未知身份",
+                "similarity": 0.002581339795142412,
+                "threshold": 0.45,
+                "confirmed": false,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": 0.002581339795142412
+                  }
+                ],
+                "diagnostic": "未达到身份确认标准"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 236.28246399999853,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-3",
+          "steps": [
+            "Gamma=0.65"
+          ],
+          "parameters": {
+            "method": "gamma",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 22,
+          "method": "clahe",
+          "scene": "normal",
+          "item_index": 3,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 0,
+          "unknown": 1,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "elapsed_ms": 248.42892200001643,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": false,
+              "correct": false,
+              "detected": true,
+              "score": -0.002247114200145006,
+              "candidate_id": 1,
+              "truth_person_id": null,
+              "subject": "unknown-B"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                177.63002014160156,
+                127.04589080810547,
+                348.79052734375,
+                329.04302978515625
+              ],
+              "keypoints": [
+                [
+                  223.09219360351562,
+                  192.05934143066406
+                ],
+                [
+                  309.30645751953125,
+                  190.1667022705078
+                ],
+                [
+                  269.69512939453125,
+                  236.1348876953125
+                ],
+                [
+                  233.78033447265625,
+                  278.431640625
+                ],
+                [
+                  303.0181884765625,
+                  276.3716735839844
+                ]
+              ],
+              "confidence": 0.8016102313995361,
+              "match": {
+                "person_id": null,
+                "name": "未知身份",
+                "similarity": -0.002247114200145006,
+                "threshold": 0.45,
+                "confirmed": false,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": -0.002247114200145006
+                  }
+                ],
+                "diagnostic": "未达到身份确认标准"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 248.42892200001643,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-3",
+          "steps": [
+            "CLAHE clip=2.0"
+          ],
+          "parameters": {
+            "method": "clahe",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 23,
+          "method": "retinex",
+          "scene": "normal",
+          "item_index": 3,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 0,
+          "unknown": 1,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "elapsed_ms": 263.8737219999996,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": false,
+              "correct": false,
+              "detected": true,
+              "score": -0.0035931395832449198,
+              "candidate_id": 1,
+              "truth_person_id": null,
+              "subject": "unknown-B"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                178.22967529296875,
+                128.46788024902344,
+                349.01220703125,
+                330.0777893066406
+              ],
+              "keypoints": [
+                [
+                  223.55206298828125,
+                  190.0818634033203
+                ],
+                [
+                  308.03985595703125,
+                  189.13821411132812
+                ],
+                [
+                  268.6530456542969,
+                  236.81680297851562
+                ],
+                [
+                  234.5801544189453,
+                  278.2518005371094
+                ],
+                [
+                  302.15142822265625,
+                  276.9822998046875
+                ]
+              ],
+              "confidence": 0.829398512840271,
+              "match": {
+                "person_id": null,
+                "name": "未知身份",
+                "similarity": -0.0035931395832449198,
+                "threshold": 0.45,
+                "confirmed": false,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": -0.0035931395832449198
+                  }
+                ],
+                "diagnostic": "未达到身份确认标准"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 263.8737219999996,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-3",
+          "steps": [
+            "SSR sigma=30.0, strength=0.6"
+          ],
+          "parameters": {
+            "method": "retinex",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        },
+        {
+          "id": 24,
+          "method": "adaptive",
+          "scene": "normal",
+          "item_index": 3,
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "known": 0,
+          "unknown": 1,
+          "correct": 0,
+          "detected_known": 0,
+          "detected_unknown": 1,
+          "false_accept": 0,
+          "elapsed_ms": 275.3109819999793,
+          "localization_protocol": "iou",
+          "decisions": [
+            {
+              "known": false,
+              "correct": false,
+              "detected": true,
+              "score": -0.0003722968976944685,
+              "candidate_id": 1,
+              "truth_person_id": null,
+              "subject": "unknown-B"
+            }
+          ],
+          "predictions": [
+            {
+              "bbox": [
+                178.94895935058594,
+                127.84832000732422,
+                348.7569274902344,
+                330.2822265625
+              ],
+              "keypoints": [
+                [
+                  223.75709533691406,
+                  190.31365966796875
+                ],
+                [
+                  308.15087890625,
+                  189.3103485107422
+                ],
+                [
+                  268.70477294921875,
+                  236.66563415527344
+                ],
+                [
+                  234.57412719726562,
+                  278.26953125
+                ],
+                [
+                  302.2141418457031,
+                  276.9393310546875
+                ]
+              ],
+              "confidence": 0.8272837400436401,
+              "match": {
+                "person_id": null,
+                "name": "未知身份",
+                "similarity": -0.0003722968976944685,
+                "threshold": 0.45,
+                "confirmed": false,
+                "candidates": [
+                  {
+                    "person_id": 1,
+                    "name": "Smoke reference A",
+                    "similarity": -0.0003722968976944685
+                  }
+                ],
+                "diagnostic": "未达到身份确认标准"
+              }
+            }
+          ],
+          "timing": {
+            "original_inference_ms": 0.0,
+            "method_ms": 275.3109819999793,
+            "accounting": "standalone"
+          },
+          "capture_id": "synthetic-derived-case-3",
+          "steps": [
+            "光照不均匀 SSR strength=0.45"
+          ],
+          "parameters": {
+            "method": "adaptive",
+            "auto_parameters": false,
+            "gamma": 0.65,
+            "clip_limit": 2.0,
+            "sigma": 30.0,
+            "target": 115.0,
+            "strength": 0.6
+          }
+        }
+      ]
+    },
+    "browser_tests": 3,
+    "live_service": {
+      "frontend": {
+        "status": 200
+      },
+      "model": {
+        "status": 200,
+        "response": {
+          "data": {
+            "ready": true,
+            "model": "buffalo_l",
+            "recognition_backbone": "glintr100",
+            "providers": [
+              "CPUExecutionProvider"
+            ],
+            "fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+            "error": null,
+            "detection_size": 640,
+            "inference_threads": {
+              "detection": {
+                "intra": 2,
+                "inter": 1
+              },
+              "recognition": {
+                "intra": 2,
+                "inter": 1
+              }
+            },
+            "weights_present": true,
+            "infrared_supported": "未验证；RGB 模型不保证可见光/红外跨模态准确率"
+          },
+          "message": "ok"
+        }
+      },
+      "overview": {
+        "status": 200,
+        "counts": {
+          "persons": 120,
+          "samples": 240,
+          "detections": 1,
+          "recognitions": 0,
+          "datasets": 6,
+          "experiments": 6
+        }
+      },
+      "production_database_unchanged": true
+    }
+  },
+  "limitations": [
+    "Software-simulated illumination, not real-capture/infrared validation.",
+    "Each enhancement evaluated on its corresponding lighting scene; no universal per-image superiority.",
+    "120-person regression identities overlap development; query photos differ.",
+    "A baseline at 100% cannot be strictly improved.",
+    "Small observed gains do not establish statistically significant or universal superiority.",
+    "Unknown validation contains 30 identities under 3 simulated lighting conditions, not 90 independent subjects.",
+    "CLAHE includes feature mirroring; gains are not attributable to pixel enhancement alone.",
+    "Parallel inference time is not application single-image latency."
+  ]
+}

@@ -64,9 +64,10 @@ def test_identity_deletion_keeps_downloads_and_original_photos(
     downloads = tmp_path / "datasets"
     downloads.mkdir()
     protected = {
-        downloads / "att_faces_demo.zip": b"downloaded demo archive",
-        downloads / "att_lighting_simulation.zip": b"downloaded simulation archive",
-        downloads / "att_lighting_three_scenes.zip": b"three scene archive",
+        downloads / "lfw_120_demo.zip": b"downloaded demo archive",
+        downloads / "lfw_120_lighting.zip": b"original lighting archive",
+        downloads / "lfw_280_new_lighting.zip": b"new identities archive",
+        downloads / "lfw_400_lighting.zip": b"preserved earlier archive",
         downloads / "original.png": photo(),
     }
     for path, content in protected.items():
@@ -82,13 +83,10 @@ def test_identity_deletion_keeps_downloads_and_original_photos(
     for path, content in protected.items():
         assert path.read_bytes() == content
     assert (
-        client.get("/api/person/demo-dataset").content
-        == protected[downloads / "att_faces_demo.zip"]
+        client.get("/api/person/lfw-dataset").content
+        == protected[downloads / "lfw_120_lighting.zip"]
     )
-    assert (
-        client.get("/api/person/simulated-dataset").content
-        == protected[downloads / "att_lighting_three_scenes.zip"]
-    )
+    assert client.get("/api/person/lfw-new-dataset").content == protected[downloads / "lfw_280_new_lighting.zip"]
 
 
 def test_failed_file_removal_is_reported_and_retried_on_restart(client, model, monkeypatch):

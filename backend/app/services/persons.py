@@ -8,8 +8,8 @@ from app.algorithms.face_recognizer import unit
 from app.algorithms.light_analysis import analyze
 from app.core.config import DATA
 from app.core.errors import AppError
-from app.models.entities import Person, FaceSample, Dataset, RecognitionRecord
-from app.services.images import digest, png
+from app.models.entities import Person, FaceSample, FaceEncoding, Dataset, RecognitionRecord
+from app.services.images import digest, png, decode
 from app.services.storage import queue_sample_deletion, purge_pending_samples
 
 logger = logging.getLogger(__name__)
@@ -122,12 +122,35 @@ def gallery(db: Session, target: int | None = None) -> list[dict]:
         else list(db.scalars(select(Person).order_by(Person.id)))
     )
     result = []
+    changed = False
     for person in persons:
-        if any(s.model_fingerprint != engine.fingerprint for s in person.samples):
-            raise AppError("身份库模型指纹与当前模型不一致，请重新注册相关样本", 409)
-        if person.samples:
-            template = unit(np.mean([unit(s.embedding) for s in person.samples], axis=0))
+        vectors = []
+        for sample in person.samples:
+            if sample.model_fingerprint == engine.fingerprint:
+                vectors.append(unit(sample.embedding))
+                continue
+            if sample.model_fingerprint not in engine.compatible_fingerprints:
+                raise AppError("身份库模型指纹与当前模型不一致，请重新注册相关样本", 409)
+            cached = next((e for e in sample.encodings if e.model_fingerprint == engine.fingerprint), None)
+            if cached is None:
+                path = DATA / "samples" / sample.path
+                if not path.is_file():
+                    raise AppError("注册照片缺失，无法更新人脸特征，请重新注册相关样本", 409)
+                image = decode(path.read_bytes())
+                if digest(image) != sample.digest:
+                    raise AppError("注册照片校验不一致，无法更新人脸特征", 409)
+                faces = engine.infer(image)
+                if len(faces) != 1:
+                    raise AppError("注册照片无法确定唯一人脸，请重新注册相关样本", 409)
+                cached = FaceEncoding(model_fingerprint=engine.fingerprint, embedding=faces[0]["embedding"])
+                sample.encodings.append(cached)
+                changed = True
+            vectors.append(unit(cached.embedding))
+        if vectors:
+            template = unit(np.mean(vectors, axis=0))
             result.append({"id": person.id, "name": person.name, "embedding": template.tolist()})
+    if changed:
+        db.commit()
     return result
 
 
@@ -152,6 +175,11 @@ def delete_people(db: Session, person_ids: list[int]) -> dict:
             or result.get("target_person_id") in selected
             or any(
                 candidate.get("person_id") in selected for candidate in result.get("candidates", [])
+            )
+            or any(
+                decision.get("person_id") in selected
+                or any(c.get("person_id") in selected for c in decision.get("candidates", []))
+                for decision in result.get("face_matches", [])
             )
         ):
             db.delete(row)

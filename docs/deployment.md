@@ -4,7 +4,7 @@
 
 WSL Ubuntu 20.04、Python 3.12.2（项目 .venv）、Node.js 24.11.0、npm 11.6.1、ONNX Runtime 1.20.1 CPU。系统默认 Python 3.8 不满足要求，使用已有 `/home/zns/anaconda3/bin/python` 创建虚拟环境，不替换系统 Python。
 
-项目根目录 `/home/zns/3_LumiFace`。数据库位于 runtime/lumiface.db；样本 runtime/samples；数据集 runtime/datasets；权重 runtime/insightface/models/buffalo_l。
+项目根目录 `/home/zns/3_LumiFace`。数据库位于 runtime/lumiface.db；样本 runtime/samples；数据集 runtime/datasets；检测/旧识别权重 runtime/insightface/models/buffalo_l，新识别权重 runtime/insightface/models/antelopev2/glintr100.onnx。
 
 ## 当前环境启动
 
@@ -28,9 +28,9 @@ bash scripts/check.sh
 bash scripts/start.sh
 ```
 
-setup 安装 requirements.txt 与 npm ci，并运行官方模型下载。为了完全复现本次已安装环境，可在相同 Python/OS 上改用 `pip install -r backend/requirements-lock.txt`。其他平台需依赖兼容性验证，不能保证 Linux 锁文件跨平台逐包一致。
+setup 安装 requirements-dev.txt（包含运行与测试依赖）及 npm ci，并运行官方模型下载。为了完全复现本次已安装环境，可在相同 Python/OS 上改用 `pip install -r backend/requirements-lock.txt`。其他平台需依赖兼容性验证，不能保证 Linux 锁文件跨平台逐包一致。
 
-官方权重下载失败时，图像增强仍可用，人脸接口返回明确 503。网络恢复后重跑 `python scripts/download_models.py`，再首页“加载模型”。不要用随机向量、Haar 结果或测试替身冒充识别模型。
+官方权重下载失败时，图像增强仍可用，人脸接口返回明确 503。网络恢复后重跑 `python scripts/download_models.py`，再重启服务，系统会自动加载；人脸操作也会自动重试加载。不要用随机向量、Haar 结果或测试替身冒充识别模型。
 
 ## 原生 Windows
 
@@ -87,7 +87,7 @@ frontend/node_modules/.bin/playwright install chromium
 bash scripts/browser_check.sh
 ```
 
-browser_check.sh 要求 8000/5173 空闲，会启动隔离的测试数据库、真实后端和前端，自动运行六页面工作流并停止服务。公开样例与测试数据库保存在 work，正式 runtime 身份库不受影响。失败 trace 位于 work/playwright-artifacts，JSON 报告 work/browser-results.json。
+browser_check.sh 要求 8000/5173 空闲，会启动隔离的测试数据库、真实后端和前端，自动运行五页面工作流并停止服务。公开样例与测试数据库保存在 work，正式 runtime 身份库不受影响。失败 trace 位于 work/playwright-artifacts，JSON 报告 work/browser-results.json。
 
 Ubuntu 20.04 使用固定 Playwright 1.56.1；新版浏览器支持可能不同。精简 WSL 缺少运行库时，可通过 Playwright 官方 install-deps 安装所需系统依赖。本次未修改系统库，在 work/browser-libs 解包 Ubuntu 官方运行库，并通过 LD_LIBRARY_PATH 供测试进程使用。中文截图使用本机已安装的 Windows 字体目录；纯 Linux 应安装中文字体，例如 Noto CJK。应用本身使用系统字体栈，不依赖外部字体网络请求。
 
@@ -123,3 +123,15 @@ bash scripts/start.sh
 ```
 
 stop.sh 只向同一用户、本项目工作目录且命令明确为本项目 Uvicorn/Vite 的进程发送 SIGTERM；不会终止公开数据评估或其他项目。隔离工具的进程命名空间可能看不到旧服务器，此时它会明确提示从普通 WSL 终端执行，不会声称已停止。
+
+## 维护与数据清理
+
+- 只安装服务依赖时使用 `backend/requirements.txt`；运行测试需 `backend/requirements-dev.txt`。可选研究样例和硬件诊断依赖分别列在 requirements-demo.txt、requirements-torch.txt。
+- Element Plus 的脚本与样式按实际组件导入，入口 main.ts 注册全局组件；新增控件需同步补充对应导入，避免恢复全量组件库。
+- 批量图片与 ZIP 数据集共用验证、泄漏检查和存储流程；多图上传逐张解码和写入，不在内存中建立再解包一个 ZIP。
+- 身份删除将注册副本清理任务与数据库事务一并提交；失败会重试，启动时仅回收超过一小时且无样本引用的 UUID 注册副本。下载源、模型、独立研究记录保留。
+- 修改 Python 后端后需重启服务。Vite 热更新只作用于前端，刷新浏览器不会更新已启动的后端进程。
+
+系统目录窗口使用 backend/native/DirectoryPicker.cs，在服务启动时通过 Windows 自带的 .NET Framework 编译器准备。生成文件位于 runtime/cache/directory-picker，可自动重建；点击不再启动 PowerShell，不弹控制台或透明占位窗口。源码改变后按摘要重新生成，窗口通过实际 HWND 置顶；仅窗口存活期间生效，不修改系统前台锁定设置。
+
+默认识别头为 glintr100；首次升级启动时会自动为现有注册照片建立新特征缓存，等待启动完成即可。无需删除身份或重新导入。`LUMIFACE_RECOGNIZER=w600k_r50 bash scripts/start.sh` 用于旧模型复现；历史结果不自动覆盖，模型切换后须新建实验。

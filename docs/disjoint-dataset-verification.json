@@ -1,0 +1,1919 @@
+{
+  "protocol": {
+    "archive_sha256": "b5e7a704e18a212b754f23ce88f2ce9b9a44bb53411a3154fc465e3ed78afeec",
+    "gallery_cache_sha256": "5fa0759149be5111e355053adb52ab4d00d9e7312d54af071a2163e2f2e52527",
+    "gallery_size": 400,
+    "queries": 3360,
+    "identities": 280,
+    "model_fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+    "threshold": 0.435,
+    "threshold_policy": "glintr100-development-balanced-v1",
+    "algorithm_version": "lumiface-1.3",
+    "recognition_policy": "aligned-fusion-v3",
+    "enhanced_weight": 0.3,
+    "scoring": "exact identity in confirmed per-face top1 decisions; every image counted",
+    "methods": {
+      "00_正常光照": "original",
+      "01_逆光_CLAHE": "clahe",
+      "02_光照不均_Retinex": "retinex",
+      "03_低照度_Gamma": "gamma"
+    },
+    "previous_identity_overlap": 0,
+    "targets": {
+      "low_light": 0.95,
+      "backlight": 0.9,
+      "normal_low_light_backlight_combined": 0.95
+    },
+    "limitations": "Software simulated lighting, not infrared/real-capture validation. No unknown subjects in this pack. Gallery contains all 120 old and 280 new identities; no query filtering."
+  },
+  "summary": {
+    "00_正常光照/original": {
+      "images": 840,
+      "correct": 839,
+      "no_face": 0,
+      "rejected": 0,
+      "wrong_identity": 1,
+      "accuracy": 0.9988095238095238
+    },
+    "01_逆光_CLAHE/original": {
+      "images": 840,
+      "correct": 828,
+      "no_face": 0,
+      "rejected": 11,
+      "wrong_identity": 1,
+      "accuracy": 0.9857142857142858
+    },
+    "01_逆光_CLAHE/clahe": {
+      "images": 840,
+      "correct": 828,
+      "no_face": 0,
+      "rejected": 11,
+      "wrong_identity": 1,
+      "accuracy": 0.9857142857142858
+    },
+    "02_光照不均_Retinex/original": {
+      "images": 840,
+      "correct": 837,
+      "no_face": 0,
+      "rejected": 2,
+      "wrong_identity": 1,
+      "accuracy": 0.9964285714285714
+    },
+    "02_光照不均_Retinex/retinex": {
+      "images": 840,
+      "correct": 837,
+      "no_face": 0,
+      "rejected": 2,
+      "wrong_identity": 1,
+      "accuracy": 0.9964285714285714
+    },
+    "03_低照度_Gamma/original": {
+      "images": 840,
+      "correct": 838,
+      "no_face": 0,
+      "rejected": 1,
+      "wrong_identity": 1,
+      "accuracy": 0.9976190476190476
+    },
+    "03_低照度_Gamma/gamma": {
+      "images": 840,
+      "correct": 839,
+      "no_face": 0,
+      "rejected": 0,
+      "wrong_identity": 1,
+      "accuracy": 0.9988095238095238
+    }
+  },
+  "combined": {
+    "images": 2520,
+    "correct": 2506,
+    "accuracy": 0.9944444444444445
+  },
+  "simulation_targets_passed": {
+    "low_light": true,
+    "backlight": true,
+    "normal_low_light_backlight_combined": true
+  },
+  "prediction_sha256": "a6bc75fc3e6943d2a84df1c9404188c62d027fbeaf93fda60fdb4512c57084f4",
+  "errors": [
+    {
+      "file": "lfw_280_new_lighting/query/00_正常光照/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+      "scene": "00_正常光照",
+      "expected_name": "LFW_Recep_Tayyip_Erdogan",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.8097941875457764,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.8097941875457764
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.22246965765953064
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.20897480845451355
+                },
+                {
+                  "person_id": 182,
+                  "name": "LFW_Joan_Laporta",
+                  "similarity": 0.18319056928157806
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.18297961354255676
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_John_Negroponte/John_Negroponte_0003.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_John_Negroponte",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3961455821990967,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 193,
+                  "name": "LFW_John_Negroponte",
+                  "similarity": 0.3961455821990967
+                },
+                {
+                  "person_id": 290,
+                  "name": "LFW_Nicanor_Duarte_Frutos",
+                  "similarity": 0.18451671302318573
+                },
+                {
+                  "person_id": 318,
+                  "name": "LFW_Ray_Romano",
+                  "similarity": 0.18273963034152985
+                },
+                {
+                  "person_id": 50,
+                  "name": "LFW_Boris_Becker",
+                  "similarity": 0.17358152568340302
+                },
+                {
+                  "person_id": 319,
+                  "name": "LFW_Recep_Tayyip_Erdogan",
+                  "similarity": 0.15185146033763885
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3918919563293457,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 193,
+                  "name": "LFW_John_Negroponte",
+                  "similarity": 0.3918919563293457
+                },
+                {
+                  "person_id": 318,
+                  "name": "LFW_Ray_Romano",
+                  "similarity": 0.18467047810554504
+                },
+                {
+                  "person_id": 50,
+                  "name": "LFW_Boris_Becker",
+                  "similarity": 0.17940278351306915
+                },
+                {
+                  "person_id": 290,
+                  "name": "LFW_Nicanor_Duarte_Frutos",
+                  "similarity": 0.176417276263237
+                },
+                {
+                  "person_id": 199,
+                  "name": "LFW_Jonathan_Edwards",
+                  "similarity": 0.1533145308494568
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_John_Paul_II/John_Paul_II_0004.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_John_Paul_II",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.41547590494155884,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 194,
+                  "name": "LFW_John_Paul_II",
+                  "similarity": 0.41547590494155884
+                },
+                {
+                  "person_id": 183,
+                  "name": "LFW_Joe_Lieberman",
+                  "similarity": 0.19355857372283936
+                },
+                {
+                  "person_id": 25,
+                  "name": "LFW_Antonio_Banderas",
+                  "similarity": 0.1702912449836731
+                },
+                {
+                  "person_id": 292,
+                  "name": "LFW_Nicole_Kidman",
+                  "similarity": 0.16615714132785797
+                },
+                {
+                  "person_id": 383,
+                  "name": "LFW_Tom_Daschle",
+                  "similarity": 0.16467668116092682
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.4097169041633606,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 194,
+                  "name": "LFW_John_Paul_II",
+                  "similarity": 0.4097169041633606
+                },
+                {
+                  "person_id": 183,
+                  "name": "LFW_Joe_Lieberman",
+                  "similarity": 0.19424819946289062
+                },
+                {
+                  "person_id": 292,
+                  "name": "LFW_Nicole_Kidman",
+                  "similarity": 0.16761168837547302
+                },
+                {
+                  "person_id": 25,
+                  "name": "LFW_Antonio_Banderas",
+                  "similarity": 0.1646401286125183
+                },
+                {
+                  "person_id": 383,
+                  "name": "LFW_Tom_Daschle",
+                  "similarity": 0.16112694144248962
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Keanu_Reeves/Keanu_Reeves_0005.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Keanu_Reeves",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.41448163986206055,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 215,
+                  "name": "LFW_Keanu_Reeves",
+                  "similarity": 0.41448163986206055
+                },
+                {
+                  "person_id": 364,
+                  "name": "LFW_Sourav_Ganguly",
+                  "similarity": 0.2437083125114441
+                },
+                {
+                  "person_id": 206,
+                  "name": "LFW_Juan_Pablo_Montoya",
+                  "similarity": 0.1688118278980255
+                },
+                {
+                  "person_id": 27,
+                  "name": "LFW_Ari_Fleischer",
+                  "similarity": 0.16733074188232422
+                },
+                {
+                  "person_id": 359,
+                  "name": "LFW_Sheryl_Crow",
+                  "similarity": 0.1602936089038849
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.40647637844085693,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 215,
+                  "name": "LFW_Keanu_Reeves",
+                  "similarity": 0.40647637844085693
+                },
+                {
+                  "person_id": 364,
+                  "name": "LFW_Sourav_Ganguly",
+                  "similarity": 0.2481299638748169
+                },
+                {
+                  "person_id": 110,
+                  "name": "LFW_Fernando_Henrique_Cardoso",
+                  "similarity": 0.1729874312877655
+                },
+                {
+                  "person_id": 359,
+                  "name": "LFW_Sheryl_Crow",
+                  "similarity": 0.16598379611968994
+                },
+                {
+                  "person_id": 206,
+                  "name": "LFW_Juan_Pablo_Montoya",
+                  "similarity": 0.16314062476158142
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Larry_Brown/Larry_Brown_0003.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Larry_Brown",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.32408130168914795,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 226,
+                  "name": "LFW_Larry_Brown",
+                  "similarity": 0.32408130168914795
+                },
+                {
+                  "person_id": 192,
+                  "name": "LFW_John_McCain",
+                  "similarity": 0.19914484024047852
+                },
+                {
+                  "person_id": 36,
+                  "name": "LFW_Benjamin_Netanyahu",
+                  "similarity": 0.17549103498458862
+                },
+                {
+                  "person_id": 135,
+                  "name": "LFW_Hal_Gehman",
+                  "similarity": 0.17283222079277039
+                },
+                {
+                  "person_id": 283,
+                  "name": "LFW_Naji_Sabri",
+                  "similarity": 0.16062189638614655
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3286130428314209,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 226,
+                  "name": "LFW_Larry_Brown",
+                  "similarity": 0.3286130428314209
+                },
+                {
+                  "person_id": 192,
+                  "name": "LFW_John_McCain",
+                  "similarity": 0.20406177639961243
+                },
+                {
+                  "person_id": 110,
+                  "name": "LFW_Fernando_Henrique_Cardoso",
+                  "similarity": 0.16423267126083374
+                },
+                {
+                  "person_id": 330,
+                  "name": "LFW_Robert_Blake",
+                  "similarity": 0.1611308753490448
+                },
+                {
+                  "person_id": 135,
+                  "name": "LFW_Hal_Gehman",
+                  "similarity": 0.15956664085388184
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Paula_Radcliffe/Paula_Radcliffe_0004.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Paula_Radcliffe",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3294733464717865,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 305,
+                  "name": "LFW_Paula_Radcliffe",
+                  "similarity": 0.3294733464717865
+                },
+                {
+                  "person_id": 225,
+                  "name": "LFW_Lance_Armstrong",
+                  "similarity": 0.20379287004470825
+                },
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.20168724656105042
+                },
+                {
+                  "person_id": 267,
+                  "name": "LFW_Michael_Schumacher",
+                  "similarity": 0.1902438849210739
+                },
+                {
+                  "person_id": 75,
+                  "name": "LFW_Claudia_Pechstein",
+                  "similarity": 0.1793343424797058
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3014875650405884,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 305,
+                  "name": "LFW_Paula_Radcliffe",
+                  "similarity": 0.3014875650405884
+                },
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.20809587836265564
+                },
+                {
+                  "person_id": 225,
+                  "name": "LFW_Lance_Armstrong",
+                  "similarity": 0.20761620998382568
+                },
+                {
+                  "person_id": 75,
+                  "name": "LFW_Claudia_Pechstein",
+                  "similarity": 0.1851729154586792
+                },
+                {
+                  "person_id": 267,
+                  "name": "LFW_Michael_Schumacher",
+                  "similarity": 0.17908445000648499
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Princess_Caroline/Princess_Caroline_0005.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Princess_Caroline",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.40824204683303833,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 313,
+                  "name": "LFW_Princess_Caroline",
+                  "similarity": 0.40824204683303833
+                },
+                {
+                  "person_id": 208,
+                  "name": "LFW_Julie_Gerberding",
+                  "similarity": 0.24374336004257202
+                },
+                {
+                  "person_id": 93,
+                  "name": "LFW_Diana_Krall",
+                  "similarity": 0.23337382078170776
+                },
+                {
+                  "person_id": 35,
+                  "name": "LFW_Benazir_Bhutto",
+                  "similarity": 0.18575988709926605
+                },
+                {
+                  "person_id": 366,
+                  "name": "LFW_Steffi_Graf",
+                  "similarity": 0.16055873036384583
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.417192280292511,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 313,
+                  "name": "LFW_Princess_Caroline",
+                  "similarity": 0.417192280292511
+                },
+                {
+                  "person_id": 93,
+                  "name": "LFW_Diana_Krall",
+                  "similarity": 0.23546913266181946
+                },
+                {
+                  "person_id": 208,
+                  "name": "LFW_Julie_Gerberding",
+                  "similarity": 0.22951668500900269
+                },
+                {
+                  "person_id": 35,
+                  "name": "LFW_Benazir_Bhutto",
+                  "similarity": 0.1878172755241394
+                },
+                {
+                  "person_id": 366,
+                  "name": "LFW_Steffi_Graf",
+                  "similarity": 0.1587616205215454
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Recep_Tayyip_Erdogan",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.7538121342658997,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7538121342658997
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.20809921622276306
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.18681976199150085
+                },
+                {
+                  "person_id": 182,
+                  "name": "LFW_Joan_Laporta",
+                  "similarity": 0.1719484031200409
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.1642683744430542
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.7481215000152588,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7481215000152588
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.20431433618068695
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.1778528392314911
+                },
+                {
+                  "person_id": 182,
+                  "name": "LFW_Joan_Laporta",
+                  "similarity": 0.16759443283081055
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.16480356454849243
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Romano_Prodi/Romano_Prodi_0004.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Romano_Prodi",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3786596357822418,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.3786596357822418
+                },
+                {
+                  "person_id": 183,
+                  "name": "LFW_Joe_Lieberman",
+                  "similarity": 0.20229308307170868
+                },
+                {
+                  "person_id": 300,
+                  "name": "LFW_Paul_Burrell",
+                  "similarity": 0.16561321914196014
+                },
+                {
+                  "person_id": 57,
+                  "name": "LFW_Carlos_Menem",
+                  "similarity": 0.160084068775177
+                },
+                {
+                  "person_id": 7,
+                  "name": "LFW_Alan_Greenspan",
+                  "similarity": 0.15706154704093933
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3877561688423157,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.3877561688423157
+                },
+                {
+                  "person_id": 183,
+                  "name": "LFW_Joe_Lieberman",
+                  "similarity": 0.2024410218000412
+                },
+                {
+                  "person_id": 300,
+                  "name": "LFW_Paul_Burrell",
+                  "similarity": 0.1741160750389099
+                },
+                {
+                  "person_id": 57,
+                  "name": "LFW_Carlos_Menem",
+                  "similarity": 0.16138875484466553
+                },
+                {
+                  "person_id": 45,
+                  "name": "LFW_Billy_Crystal",
+                  "similarity": 0.15631449222564697
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Sarah_Jessica_Parker/Sarah_Jessica_Parker_0003.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Sarah_Jessica_Parker",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.4009897708892822,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.4009897708892822
+                },
+                {
+                  "person_id": 234,
+                  "name": "LFW_Liza_Minnelli",
+                  "similarity": 0.1749592125415802
+                },
+                {
+                  "person_id": 93,
+                  "name": "LFW_Diana_Krall",
+                  "similarity": 0.14893881976604462
+                },
+                {
+                  "person_id": 103,
+                  "name": "LFW_Elsa_Zylberstein",
+                  "similarity": 0.13458751142024994
+                },
+                {
+                  "person_id": 395,
+                  "name": "LFW_Valery_Giscard_dEstaing",
+                  "similarity": 0.1340600848197937
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.41359084844589233,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.41359084844589233
+                },
+                {
+                  "person_id": 234,
+                  "name": "LFW_Liza_Minnelli",
+                  "similarity": 0.17144837975502014
+                },
+                {
+                  "person_id": 103,
+                  "name": "LFW_Elsa_Zylberstein",
+                  "similarity": 0.14680629968643188
+                },
+                {
+                  "person_id": 93,
+                  "name": "LFW_Diana_Krall",
+                  "similarity": 0.14322702586650848
+                },
+                {
+                  "person_id": 132,
+                  "name": "LFW_Gunter_Pleuger",
+                  "similarity": 0.1344228833913803
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Susan_Sarandon/Susan_Sarandon_0004.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Susan_Sarandon",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3754907250404358,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 370,
+                  "name": "LFW_Susan_Sarandon",
+                  "similarity": 0.3754907250404358
+                },
+                {
+                  "person_id": 101,
+                  "name": "LFW_Elizabeth_Hurley",
+                  "similarity": 0.20824787020683289
+                },
+                {
+                  "person_id": 140,
+                  "name": "LFW_Heidi_Klum",
+                  "similarity": 0.17422664165496826
+                },
+                {
+                  "person_id": 262,
+                  "name": "LFW_Michael_Chiklis",
+                  "similarity": 0.15359649062156677
+                },
+                {
+                  "person_id": 20,
+                  "name": "LFW_Angela_Bassett",
+                  "similarity": 0.14444570243358612
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.36929094791412354,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 370,
+                  "name": "LFW_Susan_Sarandon",
+                  "similarity": 0.36929094791412354
+                },
+                {
+                  "person_id": 101,
+                  "name": "LFW_Elizabeth_Hurley",
+                  "similarity": 0.20001111924648285
+                },
+                {
+                  "person_id": 140,
+                  "name": "LFW_Heidi_Klum",
+                  "similarity": 0.18566368520259857
+                },
+                {
+                  "person_id": 262,
+                  "name": "LFW_Michael_Chiklis",
+                  "similarity": 0.1577524095773697
+                },
+                {
+                  "person_id": 20,
+                  "name": "LFW_Angela_Bassett",
+                  "similarity": 0.15144392848014832
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Tim_Henman/Tim_Henman_0003.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Tim_Henman",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.42137396335601807,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 379,
+                  "name": "LFW_Tim_Henman",
+                  "similarity": 0.42137396335601807
+                },
+                {
+                  "person_id": 279,
+                  "name": "LFW_Monica_Seles",
+                  "similarity": 0.2178478240966797
+                },
+                {
+                  "person_id": 388,
+                  "name": "LFW_Tommy_Haas",
+                  "similarity": 0.2092738300561905
+                },
+                {
+                  "person_id": 63,
+                  "name": "LFW_Celine_Dion",
+                  "similarity": 0.17302727699279785
+                },
+                {
+                  "person_id": 160,
+                  "name": "LFW_James_Wolfensohn",
+                  "similarity": 0.16470742225646973
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.42716407775878906,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 379,
+                  "name": "LFW_Tim_Henman",
+                  "similarity": 0.42716407775878906
+                },
+                {
+                  "person_id": 279,
+                  "name": "LFW_Monica_Seles",
+                  "similarity": 0.21701651811599731
+                },
+                {
+                  "person_id": 388,
+                  "name": "LFW_Tommy_Haas",
+                  "similarity": 0.19934692978858948
+                },
+                {
+                  "person_id": 63,
+                  "name": "LFW_Celine_Dion",
+                  "similarity": 0.18143661320209503
+                },
+                {
+                  "person_id": 160,
+                  "name": "LFW_James_Wolfensohn",
+                  "similarity": 0.16963237524032593
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/01_逆光_CLAHE/LFW_Tim_Henman/Tim_Henman_0005.png",
+      "scene": "01_逆光_CLAHE",
+      "expected_name": "LFW_Tim_Henman",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.34238898754119873,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 379,
+                  "name": "LFW_Tim_Henman",
+                  "similarity": 0.34238898754119873
+                },
+                {
+                  "person_id": 381,
+                  "name": "LFW_Tom_Crean",
+                  "similarity": 0.22444209456443787
+                },
+                {
+                  "person_id": 8,
+                  "name": "LFW_Alastair_Campbell",
+                  "similarity": 0.19246217608451843
+                },
+                {
+                  "person_id": 400,
+                  "name": "LFW_Victoria_Clarke",
+                  "similarity": 0.17265939712524414
+                },
+                {
+                  "person_id": 198,
+                  "name": "LFW_Jon_Gruden",
+                  "similarity": 0.1664211004972458
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "clahe": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.3504152297973633,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 379,
+                  "name": "LFW_Tim_Henman",
+                  "similarity": 0.3504152297973633
+                },
+                {
+                  "person_id": 381,
+                  "name": "LFW_Tom_Crean",
+                  "similarity": 0.22982370853424072
+                },
+                {
+                  "person_id": 301,
+                  "name": "LFW_Paul_Martin",
+                  "similarity": 0.17522799968719482
+                },
+                {
+                  "person_id": 63,
+                  "name": "LFW_Celine_Dion",
+                  "similarity": 0.17394649982452393
+                },
+                {
+                  "person_id": 269,
+                  "name": "LFW_Michelle_Yeoh",
+                  "similarity": 0.17301684617996216
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Larry_Brown/Larry_Brown_0003.png",
+      "scene": "02_光照不均_Retinex",
+      "expected_name": "LFW_Larry_Brown",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.40039676427841187,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 226,
+                  "name": "LFW_Larry_Brown",
+                  "similarity": 0.40039676427841187
+                },
+                {
+                  "person_id": 189,
+                  "name": "LFW_John_Howard",
+                  "similarity": 0.18380291759967804
+                },
+                {
+                  "person_id": 330,
+                  "name": "LFW_Robert_Blake",
+                  "similarity": 0.1748255491256714
+                },
+                {
+                  "person_id": 374,
+                  "name": "LFW_Tariq_Aziz",
+                  "similarity": 0.16697904467582703
+                },
+                {
+                  "person_id": 362,
+                  "name": "LFW_Silvio_Berlusconi",
+                  "similarity": 0.16379591822624207
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "retinex": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.4147726595401764,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 226,
+                  "name": "LFW_Larry_Brown",
+                  "similarity": 0.4147726595401764
+                },
+                {
+                  "person_id": 189,
+                  "name": "LFW_John_Howard",
+                  "similarity": 0.1816444993019104
+                },
+                {
+                  "person_id": 330,
+                  "name": "LFW_Robert_Blake",
+                  "similarity": 0.16996723413467407
+                },
+                {
+                  "person_id": 362,
+                  "name": "LFW_Silvio_Berlusconi",
+                  "similarity": 0.16510963439941406
+                },
+                {
+                  "person_id": 173,
+                  "name": "LFW_Jennifer_Garner",
+                  "similarity": 0.16206061840057373
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+      "scene": "02_光照不均_Retinex",
+      "expected_name": "LFW_Recep_Tayyip_Erdogan",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.7656038999557495,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7656038999557495
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.22071786224842072
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.19270062446594238
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.18916217982769012
+                },
+                {
+                  "person_id": 53,
+                  "name": "LFW_Bulent_Ecevit",
+                  "similarity": 0.18680956959724426
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        },
+        "retinex": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.7743861079216003,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7743861079216003
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.2240910530090332
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.1944533735513687
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.18882420659065247
+                },
+                {
+                  "person_id": 182,
+                  "name": "LFW_Joan_Laporta",
+                  "similarity": 0.18718072772026062
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/02_光照不均_Retinex/LFW_Susan_Sarandon/Susan_Sarandon_0004.png",
+      "scene": "02_光照不均_Retinex",
+      "expected_name": "LFW_Susan_Sarandon",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.42682185769081116,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 370,
+                  "name": "LFW_Susan_Sarandon",
+                  "similarity": 0.42682185769081116
+                },
+                {
+                  "person_id": 207,
+                  "name": "LFW_Julianne_Moore",
+                  "similarity": 0.2876969575881958
+                },
+                {
+                  "person_id": 227,
+                  "name": "LFW_Laura_Bush",
+                  "similarity": 0.19650843739509583
+                },
+                {
+                  "person_id": 101,
+                  "name": "LFW_Elizabeth_Hurley",
+                  "similarity": 0.18554946780204773
+                },
+                {
+                  "person_id": 35,
+                  "name": "LFW_Benazir_Bhutto",
+                  "similarity": 0.17715002596378326
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "retinex": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.433292031288147,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 370,
+                  "name": "LFW_Susan_Sarandon",
+                  "similarity": 0.433292031288147
+                },
+                {
+                  "person_id": 207,
+                  "name": "LFW_Julianne_Moore",
+                  "similarity": 0.2790933847427368
+                },
+                {
+                  "person_id": 227,
+                  "name": "LFW_Laura_Bush",
+                  "similarity": 0.19360387325286865
+                },
+                {
+                  "person_id": 35,
+                  "name": "LFW_Benazir_Bhutto",
+                  "similarity": 0.18457458913326263
+                },
+                {
+                  "person_id": 101,
+                  "name": "LFW_Elizabeth_Hurley",
+                  "similarity": 0.18195664882659912
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/03_低照度_Gamma/LFW_Recep_Tayyip_Erdogan/Recep_Tayyip_Erdogan_0004.png",
+      "scene": "03_低照度_Gamma",
+      "expected_name": "LFW_Recep_Tayyip_Erdogan",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.7990173101425171,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.7990173101425171
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.21446633338928223
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.21404722332954407
+                },
+                {
+                  "person_id": 182,
+                  "name": "LFW_Joan_Laporta",
+                  "similarity": 0.21207699179649353
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.18133442103862762
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        },
+        "gamma": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 1,
+              "name": "LFW_Abdullah_Gul",
+              "similarity": 0.8054998517036438,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 1,
+                  "name": "LFW_Abdullah_Gul",
+                  "similarity": 0.8054998517036438
+                },
+                {
+                  "person_id": 116,
+                  "name": "LFW_George_Clooney",
+                  "similarity": 0.2154616117477417
+                },
+                {
+                  "person_id": 341,
+                  "name": "LFW_Romano_Prodi",
+                  "similarity": 0.21484723687171936
+                },
+                {
+                  "person_id": 182,
+                  "name": "LFW_Joan_Laporta",
+                  "similarity": 0.2143470048904419
+                },
+                {
+                  "person_id": 147,
+                  "name": "LFW_Hu_Jintao",
+                  "similarity": 0.18098513782024384
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Abdullah_Gul"
+          ],
+          "correct": false,
+          "outcome": "wrong_identity"
+        }
+      }
+    },
+    {
+      "file": "lfw_280_new_lighting/query/03_低照度_Gamma/LFW_Sarah_Jessica_Parker/Sarah_Jessica_Parker_0003.png",
+      "scene": "03_低照度_Gamma",
+      "expected_name": "LFW_Sarah_Jessica_Parker",
+      "decisions": {
+        "original": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": null,
+              "name": "未知身份",
+              "similarity": 0.43318241834640503,
+              "threshold": 0.435,
+              "confirmed": false,
+              "candidates": [
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.43318241834640503
+                },
+                {
+                  "person_id": 228,
+                  "name": "LFW_LeBron_James",
+                  "similarity": 0.1592644900083542
+                },
+                {
+                  "person_id": 103,
+                  "name": "LFW_Elsa_Zylberstein",
+                  "similarity": 0.15467163920402527
+                },
+                {
+                  "person_id": 93,
+                  "name": "LFW_Diana_Krall",
+                  "similarity": 0.1457328200340271
+                },
+                {
+                  "person_id": 76,
+                  "name": "LFW_Clay_Aiken",
+                  "similarity": 0.14503903687000275
+                }
+              ],
+              "diagnostic": "未达到身份确认标准"
+            }
+          ],
+          "accepted_names": [],
+          "correct": false,
+          "outcome": "rejected"
+        },
+        "gamma": {
+          "face_count": 1,
+          "matches": [
+            {
+              "person_id": 350,
+              "name": "LFW_Sarah_Jessica_Parker",
+              "similarity": 0.43592968583106995,
+              "threshold": 0.435,
+              "confirmed": true,
+              "candidates": [
+                {
+                  "person_id": 350,
+                  "name": "LFW_Sarah_Jessica_Parker",
+                  "similarity": 0.43592968583106995
+                },
+                {
+                  "person_id": 228,
+                  "name": "LFW_LeBron_James",
+                  "similarity": 0.15975749492645264
+                },
+                {
+                  "person_id": 93,
+                  "name": "LFW_Diana_Krall",
+                  "similarity": 0.15797799825668335
+                },
+                {
+                  "person_id": 103,
+                  "name": "LFW_Elsa_Zylberstein",
+                  "similarity": 0.15272164344787598
+                },
+                {
+                  "person_id": 76,
+                  "name": "LFW_Clay_Aiken",
+                  "similarity": 0.14810249209403992
+                }
+              ],
+              "diagnostic": "身份已确认"
+            }
+          ],
+          "accepted_names": [
+            "LFW_Sarah_Jessica_Parker"
+          ],
+          "correct": true,
+          "outcome": "correct"
+        }
+      }
+    }
+  ],
+  "archive_validation": {
+    "previous_people": 120,
+    "new_people": 280,
+    "identity_overlap": 0,
+    "gallery_images": 560,
+    "scenes": {
+      "00_正常光照": {
+        "images": 840,
+        "unique": 840
+      },
+      "01_逆光_CLAHE": {
+        "images": 840,
+        "unique": 840
+      },
+      "02_光照不均_Retinex": {
+        "images": 840,
+        "unique": 840
+      },
+      "03_低照度_Gamma": {
+        "images": 840,
+        "unique": 840
+      }
+    },
+    "unchanged_bytes_from_combined_package": 3920,
+    "provenance_checked": 3360,
+    "archive_sha256": "b5e7a704e18a212b754f23ce88f2ce9b9a44bb53411a3154fc465e3ed78afeec"
+  },
+  "old_package_feature_replay": {
+    "kind": "Existing real-model feature replay against enlarged gallery; not new image inference",
+    "cache_sha256": "edb3dc0548924ab33746cc5e14d5da3a8aee18b7205162738805f1688dc06192",
+    "model_fingerprint": "037eae3c9278032ea2931c556affff730047f9644334fd612407910c7313339b",
+    "gallery_size": 400,
+    "threshold": 0.435,
+    "summary": {
+      "backlight/original": {
+        "images": 360,
+        "correct": 359,
+        "accuracy": 0.9972222222222222
+      },
+      "backlight/clahe": {
+        "images": 360,
+        "correct": 359,
+        "accuracy": 0.9972222222222222
+      },
+      "uneven/original": {
+        "images": 360,
+        "correct": 360,
+        "accuracy": 1.0
+      },
+      "uneven/retinex": {
+        "images": 360,
+        "correct": 360,
+        "accuracy": 1.0
+      },
+      "low_light/original": {
+        "images": 360,
+        "correct": 360,
+        "accuracy": 1.0
+      },
+      "low_light/gamma": {
+        "images": 360,
+        "correct": 360,
+        "accuracy": 1.0
+      }
+    },
+    "errors": [
+      {
+        "person": "LFW_Colin_Montgomerie",
+        "scene": "backlight",
+        "file": "lfw_120_lighting/query/01_逆光_CLAHE/LFW_Colin_Montgomerie/Colin_Montgomerie_0004.png",
+        "method": "original",
+        "matches": [
+          {
+            "person_id": null,
+            "name": "未知身份",
+            "similarity": 0.40908509492874146,
+            "threshold": 0.435,
+            "confirmed": false,
+            "candidates": [
+              {
+                "person_id": 79,
+                "name": "LFW_Colin_Montgomerie",
+                "similarity": 0.40908509492874146
+              },
+              {
+                "person_id": 122,
+                "name": "LFW_Gerhard_Schroeder",
+                "similarity": 0.22466927766799927
+              },
+              {
+                "person_id": 141,
+                "name": "LFW_Heizo_Takenaka",
+                "similarity": 0.20419931411743164
+              },
+              {
+                "person_id": 8,
+                "name": "LFW_Alastair_Campbell",
+                "similarity": 0.18239936232566833
+              },
+              {
+                "person_id": 216,
+                "name": "LFW_Kevin_Costner",
+                "similarity": 0.17783227562904358
+              }
+            ],
+            "diagnostic": "未达到身份确认标准"
+          }
+        ]
+      },
+      {
+        "person": "LFW_Colin_Montgomerie",
+        "scene": "backlight",
+        "file": "lfw_120_lighting/query/01_逆光_CLAHE/LFW_Colin_Montgomerie/Colin_Montgomerie_0004.png",
+        "method": "clahe",
+        "matches": [
+          {
+            "person_id": null,
+            "name": "未知身份",
+            "similarity": 0.39818862080574036,
+            "threshold": 0.435,
+            "confirmed": false,
+            "candidates": [
+              {
+                "person_id": 79,
+                "name": "LFW_Colin_Montgomerie",
+                "similarity": 0.39818862080574036
+              },
+              {
+                "person_id": 122,
+                "name": "LFW_Gerhard_Schroeder",
+                "similarity": 0.2268916517496109
+              },
+              {
+                "person_id": 141,
+                "name": "LFW_Heizo_Takenaka",
+                "similarity": 0.2035006880760193
+              },
+              {
+                "person_id": 216,
+                "name": "LFW_Kevin_Costner",
+                "similarity": 0.17729789018630981
+              },
+              {
+                "person_id": 8,
+                "name": "LFW_Alastair_Campbell",
+                "similarity": 0.1765032261610031
+              }
+            ],
+            "diagnostic": "未达到身份确认标准"
+          }
+        ]
+      }
+    ]
+  },
+  "service_validation": {
+    "lfw-dataset": {
+      "file": "lfw_120_lighting.zip",
+      "sha256": "49d5243287ac350370142c58fb13e37589333c9d6f262fb067891b4226564deb",
+      "status": 200
+    },
+    "lfw-new-dataset": {
+      "file": "lfw_280_new_lighting.zip",
+      "sha256": "b5e7a704e18a212b754f23ce88f2ce9b9a44bb53411a3154fc465e3ed78afeec",
+      "status": 200
+    },
+    "production_database_unchanged": true
+  },
+  "software_checks": {
+    "download_and_storage_tests": "41 passed",
+    "browser_dual_download_import_test": "1 passed",
+    "frontend_build": "passed"
+  }
+}

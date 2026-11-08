@@ -16,6 +16,8 @@ def iou(a: list, b: list) -> float:
 def score_image(
     truth: list[dict], predictions: list[dict], elapsed_ms: float, protocol: str = "iou"
 ) -> dict:
+    if protocol == "image_identity_presence":
+        return score_identity_presence(truth, predictions, elapsed_ms)
     if protocol not in ("iou", "eye_containment", "single_face_presence"):
         raise ValueError("Unknown localization protocol")
     if protocol == "eye_containment" and any(not g.get("eyes") for g in truth):
@@ -79,6 +81,54 @@ def score_image(
         "elapsed_ms": elapsed_ms,
         "localization_protocol": protocol,
         "decisions": decisions,
+        "predictions": predictions,
+    }
+
+
+def score_identity_presence(truth: list[dict], predictions: list[dict], elapsed_ms: float) -> dict:
+    """Image-level labels: any confirmed exact ID wins only when there are multiple faces.
+
+    Additional faces have no independent bounding-box labels, so localization counts
+    represent image presence, not face detector precision. Never change IoU scoring.
+    """
+    if len(truth) != 1:
+        raise ValueError("Image identity presence requires exactly one image-level identity")
+    gt = truth[0]
+    known = gt["person_id"] is not None
+    accepted = [p for p in predictions if p["match"]["confirmed"]]
+    correct = [p for p in accepted if known and p["match"]["person_id"] == gt["person_id"]]
+    # With one face this is precisely the ordinary thresholded identity decision.
+    selected = max(
+        correct or accepted or predictions,
+        key=lambda p: p["match"]["similarity"] if p["match"]["similarity"] is not None else -2,
+        default=None,
+    )
+    decision = selected["match"] if selected else None
+    present = bool(predictions)
+    return {
+        "tp": int(present),
+        "fp": 0,
+        "fn": int(not present),
+        "known": int(known),
+        "unknown": int(not known),
+        "correct": int(bool(correct)),
+        "detected_known": int(known and present),
+        "detected_unknown": int(not known and present),
+        "false_accept": int(not known and bool(accepted)),
+        "elapsed_ms": elapsed_ms,
+        "localization_protocol": "image_identity_presence",
+        "decisions": [
+            {
+                "known": known,
+                "correct": bool(correct),
+                "detected": present,
+                "score": decision["similarity"] if decision else None,
+                "candidate_id": decision["candidates"][0]["person_id"]
+                if decision and decision["candidates"] else None,
+                "truth_person_id": gt["person_id"],
+                "subject": gt["subject"],
+            }
+        ],
         "predictions": predictions,
     }
 

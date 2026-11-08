@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index'
 import { ref } from 'vue'
 export const api = axios.create({ baseURL: '/api', timeout: 180000 })
 api.interceptors.response.use(
@@ -24,17 +24,17 @@ export const methods = [
   {
     value: 'gamma',
     label: 'Gamma 校正（低照度）',
-    description: '侧重整体偏暗的照片，提亮暗部；Gamma 小于 1 时提亮，大于 1 时压暗。',
+    description: '根据图片亮度自动计算 Gamma，侧重提亮低照度照片。',
   },
   {
     value: 'clahe',
     label: 'CLAHE（逆光）',
-    description: '侧重逆光下的人脸暗部与局部对比度，限制过度增强；无法恢复已过曝丢失的细节。',
+    description: '根据明暗差与噪声自动调整对比度限制，侧重逆光暗部；无法恢复过曝细节。',
   },
   {
     value: 'retinex',
     label: 'Retinex（光照不均）',
-    description: '侧重阴影、侧光等明暗不均的照片，估计光照并平衡亮度。',
+    description: '根据图片尺寸和光照不均程度自动调整平滑尺度、处理强度，平衡阴影与侧光。',
   },
 ]
 export const experimentMethods = [{ value: 'original', label: '不增强（对照组）' }, ...methods]
@@ -46,10 +46,15 @@ const historicalMethodLabels: Record<string, string> = {
 export const scenes: Record<string, string> = {
   normal: '正常光照',
   low_light: '低照度',
-  backlight: '强逆光',
-  infrared: '红外补光',
-  overexposed: '局部过曝',
-  uneven: '光照不均匀',
+  backlight: '逆光',
+  uneven: '光照不均',
+}
+export function sceneLabel(value: string) {
+  const historical: Record<string, string> = {
+    infrared: '红外补光（历史数据）',
+    overexposed: '局部过曝（历史数据）',
+  }
+  return scenes[value] || historical[value] || value
 }
 export function methodLabel(value: string) {
   return (

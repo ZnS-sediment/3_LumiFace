@@ -1,5 +1,5 @@
 from typing import Annotated, Any, Literal
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 from app.core.config import MAX_DATASET_IMAGES, DEFAULT_THRESHOLD
 
 Method = Literal["original", "gamma", "clahe", "retinex", "exposure", "normalize", "adaptive"]
@@ -14,6 +14,7 @@ class Response(BaseModel):
 class EnhanceOptions(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     method: Method = "adaptive"
+    auto_parameters: bool = False
     gamma: float = Field(default=0.65, ge=0.15, le=4)
     clip_limit: float = Field(default=2.0, ge=0.1, le=8)
     sigma: float = Field(default=30, ge=3, le=100)
@@ -78,19 +79,25 @@ class ResearchProtocol(BaseModel):
     scene_evidence: dict[Scene, SceneEvidence] = Field(default_factory=dict)
 
 
-class Manifest(BaseModel):
+class DatasetMetadata(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=1, max_length=100)
     split: Literal["calibration", "test"]
     source: str = Field(min_length=1, max_length=1000)
     license: str = Field(min_length=1, max_length=1000)
     real_capture: bool
-    localization_protocol: Literal["iou", "eye_containment", "single_face_presence"] = "iou"
+    localization_protocol: Literal[
+        "iou", "eye_containment", "single_face_presence", "image_identity_presence"
+    ] = "iou"
     protocol: ResearchProtocol = Field(default_factory=ResearchProtocol)
+
+
+class Manifest(DatasetMetadata):
     items: list[DatasetItem] = Field(min_length=1, max_length=MAX_DATASET_IMAGES)
 
 
 class ExperimentRequest(BaseModel):
+    name: Annotated[str, StringConstraints(strip_whitespace=True, max_length=100)] = ""
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     dataset_id: int
     threshold: float = Field(default=DEFAULT_THRESHOLD, ge=-1, le=1)
@@ -98,6 +105,12 @@ class ExperimentRequest(BaseModel):
         default=["original", "gamma", "clahe", "retinex", "adaptive"], min_length=1, max_length=7
     )
     calibration_id: int | None = None
+    auto_parameters: bool = False
+
+
+class ExperimentRename(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    name: str = Field(min_length=1, max_length=100)
 
 
 class CalibrationRequest(BaseModel):
@@ -114,6 +127,8 @@ class ImageTestItem(BaseModel):
 
 
 class ImageTestRequest(BaseModel):
+    name: Annotated[str, StringConstraints(strip_whitespace=True, max_length=100)] = ""
+    auto_parameters: bool = True
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     items: list[ImageTestItem] = Field(min_length=1, max_length=MAX_DATASET_IMAGES)
     methods: list[Method] = Field(default=["original"], min_length=1, max_length=7)

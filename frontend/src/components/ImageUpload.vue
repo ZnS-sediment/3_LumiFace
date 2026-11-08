@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onBeforeUnmount } from 'vue'
 import { UploadFilled, Picture } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index'
 import RequiredLabel from './RequiredLabel.vue'
 const props = defineProps<{ multiple?: boolean; required?: boolean }>()
 const emit = defineEmits<{ change: [files: File[]] }>()

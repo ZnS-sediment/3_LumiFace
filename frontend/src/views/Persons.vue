@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index'
+import { ElMessageBox } from 'element-plus/es/components/message-box/index'
 import type { TableInstance } from 'element-plus'
 import { Plus, Search, FolderOpened } from '@element-plus/icons-vue'
 import ImageUpload from '../components/ImageUpload.vue'
@@ -126,7 +127,6 @@ async function confirmDelete(rows: PersonSummary[], batch = false) {
         <h2>
           已注册身份 <span class="count-badge">{{ persons.length }}</span>
         </h2>
-        <p class="muted">多参考照片注册 · 归一化特征 · 余弦相似度</p>
       </div>
       <div class="toolbar-actions">
         <el-input
@@ -167,15 +167,10 @@ async function confirmDelete(rows: PersonSummary[], batch = false) {
         width="48"
         :selectable="() => !busy && !deleting"
       /><el-table-column type="index" label="编号" width="80" /><el-table-column
+        prop="name"
         label="人员姓名"
         min-width="130"
-        ><template #default="{ row }"
-          ><div class="person-name">
-            <span class="person-avatar" aria-hidden="true">{{ row.name.slice(0, 1) }}</span
-            ><span>{{ row.name }}</span>
-          </div></template
-        ></el-table-column
-      ><el-table-column prop="sample_count" label="参考样本" width="110" /><el-table-column
+      /><el-table-column prop="sample_count" label="参考样本" width="110" /><el-table-column
         prop="note"
         label="备注"
         min-width="160"

@@ -3,27 +3,31 @@ import RequiredLabel from '../components/RequiredLabel.vue'
 import { validateRequired } from '../utils/validation'
 import { ref } from 'vue'
 import ImageUpload from '../components/ImageUpload.vue'
-import CompareImages from '../components/CompareImages.vue'
+import ResultImage from '../components/ResultImage.vue'
 import MethodSelect from '../components/MethodSelect.vue'
 import { post, imageForm, useTask, number } from '../api/client'
 const file = ref<File>(),
+  enabled = ref(false),
   method = ref('gamma'),
   result = ref<any>(null)
 const { busy, run } = useTask()
 function execute() {
   if (!validateRequired([['输入图像', file.value]])) return
   run(async () => {
-    result.value = await post('/face/detect', imageForm(file.value!, { method: method.value }))
+    result.value = await post(
+      '/face/detect',
+      imageForm(file.value!, {
+        method: enabled.value ? method.value : 'original',
+        auto_parameters: true,
+      }),
+    )
   })
 }
 </script>
 <template>
   <div class="workbench">
     <section class="card controls">
-      <div class="section-heading">
-        <h2>检测设置</h2>
-        <span class="step-label">01</span>
-      </div>
+      <div class="section-heading"><h2>检测设置</h2></div>
       <ImageUpload
         required
         @change="
@@ -32,72 +36,54 @@ function execute() {
             result = null
           }
         "
-      /><el-form label-position="top"
-        ><el-form-item
-          ><template #label><RequiredLabel>对照组增强方法</RequiredLabel></template
-          ><MethodSelect v-model="method" /></el-form-item></el-form
-      ><el-button type="primary" class="full-width" :loading="busy" @click="execute"
-        >运行双路检测</el-button
+      />
+      <el-form label-position="top">
+        <el-form-item label="检测前增强"
+          ><el-switch v-model="enabled" active-text="开启" inactive-text="关闭"
+        /></el-form-item>
+        <el-form-item v-if="enabled"
+          ><template #label><RequiredLabel>增强算法</RequiredLabel></template
+          ><MethodSelect v-model="method"
+        /></el-form-item>
+      </el-form>
+      <el-button type="primary" class="full-width" :loading="busy" @click="execute"
+        >开始检测</el-button
       >
-      <div class="note">
-        支持单图多人脸。绿色框为检测位置，彩色点为五点关键点。两路使用同一模型与检测阈值。
-      </div>
+      <p class="muted">支持单图多人脸。绿色框标记人脸，彩色点标记五点关键点。</p>
     </section>
     <section class="card result-panel" v-loading="busy">
       <div class="section-heading">
-        <h2>检测结果对比</h2>
-        <span class="pill">InsightFace / SCRFD</span>
+        <h2>检测结果</h2>
+        <span class="pill">SCRFD</span>
       </div>
-      <CompareImages
-        :original="result?.original.image"
-        :enhanced="result?.enhanced.image"
-        left-label="原始图像检测"
-        right-label="增强图像检测"
-        download-name="lumiface-detection-enhanced.png"
-      />
-      <div v-if="result" class="detection-metrics">
-        <div v-for="key in ['original', 'enhanced']" :key="key">
-          <span>{{ key === 'original' ? '原始图像' : '增强图像' }}</span
-          ><strong>{{ result[key].count }}<small> 张人脸</small></strong>
-          <p>模型推理 {{ number(result[key].elapsed_ms) }} ms</p>
-          <p v-if="key === 'enhanced'">含增强总耗时 {{ number(result.enhanced.total_ms) }} ms</p>
-        </div>
-      </div>
-      <div v-if="result" class="steps">
-        <el-tag v-for="s in result.steps" :key="s">{{ s }}</el-tag>
+      <ResultImage :src="result?.image" label="人脸检测图像" filename="lumiface-detection.png" />
+      <div v-if="result" class="result-facts">
+        <span
+          >人脸数量 <b>{{ result.count }}</b></span
+        ><span
+          >总耗时 <b>{{ number(result.total_ms) }} ms</b></span
+        >
       </div>
     </section>
   </div>
   <section v-if="result" class="card quality-card">
     <div class="section-heading">
       <h2>人脸明细与对齐裁剪</h2>
-      <span>五点对齐 · 112 × 112</span>
+      <span>112 × 112</span>
     </div>
-    <el-tabs
-      ><el-tab-pane
-        v-for="key in ['original', 'enhanced']"
-        :key="key"
-        :label="key === 'original' ? '原始检测' : '增强检测'"
-        ><el-table :data="result[key].faces" empty-text="未检测到人脸"
-          ><el-table-column label="对齐人脸" width="130"
-            ><template #default="{ row }"
-              ><img
-                :src="row.aligned_crop"
-                class="face-thumb"
-                alt="对齐人脸裁剪" /></template></el-table-column
-          ><el-table-column label="检测置信度"
-            ><template #default="{ row }">{{
-              number(row.confidence, 4)
-            }}</template></el-table-column
-          ><el-table-column label="边界框 [x1,y1,x2,y2]"
-            ><template #default="{ row }">{{
-              row.bbox.map((n: number) => Math.round(n)).join(', ')
-            }}</template></el-table-column
-          ><el-table-column label="关键点数"
-            ><template #default="{ row }">{{ row.keypoints.length }}</template></el-table-column
-          ></el-table
-        ></el-tab-pane
-      ></el-tabs
-    >
+    <el-table :data="result.faces" empty-text="未检测到人脸">
+      <el-table-column label="对齐人脸" width="130"
+        ><template #default="{ row }"
+          ><img :src="row.aligned_crop" class="face-thumb" alt="对齐人脸裁剪" /></template
+      ></el-table-column>
+      <el-table-column label="检测置信度"
+        ><template #default="{ row }">{{ number(row.confidence, 4) }}</template></el-table-column
+      >
+      <el-table-column label="位置 [x1,y1,x2,y2]"
+        ><template #default="{ row }">{{
+          row.bbox.map((n: number) => Math.round(n)).join(', ')
+        }}</template></el-table-column
+      >
+    </el-table>
   </section>
 </template>

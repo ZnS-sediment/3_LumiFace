@@ -70,18 +70,79 @@ def normalize(image: np.ndarray, strength: float = 0.6) -> np.ndarray:
     return luminance_transform(image, (1 - strength) * y + strength * mapped)
 
 
+def resolve_options(image: np.ndarray, options: EnhanceOptions) -> EnhanceOptions:
+    """Deterministic image-only tuning; never inspect identity labels or match scores.
+
+    Analyze at most 512 px per side. Historical fixed-parameter calls remain unchanged.
+    Bounds limit noise amplification and preserve reproducible per-image parameters.
+    """
+    validate(image)
+    if not options.auto_parameters or options.method not in {"gamma", "clahe", "retinex"}:
+        return options.model_copy(update={"auto_parameters": False})
+    h, w = image.shape[:2]
+    scale = min(1, 512 / max(h, w))
+    small = cv2.resize(image, (max(8, round(w * scale)), max(8, round(h * scale))))
+    gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+    histogram = np.bincount(gray.ravel(), minlength=256).astype(np.float64)
+    histogram /= gray.size
+    levels = np.arange(256, dtype=np.float64) / 255
+    values: dict[str, float | bool] = {"auto_parameters": False}
+    if options.method == "gamma":
+        # Solve for the expected output brightness using the whole histogram,
+        # rather than taking a logarithm of the mean of a nonuniform image.
+        low, high = 0.35, 1.8
+        if histogram[0] + histogram[255] > 0.995:
+            value = 1.0  # Gamma cannot restore clipped black or white pixels.
+        else:
+            for _ in range(18):
+                value = (low + high) / 2
+                if float(np.dot(histogram, levels**value) * 255) > 115:
+                    low = value
+                else:
+                    high = value
+            value = (low + high) / 2
+        values["gamma"] = round(value, 3)
+    else:
+        blocks = [
+            float(block.mean())
+            for row in np.array_split(gray, 4)
+            for block in np.array_split(row, 4, axis=1)
+        ]
+        uneven = float(np.clip(np.std(blocks) / max(float(gray.mean()), 20), 0, 1))
+        residual = gray.astype(np.float32) - cv2.medianBlur(gray, 3).astype(np.float32)
+        noise = float(np.clip(np.median(np.abs(residual)) / 18, 0, 1))
+        if options.method == "clahe":
+            lo, hi = np.percentile(gray, [10, 90])
+            low_contrast = float(np.clip(1 - (hi - lo) / 180, 0, 1))
+            clip = 1.15 + (2 * low_contrast + 0.9 * uneven) * (1 - 0.7 * noise)
+            values["clip_limit"] = round(float(np.clip(clip, 1.1, 3.8)), 2)
+        else:
+            values["sigma"] = round(float(np.clip(min(h, w) * (0.08 + 0.12 * uneven), 3, 100)), 2)
+            shadows = float((gray < 45).mean())
+            values["strength"] = round(
+                float(
+                    np.clip((0.15 + 0.5 * uneven + 0.15 * shadows) * (1 - 0.6 * noise), 0.1, 0.75)
+                ),
+                3,
+            )
+    return options.model_copy(update=values)
+
+
 def enhance(image: np.ndarray, options: EnhanceOptions) -> tuple[np.ndarray, list[str]]:
     validate(image)
+    automatic = options.auto_parameters
+    options = resolve_options(image, options)
+    prefix = "自动参数 " if automatic else ""
     method = options.method
     if method == "original":
         return image.copy(), ["关闭增强"]
     if method == "gamma":
-        return gamma(image, options.gamma), [f"Gamma={options.gamma}"]
+        return gamma(image, options.gamma), [f"{prefix}Gamma={options.gamma}"]
     if method == "clahe":
-        return clahe(image, options.clip_limit), [f"CLAHE clip={options.clip_limit}"]
+        return clahe(image, options.clip_limit), [f"{prefix}CLAHE clip={options.clip_limit}"]
     if method == "retinex":
         return retinex(image, options.sigma, options.strength), [
-            f"SSR sigma={options.sigma}, strength={options.strength}"
+            f"{prefix}SSR sigma={options.sigma}, strength={options.strength}"
         ]
     if method == "exposure":
         return exposure(image, options.target, options.strength), [f"曝光 target={options.target}"]

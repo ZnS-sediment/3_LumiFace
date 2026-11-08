@@ -3,6 +3,7 @@ import os
 from urllib.parse import urlparse
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
+from starlette.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -11,10 +12,13 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from app.api.routes import router
 from app.core.errors import AppError
+from app.algorithms.face_detector import engine as face_engine
 from app.core.config import DATA
 from app.database.session import Base, engine, SessionLocal
-from app.models.entities import Experiment
+from app.models.entities import Experiment, FaceSample
+from app.services.persons import gallery
 from app.services.storage import recover_sample_cleanup
+from app.services.directory_picker import prepare as prepare_directory_picker
 
 
 @asynccontextmanager
@@ -29,6 +33,18 @@ async def lifespan(_: FastAPI):
             experiment.error = "进程重启导致实验中断，请重新运行；未完成结果不会标为达标"
         db.commit()
         recover_sample_cleanup(db)
+    prepare_directory_picker()
+    try:
+        def warm_models_and_references():
+            face_engine.load()
+            with SessionLocal() as db:
+                if db.scalar(select(FaceSample.id).limit(1)) is not None:
+                    gallery(db)
+
+        await run_in_threadpool(warm_models_and_references)
+    except AppError as exc:
+        # Enhancement remains available; face requests retry loading and report the cause.
+        logging.warning("人脸模型自动加载未完成：%s", exc.message)
     yield
 
 

@@ -1,4 +1,4 @@
-import { ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus/es/components/message/index'
 
 export function validateRequired(fields: [label: string, filled: unknown][]): boolean {
   const missing = fields.filter(([, filled]) => !filled).map(([label]) => label)

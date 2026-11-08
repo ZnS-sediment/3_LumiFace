@@ -53,5 +53,14 @@ def model(monkeypatch):
 
     monkeypatch.setattr(face_engine, "load", load)
     monkeypatch.setattr(face_engine, "infer", infer)
+    monkeypatch.setattr(face_engine, "detect_faces", lambda image: [{k: v for k, v in f.items() if k != "embedding"} for f in face_engine.infer(image)])
+    monkeypatch.setattr(
+        face_engine, "aligned_embeddings",
+        lambda image, faces: [infer(image)[0]["embedding"] for _ in faces],
+    )
+    monkeypatch.setattr(
+        face_engine, "local_embeddings",
+        lambda image, faces, method: [[infer(image)[0]["embedding"]] * 2 for _ in faces],
+    )
     load()
     return face_engine
